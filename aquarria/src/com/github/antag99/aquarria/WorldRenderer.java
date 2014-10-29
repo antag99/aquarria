@@ -28,11 +28,13 @@ public class WorldRenderer extends Widget {
 		float width = cam.viewportWidth * cam.zoom;
 		float height = cam.viewportHeight * cam.zoom;
 		
-		int startX = clamp(floor(cam.position.x - width), 0, world.getWidth() - 1);
-		int startY = clamp(floor(cam.position.y - height), 0, world.getHeight() - 1);
+		float margin = Math.max(width, height);
 		
-		int endX = clamp(ceil(cam.position.x + width), 0, world.getWidth());
-		int endY = clamp(ceil(cam.position.y + height), 0, world.getHeight());
+		int startX = clamp(floor(cam.position.x - margin), 0, world.getWidth() - 1);
+		int startY = clamp(floor(cam.position.y - margin), 0, world.getHeight() - 1);
+		
+		int endX = clamp(ceil(cam.position.x + margin), 0, world.getWidth());
+		int endY = clamp(ceil(cam.position.y + margin), 0, world.getHeight());
 		
 		for(int i = startX; i < endX; ++i) {
 			for(int j = startY; j < endY; ++j) {
