@@ -1,5 +1,6 @@
 package com.github.antag99.aquarria;
 
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.ObjectIntMap;
 
@@ -13,6 +14,8 @@ public class World {
 	
 	private short[] surfaceLevel;
 	
+	private Array<Entity> entities;
+	
 	public World(int width, int height) {
 		this.width = width;
 		this.height = height;
@@ -23,6 +26,7 @@ public class World {
 		// Add air manually, as it is the default value
 		tileMapping.put(TileType.air, 0);
 		idMapping.put(0, TileType.air);
+		entities = new Array<Entity>();
 	}
 	
 	public TileType getTileType(int x, int y) {
@@ -53,5 +57,29 @@ public class World {
 	
 	public void setSurfaceLevel(int x, int level) {
 		surfaceLevel[x] = (short) level;
+	}
+	
+	public void addEntity(Entity entity) {
+		entities.add(entity);
+		entity.setWorld(this);
+	}
+	
+	public void removeEntity(Entity entity) {
+		entities.removeValue(entity, true);
+		entity.setWorld(null);
+	}
+	
+	public Array<Entity> getEntities() {
+		return entities;
+	}
+	
+	public void update(float delta) {
+		for(int i = 0; i < entities.size; ++i) {
+			Entity entity = entities.get(i);
+			entity.update(delta);
+			if(!entity.isActive()) {
+				entities.removeIndex(i);
+			}
+		}
 	}
 }

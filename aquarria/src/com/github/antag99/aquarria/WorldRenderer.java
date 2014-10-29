@@ -46,6 +46,10 @@ public class WorldRenderer extends Widget {
 				}
 			}
 		}
+		
+		for(Entity entity : world.getEntities()) {
+			entity.getView().draw(batch);
+		}
 	}
 	
 	public WorldView getView() {

@@ -19,6 +19,8 @@ public class Aquarria implements ApplicationListener {
 	private World world;
 	private WorldView worldView;
 	private WorldRenderer worldRenderer;
+	
+	private Entity player;
 
 	@Override
 	public void create() {
@@ -28,6 +30,8 @@ public class Aquarria implements ApplicationListener {
 
 		world = new World(1024, 512);
 		new WorldGenerator().generate(world, 0);
+		player = new Entity(EntityType.player);
+		world.addEntity(player);
 		worldView = new WorldView();
 		worldView.setWorld(world);
 		worldRenderer = new WorldRenderer();
