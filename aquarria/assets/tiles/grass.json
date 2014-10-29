@@ -1,0 +1,6 @@
+{
+	"internalName" : "grass",
+	"displayName" : "Grass",
+	"solid" : true,
+	"texture" : "images/grass.png"
+}

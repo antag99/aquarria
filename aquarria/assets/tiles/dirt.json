@@ -1,0 +1,6 @@
+{
+	"internalName" : "dirt",
+	"displayName" : "Dirt",
+	"solid" : true,
+	"texture" : "images/dirt.png"
+}

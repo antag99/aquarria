@@ -1,0 +1,6 @@
+{
+	"internalName" : "stone",
+	"displayName" : "Stone",
+	"solid" : true,
+	"texture" : "images/stone.png"
+}
