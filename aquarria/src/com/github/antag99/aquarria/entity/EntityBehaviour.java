@@ -1,4 +1,4 @@
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.entity;
 
 public class EntityBehaviour {
 	private Entity entity;

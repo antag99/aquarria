@@ -1,8 +1,9 @@
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.world;
 
 import java.util.Random;
 
 import com.badlogic.gdx.utils.Array;
+import com.github.antag99.aquarria.tile.TileType;
 
 public class WorldGenerator {
 	

@@ -1,9 +1,11 @@
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.world;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.ObjectIntMap;
+import com.github.antag99.aquarria.entity.Entity;
+import com.github.antag99.aquarria.tile.TileType;
 
 public class World {
 	private int width;

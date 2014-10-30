@@ -1,4 +1,4 @@
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.world;
 
 import static com.badlogic.gdx.math.MathUtils.ceil;
 import static com.badlogic.gdx.math.MathUtils.clamp;
@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
+import com.github.antag99.aquarria.entity.Entity;
+import com.github.antag99.aquarria.tile.TileType;
 
 public class WorldRenderer extends Widget {
 

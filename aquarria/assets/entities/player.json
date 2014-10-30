@@ -4,5 +4,5 @@
 	"texture" : "images/white.png",
 	"width" : 1.5,
 	"height" : 2.5,
-	"behaviour" : "com.github.antag99.aquarria.PlayerBehaviour"
+	"behaviour" : "com.github.antag99.aquarria.entity.PlayerBehaviour"
 }

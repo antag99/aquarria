@@ -1,9 +1,11 @@
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.ReflectionHelper;
+import com.github.antag99.aquarria.TexturePack;
 
 public class EntityType {
 	public static final EntityType player = new EntityType("entities/player.json");

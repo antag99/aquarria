@@ -1,9 +1,10 @@
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.tile;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.TexturePack;
 
 public class TileType {
 	public static final TileType air = new TileType("tiles/air.json");
