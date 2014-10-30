@@ -46,10 +46,6 @@ public final class Steam {
 				} catch(Throwable ignored) {
 				}
 			}
-			// FIXME: DO NOT INCLUDE THIS
-			File _result = seekTerrariaDirectory(new File("/media/anton/OS/Program Files (x86)/Steam/steamapps/common/Terraria/"));
-			if(_result == null) System.err.println("THIS SHOULD NOT BE INCLUDED (Steam.java:51)");
-			else return _result;
 			
 			// Try to find steam parent directories
 			for(File root : File.listRoots()) {
