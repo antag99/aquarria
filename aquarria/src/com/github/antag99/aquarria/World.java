@@ -1,5 +1,6 @@
 package com.github.antag99.aquarria;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.ObjectIntMap;
@@ -7,6 +8,8 @@ import com.badlogic.gdx.utils.ObjectIntMap;
 public class World {
 	private int width;
 	private int height;
+	
+	private Vector2 spawnPoint = new Vector2();
 	
 	private short[] tileMatrix;
 	private ObjectIntMap<TileType> tileMapping;
@@ -19,6 +22,7 @@ public class World {
 	public World(int width, int height) {
 		this.width = width;
 		this.height = height;
+		spawnPoint.set(width / 2, height / 2);
 		tileMatrix = new short[width * height];
 		tileMapping = new ObjectIntMap<TileType>();
 		idMapping = new IntMap<TileType>();
@@ -27,6 +31,10 @@ public class World {
 		tileMapping.put(TileType.air, 0);
 		idMapping.put(0, TileType.air);
 		entities = new Array<Entity>();
+	}
+	
+	public Vector2 getSpawnPoint() {
+		return spawnPoint;
 	}
 	
 	public TileType getTileType(int x, int y) {

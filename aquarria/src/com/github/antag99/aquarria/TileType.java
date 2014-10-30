@@ -6,8 +6,6 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
 public class TileType {
-	public static final float SIZE = 16f;
-	
 	public static final TileType air = new TileType("tiles/air.json");
 	public static final TileType dirt = new TileType("tiles/dirt.json");
 	public static final TileType stone = new TileType("tiles/stone.json");

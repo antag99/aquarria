@@ -12,6 +12,7 @@ public class EntityType {
 	private String displayName;
 	private boolean solid;
 	private String texturePath;
+	private float weight;
 	
 	private float width;
 	private float height;
@@ -28,6 +29,7 @@ public class EntityType {
 		displayName = value.getString("displayName", "");
 		solid = value.getBoolean("solid", true);
 		texturePath = value.getString("texture");
+		weight = value.getFloat("weight", 1f);
 		
 		width = value.getFloat("width");
 		height = value.getFloat("height");
@@ -46,6 +48,10 @@ public class EntityType {
 	
 	public boolean isSolid() {
 		return solid;
+	}
+	
+	public float getWeight() {
+		return weight;
 	}
 	
 	public float getWidth() {

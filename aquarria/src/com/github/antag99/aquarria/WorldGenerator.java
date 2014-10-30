@@ -35,7 +35,13 @@ public class WorldGenerator {
 		tasks.add(() -> {
 			for(int i = 0; i < world.getWidth(); ++i) {
 				world.setTileType(i, world.getSurfaceLevel(i), TileType.grass);
+				world.setSurfaceLevel(i, world.getSurfaceLevel(i) + 1);
 			}
+		});
+		
+		// Set the spawnpoint
+		tasks.add(() -> {
+			world.getSpawnPoint().y = world.getSurfaceLevel((int) world.getSpawnPoint().x);
 		});
 	}
 	
