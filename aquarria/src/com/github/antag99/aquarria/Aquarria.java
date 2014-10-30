@@ -2,6 +2,7 @@ package com.github.antag99.aquarria;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -50,6 +51,13 @@ public class Aquarria implements ApplicationListener {
 
 	@Override
 	public void render() {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+			worldRenderer.setDrawTileGrid(!worldRenderer.getDrawTileGrid());
+		}
+		if(Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
+			worldRenderer.setDrawEntityBoxes(!worldRenderer.getDrawEntityBoxes());
+		}
+		
 		float delta = Gdx.graphics.getDeltaTime();
 		world.update(delta);
 
