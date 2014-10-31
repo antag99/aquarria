@@ -2,5 +2,5 @@
 	"internalName" : "stone",
 	"displayName" : "Stone",
 	"solid" : true,
-	"texture" : "images/tile/stone.png"
+	"texture" : "images/tiles/stone.png"
 }

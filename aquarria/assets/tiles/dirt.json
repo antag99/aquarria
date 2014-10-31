@@ -2,5 +2,5 @@
 	"internalName" : "dirt",
 	"displayName" : "Dirt",
 	"solid" : true,
-	"texture" : "images/tile/dirt.png"
+	"texture" : "images/tiles/dirt.png"
 }
