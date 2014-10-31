@@ -76,7 +76,6 @@ public class Aquarria implements ApplicationListener {
 					long startTime = System.currentTimeMillis();
 					ContentExtractor extractor = new ContentExtractor(terrariaDirectory.child("Content"), terrariaAssets);
 					extractor.extract();
-					extractor.finish();
 					long time = System.currentTimeMillis() - startTime;
 					System.out.println("Done. Took " + time / 1000f + " seconds");
 				} catch(Throwable ex) {
