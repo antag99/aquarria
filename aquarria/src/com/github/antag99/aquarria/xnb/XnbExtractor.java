@@ -5,15 +5,11 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import com.badlogic.gdx.assets.AssetLoaderParameters;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
-import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 
-public abstract class XnbAssetLoader<T, P extends AssetLoaderParameters<T>> extends AsynchronousAssetLoader<T, P> {
+public abstract class XnbExtractor {
 	private static final int HEADER_SIZE = 14;
 	
 	private LzxDecoder lzxDecoder = new LzxDecoder();
@@ -28,13 +24,8 @@ public abstract class XnbAssetLoader<T, P extends AssetLoaderParameters<T>> exte
 	protected String primaryType;
 	protected int primaryTypeReaderVersion;
 	
-	public XnbAssetLoader(FileHandleResolver resolver) {
-		super(resolver);
-	}
-
-	@Override
-	public void loadAsync(AssetManager assetManager, String path, FileHandle file, P params) {
-		readHeader(file);
+	public void extract(FileHandle source, FileHandle dest) {
+		readHeader(source);
 	}
 	
 	protected void readHeader(FileHandle file) {
@@ -52,6 +43,7 @@ public abstract class XnbAssetLoader<T, P extends AssetLoaderParameters<T>> exte
 		compressedSize = buffer.getInt();
 		decompressedSize = wasCompressed ? buffer.getInt() : compressedSize;
 		
+		// XNB files can be compressed with a slightly modified LZX algorithm
 		if (wasCompressed) {
 			ByteBuffer decompressedBuffer = ByteBuffer.allocate(decompressedSize);
 			decompressedBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -64,19 +56,22 @@ public abstract class XnbAssetLoader<T, P extends AssetLoaderParameters<T>> exte
 		}
 		
 		int typeReaderCount = get7BitEncodedInt(buffer);
-		
+
+		// The first type reader is used for reading the primary asset
 		primaryTypeReaderName = getCSharpString(buffer);
 		primaryTypeReaderVersion = buffer.getInt();
-		
+
+		// Type reader names MIGHT contain assembly information
 		int assemblyInformationIndex = primaryTypeReaderName.indexOf(',');
 		if(assemblyInformationIndex != -1) {
 			primaryTypeReaderName = primaryTypeReaderName.substring(0, assemblyInformationIndex);
 		}
 		
 		primaryType = primaryTypeReaderName.replace("Microsoft.Xna.Framework.Content.", "").replace("Reader", "");
-		
+
+		// Skip the remaining type readers, as all types are known
 		for(int k = 1; k < typeReaderCount; ++k) {
-			getCSharpChar(buffer);
+			getCSharpString(buffer);
 			buffer.getInt();
 		}
 		
@@ -119,7 +114,10 @@ public abstract class XnbAssetLoader<T, P extends AssetLoaderParameters<T>> exte
 	}
 	
 	protected static <T> void getList(ByteBuffer buffer, List<T> list, Class<T> clazz) {
-		if(get7BitEncodedInt(buffer) == 0) return; //Null list
+		if(get7BitEncodedInt(buffer) == 0) {
+			throw new RuntimeException("List is null");
+		}
+		
 		int len = buffer.getInt();
 		for(int i = 0; i < len; ++i) {
 			if(clazz == Rectangle.class) {

@@ -1,14 +1,19 @@
 package com.github.antag99.aquarria;
 
+import java.io.File;
+import java.util.Scanner;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.EntityType;
@@ -16,6 +21,7 @@ import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
 import com.github.antag99.aquarria.world.WorldRenderer;
 import com.github.antag99.aquarria.world.WorldView;
+import com.github.antag99.aquarria.xnb.Steam;
 
 public class Aquarria implements ApplicationListener {
 	public static final float PIXELS_PER_METER = 16;
@@ -29,12 +35,60 @@ public class Aquarria implements ApplicationListener {
 	private WorldRenderer worldRenderer;
 	
 	private Entity player;
+	
+	private AquarriaProperties properties;
+	private FileHandle configFile;
+	private FileHandle terrariaAssets;
+	private FileHandle terrariaDirectory;
 
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
 		viewport = new ScreenViewport();
 		stage = new Stage(viewport, batch);
+		
+		configFile = Gdx.files.local("aquarria.json");
+		if(configFile.exists()) {
+			properties = new Json().fromJson(AquarriaProperties.class, configFile);
+		} else {
+			properties = new AquarriaProperties();
+		}
+		
+		terrariaAssets = Gdx.files.local("assets-terraria");
+		terrariaDirectory = properties.getTerrariaDirectory();
+		
+		if(!terrariaAssets.exists() || properties.getForceExtractAssets()) {
+			if(terrariaDirectory == null) {
+				terrariaDirectory = Steam.findTerrariaDirectory();
+				if(terrariaDirectory == null) {
+					System.err.println("Error: Terraria directory not found. Edit aquarria.json manually. Exiting.");
+					properties.setTerrariaDirectory(new FileHandle("<terraria directory>"));
+					Gdx.app.exit();
+				}
+			} else if(!terrariaDirectory.exists()) {
+				System.err.println("Error: The directory " + terrariaDirectory.path() +
+						" does not exist. Edit aquarria.json manually. Exiting.");
+				Gdx.app.exit();
+			}
+			
+			if(terrariaDirectory != null && terrariaDirectory.exists()) {
+				try {
+					long startTime = System.currentTimeMillis();
+					ContentExtractor extractor = new ContentExtractor(terrariaDirectory.child("Content"), terrariaAssets);
+					extractor.extract();
+					extractor.finish();
+					long time = System.currentTimeMillis() - startTime;
+					System.out.println("Done. Took " + time / 1000f + " seconds");
+				} catch(Throwable ex) {
+					System.err.println("Error extracting assets. Exiting.");
+					ex.printStackTrace();
+					Gdx.app.exit();
+					return;
+				}
+			}
+			
+			properties.setForceExtractAssets(false);
+		}
 
 		world = new World(1024, 512);
 		new WorldGenerator().generate(world, 0);
@@ -50,9 +104,14 @@ public class Aquarria implements ApplicationListener {
 		Gdx.input.setInputProcessor(stage);
 	}
 
+	public AquarriaProperties getProperties() {
+		return properties;
+	}
+
 	@Override
 	public void dispose() {
 		batch.dispose();
+		new Json().toJson(properties, AquarriaProperties.class, configFile);
 	}
 
 	@Override
