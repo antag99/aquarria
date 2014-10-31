@@ -7,8 +7,8 @@ public final class Steam {
 	}
 
 	public static FileHandle findTerrariaDirectory() {
+		// Check the windows registry for steam installation path
 		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-			// Check the windows registry for steam installation path
 			try {
 				String steamPath = WinRegistry.readString(WinRegistry.HKEY_CURRENT_USER,
 						"Software\\Valve\\Steam", "SteamPath");
@@ -20,7 +20,7 @@ public final class Steam {
 			}
 		}
 
-		// If nothing other works, then prompt the user
+		// Else prompt the user
 		return null;
 	}
 

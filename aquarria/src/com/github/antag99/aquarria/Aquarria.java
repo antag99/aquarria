@@ -1,42 +1,27 @@
 package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.EntityType;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.world.World;
-import com.github.antag99.aquarria.world.WorldGenerator;
-import com.github.antag99.aquarria.world.WorldRenderer;
-import com.github.antag99.aquarria.world.WorldView;
+import com.github.antag99.aquarria.ui.IngameScreen;
 import com.github.antag99.aquarria.xnb.Steam;
 
-public class Aquarria implements ApplicationListener {
-	public static final float PIXELS_PER_METER = 16;
-	
+public class Aquarria extends Game {
 	private Batch batch;
 	private Stage stage;
 	private ScreenViewport viewport;
-
-	private World world;
-	private WorldView worldView;
-	private WorldRenderer worldRenderer;
-	
-	private Entity player;
 	
 	private AquarriaProperties properties;
 	private FileHandle configFile;
@@ -107,17 +92,6 @@ public class Aquarria implements ApplicationListener {
 			properties.setForceExtractAssets(false);
 		}
 
-		world = new World(1024, 512);
-		new WorldGenerator().generate(world, 0);
-		player = new Entity(EntityType.player);
-		player.getPosition().set(world.getSpawnPoint());
-		world.addEntity(player);
-		worldView = new WorldView();
-		worldView.setWorld(world);
-		worldRenderer = new WorldRenderer();
-		worldRenderer.setView(worldView);
-		worldRenderer.setFillParent(true);
-		stage.addActor(worldRenderer);
 		Gdx.input.setInputProcessor(stage);
 		
 		System.out.print("Loading assets... ");
@@ -146,6 +120,8 @@ public class Aquarria implements ApplicationListener {
 			itemType.getTexture(assetManager);
 		
 		System.out.println("Done!");
+		
+		setScreen(new IngameScreen(this));
 	}
 
 	public AquarriaProperties getProperties() {
@@ -162,53 +138,33 @@ public class Aquarria implements ApplicationListener {
 
 	@Override
 	public void dispose() {
+		super.dispose();
 		batch.dispose();
 		new Json().toJson(properties, AquarriaProperties.class, configFile);
 	}
 
+	public Stage getStage() {
+		return stage;
+	}
+	
+	public Batch getBatch() {
+		return batch;
+	}
+	
 	@Override
 	public void render() {
-		if(Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
-			worldRenderer.setDrawTileGrid(!worldRenderer.getDrawTileGrid());
-		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
-			worldRenderer.setDrawEntityBoxes(!worldRenderer.getDrawEntityBoxes());
-		}
-		
-		float delta = Gdx.graphics.getDeltaTime();
-		world.update(delta);
-
-		OrthographicCamera cam = worldView.getCamera();
-
-		Vector2 playerPosition = player.getPosition();
-		cam.position.x = playerPosition.x;
-		cam.position.y = playerPosition.y;
-		cam.zoom = 0.7f;
-
-		cam.update();
-		
 		Gdx.gl.glClearColor(0.6f, 0.6f, 1f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		super.render();
+		
 		stage.act();
 		stage.draw();
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		OrthographicCamera cam = worldView.getCamera();
-		cam.viewportWidth = width / PIXELS_PER_METER;
-		cam.viewportHeight = height / PIXELS_PER_METER;
-		cam.update();
-
 		viewport.update(width, height, true);
-	}
-
-	@Override
-	public void resume() {
-	}
-
-	@Override
-	public void pause() {
+		super.resize(width, height);
 	}
 }
