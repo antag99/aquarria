@@ -6,12 +6,16 @@ import static com.badlogic.gdx.math.MathUtils.floor;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.github.antag99.aquarria.entity.Entity;
+import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.TileType;
 
 public class WorldRenderer extends Widget {
@@ -59,13 +63,19 @@ public class WorldRenderer extends Widget {
 		int endX = clamp(ceil(cam.position.x + margin), 0, world.getWidth());
 		int endY = clamp(ceil(cam.position.y + margin), 0, world.getHeight());
 
+		GridPoint2 frame = new GridPoint2();
+
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
 				TileType type = world.getTileType(i, j);
 				TextureRegion texture = type.getTexture();
 
 				if (texture != null) {
-					batch.draw(texture, i, j, 1f, 1f);
+					FrameStyle.defaultFrameStyle.findFrame(type, i, j, world, MathUtils.random, frame);
+					int srcX = texture.getRegionX() + frame.x * 18;
+					int srcY = texture.getRegionY() + frame.y * 18;
+					Texture srcTexture = texture.getTexture();
+					batch.draw(srcTexture, i, j, 1f, 1f, srcX, srcY, 16, 16, false, false);
 				}
 			}
 		}

@@ -1,14 +1,22 @@
 package com.github.antag99.aquarria.entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.ReflectionHelper;
-import com.github.antag99.aquarria.TexturePack;
 
 public class EntityType {
+	private static Array<EntityType> entityTypes = new Array<EntityType>();
+	
+	public static Array<EntityType> getEntityTypes() {
+		return entityTypes;
+	}
+	
 	public static final EntityType player = new EntityType("entities/player.json");
+	
 	
 	private String internalName;
 	private String displayName;
@@ -23,7 +31,6 @@ public class EntityType {
 	private Class<? extends EntityBehaviour> behaviourClass;
 	
 	private TextureRegion texture;
-	private TexturePack texturePack;
 	
 	public EntityType(String path) {
 		JsonValue value = new JsonReader().parse(Gdx.files.internal(path));
@@ -38,6 +45,8 @@ public class EntityType {
 		
 		viewClass = ReflectionHelper.forName(value.getString("view", EntityView.class.getName()));
 		behaviourClass = ReflectionHelper.forName(value.getString("behaviour", EntityBehaviour.class.getName()));
+		
+		entityTypes.add(this);
 	}
 	
 	public String getInternalName() {
@@ -64,14 +73,16 @@ public class EntityType {
 		return height;
 	}
 	
+	public String getTexturePath() {
+		return texturePath;
+	}
+	
+	public void getTexture(AssetManager assetManager) {
+		if(texturePath != null)
+			texture = assetManager.get(texturePath);
+	}
+	
 	public TextureRegion getTexture() {
-		if(texture == null && texturePath != null) {
-			if(texturePack == null) {
-				texturePack = new TexturePack();
-			}
-			texture = texturePack.getTexture(texturePath);
-		}
-		
 		return texture;
 	}
 	

@@ -3,17 +3,21 @@ package com.github.antag99.aquarria;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.EntityType;
+import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
 import com.github.antag99.aquarria.world.WorldRenderer;
@@ -37,12 +41,28 @@ public class Aquarria implements ApplicationListener {
 	private FileHandle configFile;
 	private FileHandle terrariaAssets;
 	private FileHandle terrariaDirectory;
+	
+	private FileHandleResolverMultiplexer resolver;
+	private AssetManager assetManager;
 
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
 		viewport = new ScreenViewport();
 		stage = new Stage(viewport, batch);
+		terrariaAssets = Gdx.files.local("assets-terraria");
+		
+		InternalFileHandleResolver internalFiles = new InternalFileHandleResolver();
+		DirectoryFileHandleResolver terrariaFiles = new DirectoryFileHandleResolver(terrariaAssets);
+		
+		resolver = new FileHandleResolverMultiplexer(internalFiles);
+		resolver.addResolver(internalFiles);
+		resolver.addResolver(terrariaFiles);
+		
+		TextureRegionLoader textureRegionLoader = new TextureRegionLoader(resolver, 2048, 2048);
+		
+		assetManager = new AssetManager(resolver);
+		assetManager.setLoader(TextureRegion.class, textureRegionLoader);
 		
 		configFile = Gdx.files.local("aquarria.json");
 		if(configFile.exists()) {
@@ -51,7 +71,6 @@ public class Aquarria implements ApplicationListener {
 			properties = new AquarriaProperties();
 		}
 		
-		terrariaAssets = Gdx.files.local("assets-terraria");
 		terrariaDirectory = properties.getTerrariaDirectory();
 		
 		if(!terrariaAssets.exists() || properties.getForceExtractAssets()) {
@@ -99,10 +118,37 @@ public class Aquarria implements ApplicationListener {
 		worldRenderer.setFillParent(true);
 		stage.addActor(worldRenderer);
 		Gdx.input.setInputProcessor(stage);
+		
+		System.out.print("Loading assets... ");
+		for(EntityType entityType : EntityType.getEntityTypes())
+			if(entityType.getTexturePath() != null)
+				assetManager.load(entityType.getTexturePath(), TextureRegion.class);
+		
+		for(TileType tileType : TileType.getTileTypes())
+			if(tileType.getTexturePath() != null)
+				assetManager.load(tileType.getTexturePath(), TextureRegion.class);
+		
+		assetManager.finishLoading();
+		
+		for(EntityType entityType : EntityType.getEntityTypes())
+			entityType.getTexture(assetManager);
+		
+		for(TileType tileType : TileType.getTileTypes())
+			tileType.getTexture(assetManager);
+		
+		System.out.println("Done!");
 	}
 
 	public AquarriaProperties getProperties() {
 		return properties;
+	}
+	
+	public AssetManager getAssetManager() {
+		return assetManager;
+	}
+	
+	public FileHandleResolverMultiplexer getResolver() {
+		return resolver;
 	}
 
 	@Override

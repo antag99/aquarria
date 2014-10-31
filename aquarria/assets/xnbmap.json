@@ -1,0 +1,5 @@
+{
+	"images/Tiles_0.png" : "images/tile/dirt.png",
+	"images/Tiles_1.png" : "images/tile/stone.png",
+	"images/Tiles_2.png" : "images/tile/grass.png"
+}

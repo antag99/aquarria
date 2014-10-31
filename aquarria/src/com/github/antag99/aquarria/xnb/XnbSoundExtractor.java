@@ -41,7 +41,7 @@ public class XnbSoundExtractor extends XnbExtractor {
 		int dataChunkSize = buffer.getInt();
 
 		// Note that the samples are written directly from the source buffer
-		ByteBuffer headerBuffer = ByteBuffer.allocate(42);
+		ByteBuffer headerBuffer = ByteBuffer.allocate(44);
 		headerBuffer.put((byte) 'R');
 		headerBuffer.put((byte) 'I');
 		headerBuffer.put((byte) 'F');
