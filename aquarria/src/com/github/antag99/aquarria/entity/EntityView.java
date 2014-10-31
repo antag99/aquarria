@@ -14,7 +14,7 @@ public class EntityView {
 	
 	public void draw(Batch batch) {
 		batch.draw(entity.getType().getTexture(), entity.getPosition().x, entity.getPosition().y,
-				entity.getType().getWidth(), entity.getType().getHeight());
+				entity.getSize().x, entity.getSize().y);
 	}
 	
 	public Entity getEntity() {

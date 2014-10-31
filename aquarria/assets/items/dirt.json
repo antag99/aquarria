@@ -1,0 +1,8 @@
+{
+	"internalName" : "dirt",
+	"displayName" : "Dirt",
+	"width" : 1,
+	"height" : 1,
+	"maxStack" : 99,
+	"texture" : "images/items/dirt.png"
+}

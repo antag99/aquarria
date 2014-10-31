@@ -9,6 +9,7 @@ import com.github.antag99.aquarria.world.World;
 public class Entity {
 	private Vector2 position = new Vector2();
 	private Vector2 velocity = new Vector2();
+	private Vector2 size = new Vector2();
 	
 	private EntityBehaviour behaviour;
 	private EntityView view;
@@ -22,6 +23,8 @@ public class Entity {
 		this.type = type;
 		behaviour = type.createBehaviour(this);
 		view = type.createView(this);
+		size.x = type.getWeight();
+		size.y = type.getDefaultHeight();
 	}
 	
 	public void update(float delta) {
@@ -55,14 +58,14 @@ public class Entity {
 	private Rectangle tmpBounds2 = new Rectangle();
 	
 	public boolean inCollision() {
-		tmpBounds.set(position.x, position.y, type.getWidth(), type.getHeight());
+		tmpBounds.set(position.x, position.y, size.x, size.y);
 		tmpBounds2.set(0f, 0f, 1f, 1f);
 		
 		int startX = MathUtils.floor(position.x);
 		int startY = MathUtils.floor(position.y);
 		
-		int endX = MathUtils.floor(position.x + type.getWidth());
-		int endY = MathUtils.floor(position.y + type.getHeight());
+		int endX = MathUtils.floor(position.x + size.x);
+		int endY = MathUtils.floor(position.y + size.y);
 		
 		for(int i = startX; i < endX; ++i) {
 			tmpBounds2.x = i;
@@ -82,6 +85,10 @@ public class Entity {
 		return position;
 	}
 	
+	public Vector2 getSize() {
+		return size;
+	}
+	
 	public Vector2 getVelocity() {
 		return velocity;
 	}
@@ -90,12 +97,14 @@ public class Entity {
 		return type;
 	}
 	
-	public EntityBehaviour getBehaviour() {
-		return behaviour;
+	@SuppressWarnings("unchecked")
+	public <T extends EntityBehaviour> T getBehaviour() {
+		return (T) behaviour;
 	}
 	
-	public EntityView getView() {
-		return view;
+	@SuppressWarnings("unchecked")
+	public <T extends EntityView> T getView() {
+		return (T) view;
 	}
 	
 	public World getWorld() {

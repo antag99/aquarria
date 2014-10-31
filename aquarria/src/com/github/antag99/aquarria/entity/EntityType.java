@@ -24,8 +24,8 @@ public class EntityType {
 	private String texturePath;
 	private float weight;
 	
-	private float width;
-	private float height;
+	private float defaultWidth;
+	private float defaultHeight;
 	
 	private Class<? extends EntityView> viewClass;
 	private Class<? extends EntityBehaviour> behaviourClass;
@@ -40,8 +40,8 @@ public class EntityType {
 		texturePath = value.getString("texture");
 		weight = value.getFloat("weight", 1f);
 		
-		width = value.getFloat("width");
-		height = value.getFloat("height");
+		defaultWidth = value.getFloat("width");
+		defaultHeight = value.getFloat("height");
 		
 		viewClass = ReflectionHelper.forName(value.getString("view", EntityView.class.getName()));
 		behaviourClass = ReflectionHelper.forName(value.getString("behaviour", EntityBehaviour.class.getName()));
@@ -65,12 +65,12 @@ public class EntityType {
 		return weight;
 	}
 	
-	public float getWidth() {
-		return width;
+	public float getDefaultWidth() {
+		return defaultWidth;
 	}
 	
-	public float getHeight() {
-		return height;
+	public float getDefaultHeight() {
+		return defaultHeight;
 	}
 	
 	public String getTexturePath() {

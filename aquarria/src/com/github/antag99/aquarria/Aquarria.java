@@ -17,6 +17,7 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.EntityType;
+import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
@@ -120,6 +121,7 @@ public class Aquarria implements ApplicationListener {
 		Gdx.input.setInputProcessor(stage);
 		
 		System.out.print("Loading assets... ");
+		
 		for(EntityType entityType : EntityType.getEntityTypes())
 			if(entityType.getTexturePath() != null)
 				assetManager.load(entityType.getTexturePath(), TextureRegion.class);
@@ -128,6 +130,10 @@ public class Aquarria implements ApplicationListener {
 			if(tileType.getTexturePath() != null)
 				assetManager.load(tileType.getTexturePath(), TextureRegion.class);
 		
+		for(ItemType itemType : ItemType.getItemTypes())
+			if(itemType.getTexturePath() != null)
+				assetManager.load(itemType.getTexturePath(), TextureRegion.class);
+		
 		assetManager.finishLoading();
 		
 		for(EntityType entityType : EntityType.getEntityTypes())
@@ -135,6 +141,9 @@ public class Aquarria implements ApplicationListener {
 		
 		for(TileType tileType : TileType.getTileTypes())
 			tileType.getTexture(assetManager);
+		
+		for(ItemType itemType : ItemType.getItemTypes())
+			itemType.getTexture(assetManager);
 		
 		System.out.println("Done!");
 	}
