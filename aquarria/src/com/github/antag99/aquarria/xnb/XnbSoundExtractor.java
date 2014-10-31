@@ -67,8 +67,6 @@ public class XnbSoundExtractor extends XnbExtractor {
 		headerBuffer.put((byte) 't');
 		headerBuffer.put((byte) 'a');
 		headerBuffer.putInt(dataChunkSize);
-		// Just testing, remove if it works
-		if(headerBuffer.hasRemaining()) throw new RuntimeException("Header size mismatch " + headerBuffer.position());
 
 		try {
 			OutputStream outputStream = dest.write(false);

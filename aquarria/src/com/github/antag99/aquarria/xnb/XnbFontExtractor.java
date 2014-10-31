@@ -33,9 +33,11 @@ public class XnbFontExtractor extends XnbExtractor {
 			int height = buffer.getInt();
 			
 			int mipCount = buffer.getInt();
-			int size = buffer.getInt();
+			buffer.getInt();
 			
-			System.out.println("font texture width=" + width + ", height=" + height + ", mipCount=" + mipCount + ", size=" + size);
+			if(mipCount != 1) {
+				throw new RuntimeException("Invalid mipmap count: " + mipCount);
+			}
 			
 			FileHandle textureFile = dest.sibling(dest.nameWithoutExtension() + ".png");
 

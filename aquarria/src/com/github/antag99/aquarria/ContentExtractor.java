@@ -36,7 +36,7 @@ public class ContentExtractor {
 		XnbExtractor soundExtractor = new XnbSoundExtractor();
 		FileHandle rawSoundDir = rawDir.child("sound");
 		
-		for(FileHandle sound : contentDirectory.child("Sound").list(".xnb")) {
+		for(FileHandle sound : contentDirectory.child("Sounds").list(".xnb")) {
 			soundExtractor.extract(sound, rawSoundDir.child(sound.name()));
 		}
 	}

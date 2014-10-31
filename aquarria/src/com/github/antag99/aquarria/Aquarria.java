@@ -1,8 +1,5 @@
 package com.github.antag99.aquarria;
 
-import java.io.File;
-import java.util.Scanner;
-
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -73,6 +70,7 @@ public class Aquarria implements ApplicationListener {
 			
 			if(terrariaDirectory != null && terrariaDirectory.exists()) {
 				try {
+					System.out.println("Extracting assets from " + terrariaDirectory.path());
 					long startTime = System.currentTimeMillis();
 					ContentExtractor extractor = new ContentExtractor(terrariaDirectory.child("Content"), terrariaAssets);
 					extractor.extract();
