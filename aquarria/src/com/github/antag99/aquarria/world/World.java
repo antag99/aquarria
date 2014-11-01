@@ -5,6 +5,9 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.ObjectIntMap;
 import com.github.antag99.aquarria.entity.Entity;
+import com.github.antag99.aquarria.entity.EntityType;
+import com.github.antag99.aquarria.entity.ItemBehaviour;
+import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.tile.TileType;
 
 public class World {
@@ -77,6 +80,14 @@ public class World {
 	public void removeEntity(Entity entity) {
 		entities.removeValue(entity, true);
 		entity.setWorld(null);
+	}
+	
+	public void dropItem(Item item, float x, float y) {
+		Entity itemEntity = new Entity(EntityType.item);
+		itemEntity.getPosition().set(x, y);
+		ItemBehaviour behaviour = itemEntity.getBehaviour();
+		behaviour.setItem(item);
+		addEntity(itemEntity);
 	}
 	
 	public Array<Entity> getEntities() {

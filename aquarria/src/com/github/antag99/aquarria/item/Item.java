@@ -63,4 +63,9 @@ public class Item {
 			stack = tmpStack;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "Item[type=" + type.getInternalName() + ", stack=" + stack + "]";
+	}
 }

@@ -120,9 +120,8 @@ public class IngameInterface extends Table {
 				inventoryDisplay.setVisible(true);
 			} else {
 				if(!swapItem.isEmpty()) {
-					PlayerBehaviour behaviour = player.getBehaviour();
-					swapItem.set(behaviour.getInventory().addItem(swapItem));
-					// TODO: Drop the item instead.
+					player.getWorld().dropItem(swapItem.copy(), player.getPosition().x, player.getPosition().y);
+					swapItem.setStack(0);
 				}
 				hotbarDisplay.setSelectedIndex(hotbarSelectedIndex);
 				hotbarDisplay.setSwapItem(null);

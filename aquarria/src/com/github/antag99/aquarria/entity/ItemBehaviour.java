@@ -1,6 +1,7 @@
 package com.github.antag99.aquarria.entity;
 
 import com.github.antag99.aquarria.item.Item;
+import com.github.antag99.aquarria.ui.IngameScreen;
 
 public class ItemBehaviour extends EntityBehaviour {
 	private Item item;
@@ -17,8 +18,8 @@ public class ItemBehaviour extends EntityBehaviour {
 	
 	public void setItem(Item item) {
 		this.item = item;
-		getEntity().getSize().set(item.getType().getWidth(),
-				item.getType().getHeight());
+		getEntity().getSize().set(item.getType().getWidth() / IngameScreen.PIXELS_PER_METER,
+				item.getType().getHeight() / IngameScreen.PIXELS_PER_METER);
 	}
 	
 	@Override

@@ -42,6 +42,19 @@ public class PlayerBehaviour extends EntityBehaviour {
 		if(jump && vel.y == 0f) {
 			vel.y = 5f;
 		}
+		
+		for(Entity otherEntity : entity.getWorld().getEntities()) {
+			if(otherEntity.getBehaviour() instanceof ItemBehaviour) {
+				if(entity.getBounds().overlaps(otherEntity.getBounds())) {
+					ItemBehaviour behaviour = otherEntity.getBehaviour();
+					Item item = inventory.addItem(behaviour.getItem());
+					behaviour.setItem(item);
+					if(item.isEmpty()) {
+						otherEntity.setActive(false);
+					}
+				}
+			}
+		}
 	}
 	
 	public Inventory getHotbar() {

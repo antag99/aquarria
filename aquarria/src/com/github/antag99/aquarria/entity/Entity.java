@@ -19,6 +19,8 @@ public class Entity {
 	
 	private boolean active = true;
 	
+	private Rectangle tmpRectangle = new Rectangle();
+	
 	public Entity(EntityType type) {
 		this.type = type;
 		behaviour = type.createBehaviour(this);
@@ -91,6 +93,10 @@ public class Entity {
 	
 	public Vector2 getVelocity() {
 		return velocity;
+	}
+	
+	public Rectangle getBounds() {
+		return tmpRectangle.set(position.x, position.y, size.x, size.y);
 	}
 	
 	public EntityType getType() {

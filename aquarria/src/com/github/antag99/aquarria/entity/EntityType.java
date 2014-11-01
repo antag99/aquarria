@@ -16,7 +16,7 @@ public class EntityType {
 	}
 	
 	public static final EntityType player = new EntityType("entities/player.json");
-	
+	public static final EntityType item = new EntityType("entities/item.json");
 	
 	private String internalName;
 	private String displayName;

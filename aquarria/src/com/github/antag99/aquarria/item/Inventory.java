@@ -17,7 +17,7 @@ public class Inventory {
 		item = item.copy();
 		for(int i = 0; i < items.length; ++i) {
 			Item slot = items[i];
-			if(slot.getType() == item.getType()) {
+			if(slot.getType() == item.getType() && !slot.isEmpty() && slot.getStack() != slot.getType().getMaxStack()) {
 				item.stackTo(slot);
 				if(item.isEmpty()) break;
 			}
@@ -33,7 +33,7 @@ public class Inventory {
 			Item slot = items[i];
 			if(slot.isEmpty()) {
 				item.stackTo(slot);
-				if(item.isEmpty()) break;
+				break;
 			}
 		}
 		return item;
