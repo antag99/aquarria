@@ -1,3 +1,4 @@
+## Eclipse/Java
 .metadata
 .settings
 bin
@@ -5,6 +6,10 @@ bin
 *~
 .recommenders
 
+## Aquarria
 assets-terraria
 aquarria.json
+
+## Hiero
+out*
 

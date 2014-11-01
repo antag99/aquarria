@@ -1,0 +1,17 @@
+{
+	"com.badlogic.gdx.graphics.g2d.BitmapFont" : {
+		"stack" : { "file" : "fonts/stackFont.fnt" }
+	},
+	
+	"com.github.antag99.aquarria.ui.InventoryDisplay$InventoryDisplayStyle" : {
+		"hotbar" : {
+			"stackFont" : "stack",
+			"slotBackground" : "slot/blue",
+			"selectedSlotBackground" : "slot/focus"
+		},
+		"inventory" : {
+			"stackFont" : "stack",
+			"slotBackground" : "slot/blue"
+		}
+	}
+}

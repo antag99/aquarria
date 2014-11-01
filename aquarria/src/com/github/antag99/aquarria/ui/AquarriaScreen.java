@@ -15,6 +15,14 @@ public class AquarriaScreen extends ScreenAdapter {
 		root.setFillParent(true);
 	}
 	
+	/** Called to load AssetManager assets */
+	public void load() {
+	}
+	
+	/** Called when all assets have finished loading */
+	public void initialize() {
+	}
+	
 	@Override
 	public void show() {
 		aquarria.getStage().addActor(root);

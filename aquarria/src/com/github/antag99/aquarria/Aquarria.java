@@ -30,6 +30,7 @@ public class Aquarria extends Game {
 	
 	private FileHandleResolverMultiplexer resolver;
 	private AssetManager assetManager;
+	private IngameScreen ingameScreen;
 
 	@Override
 	public void create() {
@@ -94,6 +95,8 @@ public class Aquarria extends Game {
 
 		Gdx.input.setInputProcessor(stage);
 		
+		ingameScreen = new IngameScreen(this);
+		
 		System.out.print("Loading assets... ");
 		
 		for(EntityType entityType : EntityType.getEntityTypes())
@@ -108,6 +111,8 @@ public class Aquarria extends Game {
 			if(itemType.getTexturePath() != null)
 				assetManager.load(itemType.getTexturePath(), TextureRegion.class);
 		
+		ingameScreen.load();
+		
 		assetManager.finishLoading();
 		
 		for(EntityType entityType : EntityType.getEntityTypes())
@@ -119,9 +124,11 @@ public class Aquarria extends Game {
 		for(ItemType itemType : ItemType.getItemTypes())
 			itemType.getTexture(assetManager);
 		
+		ingameScreen.initialize();
+		
 		System.out.println("Done!");
 		
-		setScreen(new IngameScreen(this));
+		setScreen(ingameScreen);
 	}
 
 	public AquarriaProperties getProperties() {

@@ -2,6 +2,8 @@ package com.github.antag99.aquarria;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.xnb.XnbExtractor;
@@ -10,7 +12,6 @@ import com.github.antag99.aquarria.xnb.XnbSoundExtractor;
 import com.github.antag99.aquarria.xnb.XnbTextureExtractor;
 
 public class ContentExtractor {
-	
 	private JsonValue xnbMap;
 	
 	private FileHandle contentDirectory;
@@ -23,6 +24,7 @@ public class ContentExtractor {
 	}
 	
 	public void extract() {
+		// Extract XNB files to raw/
 		FileHandle rawDir = outputAssetDirectory.child("raw");
 		
 		XnbExtractor textureExtractor = new XnbTextureExtractor();
@@ -46,11 +48,29 @@ public class ContentExtractor {
 			soundExtractor.extract(sound, rawSoundDir.child(sound.nameWithoutExtension() + ".wav"));
 		}
 		
+		// Move image files from the raw/ directory to the target directory,
+		// according to the configuration.
 		for(JsonValue value : xnbMap) {
 			FileHandle src = rawDir.child(value.name);
 			FileHandle dest = outputAssetDirectory.child(value.asString());
 			src.moveTo(dest);
 		}
+		
+		// Create texture atlas for all UI images
+		Settings settings = new Settings();
+		settings.minWidth = 32;
+		settings.minHeight = 32;
+		settings.maxWidth = 2048;
+		settings.maxHeight = 2048;
+		settings.pot = true;
+		settings.paddingX = 0;
+		settings.paddingY = 0;
+		
+		String inputDirectory = outputAssetDirectory.child("images/ui").path();
+		String outputDirectory = outputAssetDirectory.child("images/ui/atlas").path();
+		String packFileName = "ui";
+		
+		TexturePacker.process(settings, inputDirectory, outputDirectory, packFileName);
 	}
 	
 	public FileHandle getContentDirectory() {

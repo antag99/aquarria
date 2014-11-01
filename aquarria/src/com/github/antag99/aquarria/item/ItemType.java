@@ -36,6 +36,8 @@ public class ItemType {
 		width = properties.getFloat("width", 0f);
 		height = properties.getFloat("height", 0f);
 		texturePath = properties.getString("texture", null);
+		
+		itemTypes.add(this);
 	}
 	
 	public String getInternalName() {
