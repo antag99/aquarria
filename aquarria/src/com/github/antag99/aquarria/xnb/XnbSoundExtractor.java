@@ -3,6 +3,7 @@ package com.github.antag99.aquarria.xnb;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import com.badlogic.gdx.files.FileHandle;
 
@@ -42,6 +43,7 @@ public class XnbSoundExtractor extends XnbExtractor {
 
 		// Note that the samples are written directly from the source buffer
 		ByteBuffer headerBuffer = ByteBuffer.allocate(44);
+		headerBuffer.order(ByteOrder.LITTLE_ENDIAN);
 		headerBuffer.put((byte) 'R');
 		headerBuffer.put((byte) 'I');
 		headerBuffer.put((byte) 'F');
@@ -70,7 +72,7 @@ public class XnbSoundExtractor extends XnbExtractor {
 
 		try {
 			OutputStream outputStream = dest.write(false);
-			outputStream.write(headerBuffer.array());
+			outputStream.write(headerBuffer.array(), headerBuffer.arrayOffset(), headerBuffer.position());
 			outputStream.write(buffer.array(), buffer.arrayOffset() + buffer.position(), dataChunkSize);
 			outputStream.close();
 		} catch(IOException ex) {
