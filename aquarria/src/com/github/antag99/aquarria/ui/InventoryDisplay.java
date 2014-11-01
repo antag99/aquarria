@@ -93,6 +93,10 @@ public class InventoryDisplay extends Table {
 		return swapItem;
 	}
 	
+	public int getSlotCount() {
+		return slotColumns * slotRows;
+	}
+	
 	// Hack to prevent layout every frame; invalidate() is called when the table is modified,
 	// causing a new layout. Keeping a flag to skip layout after the table is modified prevents this.
 	// There is probably a better solution to this, but none that i know of.

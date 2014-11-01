@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader.SkinParameter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.github.antag99.aquarria.Aquarria;
 import com.github.antag99.aquarria.entity.Entity;
@@ -70,6 +71,7 @@ public class IngameScreen extends AquarriaScreen {
 		if(Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
 			worldRenderer.setDrawTileGrid(!worldRenderer.getDrawTileGrid());
 		}
+		
 		if(Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
 			worldRenderer.setDrawEntityBoxes(!worldRenderer.getDrawEntityBoxes());
 		}
@@ -93,5 +95,13 @@ public class IngameScreen extends AquarriaScreen {
 		cam.viewportHeight = height / PIXELS_PER_METER;
 		cam.update();
 		super.resize(width, height);
+	}
+	
+	@Override
+	public void show() {
+		super.show();
+		Stage stage = aquarria.getStage();
+		stage.setKeyboardFocus(ingameInterface);
+		stage.setScrollFocus(ingameInterface);
 	}
 }
