@@ -27,19 +27,19 @@ public abstract class FrameStyle {
 			// - = does not merge with the current tile
 			// ? = unknown
 			
-			if(top != type) {
+			if(top == TileType.air) {
 				// - 
 				//? ?
 				// ?
-				if(right != type) {
+				if(right == TileType.air) {
 					// -
 					//? -
 					// ?
-					if(bottom != type) {
+					if(bottom == TileType.air) {
 						// -
 						//? -
 						// -
-						if(left != type) {
+						if(left == TileType.air) {
 							// -
 							//- -
 							// -
@@ -56,7 +56,7 @@ public abstract class FrameStyle {
 						// -
 						//? -
 						// X
-						if(left != type) {
+						if(left == TileType.air) {
 							// -
 							//- -
 							// X
@@ -74,11 +74,11 @@ public abstract class FrameStyle {
 					// -
 					//? X
 					// ?
-					if(bottom != type) {
+					if(bottom == TileType.air) {
 						// -
 						//? X
 						// -
-						if(left != type) {
+						if(left == TileType.air) {
 							// -
 							//- X
 							// -
@@ -95,7 +95,7 @@ public abstract class FrameStyle {
 						// -
 						//? X
 						// X
-						if(left != type) {
+						if(left == TileType.air) {
 							// -
 							//- X
 							// X
@@ -114,15 +114,15 @@ public abstract class FrameStyle {
 				// X
 				//? ?
 				// ?
-				if(right != type) {
+				if(right == TileType.air) {
 					// X
 					//? -
 					// ?
-					if(bottom != type) {
+					if(bottom == TileType.air) {
 						// X
 						//? -
 						// -
-						if(left != type) {
+						if(left == TileType.air) {
 							// X
 							//- -
 							// -
@@ -139,7 +139,7 @@ public abstract class FrameStyle {
 						// X
 						//? -
 						// X
-						if(left != type) {
+						if(left == TileType.air) {
 							// X
 							//- -
 							// X
@@ -157,11 +157,11 @@ public abstract class FrameStyle {
 					// X
 					//? X
 					// ?
-					if(bottom != type) {
+					if(bottom == TileType.air) {
 						// X
 						//? X
 						// -
-						if(left != type) {
+						if(left == TileType.air) {
 							// X
 							//- X
 							// -
@@ -178,7 +178,7 @@ public abstract class FrameStyle {
 						// X
 						//? X
 						// X
-						if(left != type) {
+						if(left == TileType.air) {
 							// X
 							//- X
 							// X
