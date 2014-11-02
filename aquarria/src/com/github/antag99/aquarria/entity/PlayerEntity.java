@@ -2,6 +2,7 @@ package com.github.antag99.aquarria.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.github.antag99.aquarria.item.Inventory;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.item.ItemType;
@@ -9,6 +10,8 @@ import com.github.antag99.aquarria.item.ItemType;
 public class PlayerEntity extends Entity {
 	private Inventory hotbar;
 	private Inventory inventory;
+	private Vector2 worldFocus = new Vector2();
+	private boolean hasWorldFocus = false;
 
 	public PlayerEntity() {
 		super(EntityType.player);
@@ -69,5 +72,22 @@ public class PlayerEntity extends Entity {
 	
 	public Inventory getInventory() {
 		return inventory;
+	}
+	
+	public Vector2 getWorldFocus() {
+		return hasWorldFocus ? worldFocus : null;
+	}
+
+	public void setWorldFocus(Vector2 worldFocus) {
+		setWorldFocus(worldFocus.x, worldFocus.y);
+	}
+	
+	public void setWorldFocus(float x, float y) {
+		if(worldFocus != null) {
+			this.worldFocus.set(x, y);
+			hasWorldFocus = true;
+		} else {
+			hasWorldFocus = false;
+		}
 	}
 }

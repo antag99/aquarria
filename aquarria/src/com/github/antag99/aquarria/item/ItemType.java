@@ -6,17 +6,24 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.github.antag99.aquarria.entity.PlayerEntity;
 
 public class ItemType {
 	private static Array<ItemType> itemTypes = new Array<ItemType>();
+	private static ObjectMap<String, ItemType> itemTypesByName = new ObjectMap<String, ItemType>();
 	
 	public static Array<ItemType> getItemTypes() {
 		return itemTypes;
 	}
 	
+	public static ItemType forName(String internalName) {
+		return itemTypesByName.get(internalName);
+	}
+	
 	public static final ItemType air = new ItemType("items/air.json");
-	public static final ItemType dirt = new ItemType("items/dirt.json");
-	public static final ItemType stone = new ItemType("items/stone.json");
+	public static final ItemType dirt = new TileItemType("items/dirt.json");
+	public static final ItemType stone = new TileItemType("items/stone.json");
 	
 	private String internalName;
 	private String displayName;
@@ -28,8 +35,10 @@ public class ItemType {
 	private TextureRegion texture;
 	
 	public ItemType(String path) {
-		JsonValue properties = new JsonReader().parse(Gdx.files.internal(path));
-		
+		this(new JsonReader().parse(Gdx.files.internal(path)));
+	}
+	
+	public ItemType(JsonValue properties) {
 		internalName = properties.getString("internalName");
 		displayName = properties.getString("displayName");
 		maxStack = properties.getInt("maxStack", 1);
@@ -38,6 +47,7 @@ public class ItemType {
 		texturePath = properties.getString("texture", null);
 		
 		itemTypes.add(this);
+		itemTypesByName.put(internalName, this);
 	}
 	
 	public String getInternalName() {
@@ -71,5 +81,9 @@ public class ItemType {
 	
 	public TextureRegion getTexture() {
 		return texture;
+	}
+	
+	public boolean useItem(PlayerEntity player, Item item) {
+		return false;
 	}
 }

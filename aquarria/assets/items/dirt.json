@@ -4,5 +4,6 @@
 	"width" : 16,
 	"height" : 16,
 	"maxStack" : 99,
-	"texture" : "images/items/dirt.png"
+	"texture" : "images/items/dirt.png",
+	"createdTile" : "dirt"
 }

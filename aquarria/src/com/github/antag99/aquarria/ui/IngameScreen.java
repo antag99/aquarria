@@ -5,10 +5,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader.SkinParameter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.github.antag99.aquarria.Aquarria;
 import com.github.antag99.aquarria.entity.PlayerEntity;
+import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
 import com.github.antag99.aquarria.world.WorldRenderer;
@@ -24,6 +27,9 @@ public class IngameScreen extends AquarriaScreen {
 	private PlayerEntity player;
 	private Skin skin;
 	private IngameInterface ingameInterface;
+	
+	private Vector2 tmpVector2 = new Vector2();
+	private Vector3 tmpVector3 = new Vector3();
 
 	public IngameScreen(Aquarria aquarria) {
 		super(aquarria);
@@ -84,6 +90,22 @@ public class IngameScreen extends AquarriaScreen {
 		cam.zoom = 0.7f;
 
 		cam.update();
+		
+		Vector2 mousePosition = tmpVector2.set(Gdx.input.getX(), Gdx.input.getY());
+		mousePosition = aquarria.getStage().screenToStageCoordinates(mousePosition);
+		if(aquarria.getStage().hit(mousePosition.x, mousePosition.y, true) == null) {
+			// The camera handles the different coordinate systems too, reset to input coordinates
+			mousePosition = tmpVector2.set(Gdx.input.getX(), Gdx.input.getY());
+			Vector3 worldFocus = cam.unproject(tmpVector3.set(mousePosition, 0f));
+			player.setWorldFocus(worldFocus.x, worldFocus.y);
+			
+			if(Gdx.input.justTouched()) {
+				Item focusedItem = ingameInterface.getFocusItem();
+				if(!focusedItem.isEmpty()) {
+					focusedItem.getType().useItem(player, focusedItem);
+				}
+			}
+		}
 	}
 	
 	@Override

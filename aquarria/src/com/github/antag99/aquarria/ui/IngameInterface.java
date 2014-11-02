@@ -7,10 +7,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.IntIntMap;
-import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.item.Item;
 
@@ -20,7 +20,7 @@ public class IngameInterface extends Table {
 	private int hotbarSelectedIndex = 0;
 
 	private Item swapItem;
-	private Entity player;
+	private PlayerEntity player;
 	
 	private boolean inventoryOpen;
 	private Vector2 tmpVector2 = new Vector2();
@@ -42,6 +42,7 @@ public class IngameInterface extends Table {
 	
 	public IngameInterface(Skin skin) {
 		swapItem = new Item();
+		setTouchable(Touchable.childrenOnly);
 		
 		left();
 		top();
@@ -140,5 +141,24 @@ public class IngameInterface extends Table {
 			hotbarDisplay.setInventory(null);
 			inventoryDisplay.setInventory(null);
 		}
+	}
+	
+	public Item getHeldItem() {
+		return swapItem;
+	}
+	
+	public Item getSelectedItem() {
+		int index = hotbarDisplay.getSelectedIndex();
+		
+		if(index != -1) {
+			return player.getHotbar().getItem(index);
+		}
+		
+		return null;
+	}
+	
+	public Item getFocusItem() {
+		Item selectedItem = getSelectedItem();
+		return selectedItem != null ? selectedItem : getHeldItem();
 	}
 }

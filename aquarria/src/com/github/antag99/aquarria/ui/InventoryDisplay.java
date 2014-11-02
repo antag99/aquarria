@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
@@ -37,6 +38,7 @@ public class InventoryDisplay extends Table {
 		this.slotColumns = slotColumns;
 		this.slotRows = slotRows;
 		this.style = style;
+		setTouchable(Touchable.enabled);
 	}
 	
 	public Inventory getInventory() {

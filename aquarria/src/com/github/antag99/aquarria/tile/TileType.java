@@ -6,12 +6,18 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 
 public class TileType {
 	private static Array<TileType> tileTypes = new Array<TileType>();
+	private static ObjectMap<String, TileType> tileTypesByName = new ObjectMap<String, TileType>();
 	
 	public static Array<TileType> getTileTypes() {
 		return tileTypes;
+	}
+	
+	public static TileType forName(String internalName) {
+		return tileTypesByName.get(internalName);
 	}
 	
 	public static final TileType air = new TileType("tiles/air.json");
@@ -25,16 +31,19 @@ public class TileType {
 	private String texturePath;
 	
 	private TextureRegion texture;
-	
 
 	public TileType(String path) {
-		JsonValue value = new JsonReader().parse(Gdx.files.internal(path));
-		internalName = value.getString("internalName");
-		displayName = value.getString("displayName", "");
-		texturePath = value.getString("texture", null);
-		solid = value.getBoolean("solid", true);
+		this(new JsonReader().parse(Gdx.files.internal(path)));
+	}
+	
+	public TileType(JsonValue properties) {
+		internalName = properties.getString("internalName");
+		displayName = properties.getString("displayName", "");
+		texturePath = properties.getString("texture", null);
+		solid = properties.getBoolean("solid", true);
 		
 		tileTypes.add(this);
+		tileTypesByName.put(internalName, this);
 	}
 
 	public String getInternalName() {

@@ -143,8 +143,8 @@ public abstract class FrameStyle {
 							// X
 							//- -
 							// X
-							frame.x = 6;
-							frame.y = 4;
+							frame.x = 5;
+							frame.y = 0;
 						} else {
 							// X
 							//X -

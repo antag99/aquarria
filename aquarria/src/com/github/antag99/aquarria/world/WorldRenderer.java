@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.tile.FrameStyle;
@@ -27,6 +28,7 @@ public class WorldRenderer extends Widget {
 	private ShapeRenderer shapeRenderer = null;
 
 	public WorldRenderer() {
+		setTouchable(Touchable.disabled);
 	}
 
 	public void setDrawEntityBoxes(boolean drawEntityBoxes) {
