@@ -58,8 +58,8 @@ public class Entity {
 		int startX = MathUtils.floor(x);
 		int startY = MathUtils.floor(y);
 		
-		int endX = MathUtils.floor(x + getWidth());
-		int endY = MathUtils.floor(y + getHeight());
+		int endX = MathUtils.ceil(x + getWidth());
+		int endY = MathUtils.ceil(y + getHeight());
 		
 		for(int i = startX; i < endX; ++i) {
 			tmpBounds2.x = i;
