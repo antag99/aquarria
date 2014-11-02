@@ -5,12 +5,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader.SkinParameter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.github.antag99.aquarria.Aquarria;
-import com.github.antag99.aquarria.entity.Entity;
-import com.github.antag99.aquarria.entity.EntityType;
+import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
 import com.github.antag99.aquarria.world.WorldRenderer;
@@ -23,7 +21,7 @@ public class IngameScreen extends AquarriaScreen {
 	private WorldView worldView;
 	private WorldRenderer worldRenderer;
 	
-	private Entity player;
+	private PlayerEntity player;
 	private Skin skin;
 	private IngameInterface ingameInterface;
 
@@ -50,8 +48,9 @@ public class IngameScreen extends AquarriaScreen {
 		world = new World(1024, 512);
 		new WorldGenerator().generate(world, 0);
 		
-		player = new Entity(EntityType.player);
-		player.getPosition().set(world.getSpawnPoint());
+		player = new PlayerEntity();
+		player.setX(world.getSpawnX());
+		player.setY(world.getSpawnY());
 		world.addEntity(player);
 		
 		worldView = new WorldView();
@@ -80,9 +79,8 @@ public class IngameScreen extends AquarriaScreen {
 
 		OrthographicCamera cam = worldView.getCamera();
 
-		Vector2 playerPosition = player.getPosition();
-		cam.position.x = playerPosition.x + player.getSize().x * 0.5f;
-		cam.position.y = playerPosition.y + player.getSize().y * 0.5f;
+		cam.position.x = player.getX() + player.getWidth() * 0.5f;
+		cam.position.y = player.getY() + player.getHeight() * 0.5f;
 		cam.zoom = 0.7f;
 
 		cam.update();

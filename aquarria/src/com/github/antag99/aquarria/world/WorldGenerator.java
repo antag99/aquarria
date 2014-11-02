@@ -42,7 +42,7 @@ public class WorldGenerator {
 		
 		// Set the spawnpoint
 		tasks.add(() -> {
-			world.getSpawnPoint().y = world.getSurfaceLevel((int) world.getSpawnPoint().x);
+			world.setSpawnY(world.getSurfaceLevel((int) world.getSpawnX()));
 		});
 	}
 	

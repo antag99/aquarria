@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.ReflectionHelper;
 
 public class EntityType {
 	private static Array<EntityType> entityTypes = new Array<EntityType>();
@@ -27,9 +26,6 @@ public class EntityType {
 	private float defaultWidth;
 	private float defaultHeight;
 	
-	private Class<? extends EntityView> viewClass;
-	private Class<? extends EntityBehaviour> behaviourClass;
-	
 	private TextureRegion texture;
 	
 	public EntityType(String path) {
@@ -42,9 +38,6 @@ public class EntityType {
 		
 		defaultWidth = value.getFloat("width");
 		defaultHeight = value.getFloat("height");
-		
-		viewClass = ReflectionHelper.forName(value.getString("view", EntityView.class.getName()));
-		behaviourClass = ReflectionHelper.forName(value.getString("behaviour", EntityBehaviour.class.getName()));
 		
 		entityTypes.add(this);
 	}
@@ -84,13 +77,5 @@ public class EntityType {
 	
 	public TextureRegion getTexture() {
 		return texture;
-	}
-	
-	public EntityBehaviour createBehaviour(Entity entity) {
-		return ReflectionHelper.newInstance(behaviourClass, entity);
-	}
-	
-	public EntityView createView(Entity entity) {
-		return ReflectionHelper.newInstance(viewClass, entity);
 	}
 }

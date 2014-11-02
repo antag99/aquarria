@@ -2,17 +2,16 @@ package com.github.antag99.aquarria.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.math.Vector2;
 import com.github.antag99.aquarria.item.Inventory;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.item.ItemType;
 
-public class PlayerBehaviour extends EntityBehaviour {
+public class PlayerEntity extends Entity {
 	private Inventory hotbar;
 	private Inventory inventory;
-	
-	public PlayerBehaviour(Entity entity) {
-		super(entity);
+
+	public PlayerEntity() {
+		super(EntityType.player);
 		
 		hotbar = new Inventory(10);
 		inventory = new Inventory(40);
@@ -22,39 +21,37 @@ public class PlayerBehaviour extends EntityBehaviour {
 	
 	@Override
 	public void update(float delta) {
-		Entity entity = getEntity();
-		
-		Vector2 vel = entity.getVelocity();
-		
 		boolean moveLeft = Gdx.input.isKeyPressed(Input.Keys.A);
 		boolean moveRight = Gdx.input.isKeyPressed(Input.Keys.D);
 		boolean jump = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 		
 		if(moveLeft && !moveRight) {
-			vel.x = -2f;
+			setVelocityX(-4f);
 		} else if(moveRight && !moveLeft) {
-			vel.x = 2f;
+			setVelocityX(4f);
 		} else {
-			vel.x = 0f;
+			setVelocityX(0f);
 		}
 		
 		// FIXME: This will cause errors when in mid-air and velocity gets 0
-		if(jump && vel.y == 0f) {
-			vel.y = 5f;
+		if(jump && getVelocityY() == 0f) {
+			setVelocityY(5f);
 		}
 		
-		for(Entity otherEntity : entity.getWorld().getEntities()) {
-			if(otherEntity.getBehaviour() instanceof ItemBehaviour) {
-				if(entity.getBounds().overlaps(otherEntity.getBounds())) {
-					ItemBehaviour behaviour = otherEntity.getBehaviour();
-					Item item = inventory.addItem(behaviour.getItem());
-					behaviour.setItem(item);
+		for(Entity otherEntity : getWorld().getEntities()) {
+			if(otherEntity instanceof ItemEntity) {
+				if(getBounds().overlaps(otherEntity.getBounds())) {
+					ItemEntity itemEntity = (ItemEntity) otherEntity;
+					Item item = inventory.addItem(itemEntity.getItem());
+					itemEntity.setItem(item);
 					if(item.isEmpty()) {
-						otherEntity.setActive(false);
+						itemEntity.setActive(false);
 					}
 				}
 			}
 		}
+		
+		super.update(delta);
 	}
 	
 	public Inventory getHotbar() {

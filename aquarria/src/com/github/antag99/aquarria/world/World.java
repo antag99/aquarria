@@ -1,12 +1,10 @@
 package com.github.antag99.aquarria.world;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntMap;
 import com.badlogic.gdx.utils.ObjectIntMap;
 import com.github.antag99.aquarria.entity.Entity;
-import com.github.antag99.aquarria.entity.EntityType;
-import com.github.antag99.aquarria.entity.ItemBehaviour;
+import com.github.antag99.aquarria.entity.ItemEntity;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.tile.TileType;
 
@@ -14,7 +12,7 @@ public class World {
 	private int width;
 	private int height;
 	
-	private Vector2 spawnPoint = new Vector2();
+	private float spawnX, spawnY;
 	
 	private short[] tileMatrix;
 	private ObjectIntMap<TileType> tileMapping;
@@ -27,7 +25,8 @@ public class World {
 	public World(int width, int height) {
 		this.width = width;
 		this.height = height;
-		spawnPoint.set(width / 2, height / 2);
+		spawnX = width / 2f;
+		spawnY = height / 2f;
 		tileMatrix = new short[width * height];
 		tileMapping = new ObjectIntMap<TileType>();
 		idMapping = new IntMap<TileType>();
@@ -37,9 +36,21 @@ public class World {
 		idMapping.put(0, TileType.air);
 		entities = new Array<Entity>();
 	}
+
+	public float getSpawnX() {
+		return spawnX;
+	}
 	
-	public Vector2 getSpawnPoint() {
-		return spawnPoint;
+	public float getSpawnY() {
+		return spawnY;
+	}
+	
+	public void setSpawnX(float spawnX) {
+		this.spawnX = spawnX;
+	}
+	
+	public void setSpawnY(float spawnY) {
+		this.spawnY = spawnY;
 	}
 	
 	public TileType getTileType(int x, int y) {
@@ -83,10 +94,9 @@ public class World {
 	}
 	
 	public void dropItem(Item item, float x, float y) {
-		Entity itemEntity = new Entity(EntityType.item);
-		itemEntity.getPosition().set(x, y);
-		ItemBehaviour behaviour = itemEntity.getBehaviour();
-		behaviour.setItem(item);
+		ItemEntity itemEntity = new ItemEntity(item);
+		itemEntity.setX(x);
+		itemEntity.setY(y);
 		addEntity(itemEntity);
 	}
 	

@@ -2,17 +2,15 @@ package com.github.antag99.aquarria.entity;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.github.antag99.aquarria.world.World;
 
 
 public class Entity {
-	private Vector2 position = new Vector2();
-	private Vector2 velocity = new Vector2();
-	private Vector2 size = new Vector2();
+	private float x, y;
+	private float velocityX, velocityY;
+	private float width, height;
 	
-	private EntityBehaviour behaviour;
-	private EntityView view;
+	private EntityView<?> view;
 	private EntityType type;
 	
 	private World world;
@@ -23,34 +21,31 @@ public class Entity {
 	
 	public Entity(EntityType type) {
 		this.type = type;
-		behaviour = type.createBehaviour(this);
-		view = type.createView(this);
-		size.x = type.getWeight();
-		size.y = type.getDefaultHeight();
+		view = createView();
+		width = type.getWeight();
+		height = type.getDefaultHeight();
 	}
 	
 	public void update(float delta) {
-		behaviour.update(delta);
-		
 		// Apply gravity
-		velocity.y = velocity.y - (4f * type.getWeight()) * delta;
-		if(velocity.y < -8f * type.getWeight() && type.getWeight() != 0f) {
-			velocity.y = -8f * type.getWeight();
+		velocityY = velocityY - (4f * type.getWeight()) * delta;
+		if(velocityY < -8f * type.getWeight() && type.getWeight() != 0f) {
+			velocityY = -8f * type.getWeight();
 		}
 		
 		// It works...
-		float moveX = velocity.x * delta;
-		position.x += moveX;
+		float moveX = velocityX * delta;
+		x += moveX;
 		if(type.isSolid() && inCollision()) {
-			position.x -= moveX;
-			velocity.y = 0f;
+			x -= moveX;
+			velocityX = 0f;
 		}
 		
-		float moveY = velocity.y * delta;
-		position.y += moveY;
+		float moveY = velocityY * delta;
+		y += moveY;
 		if(type.isSolid() && inCollision()) {
-			position.y -= moveY;
-			velocity.y = 0f;
+			y -= moveY;
+			velocityY = 0f;
 		}
 		
 		view.update(delta);
@@ -60,14 +55,14 @@ public class Entity {
 	private Rectangle tmpBounds2 = new Rectangle();
 	
 	public boolean inCollision() {
-		tmpBounds.set(position.x, position.y, size.x, size.y);
+		tmpBounds.set(x, y, width, height);
 		tmpBounds2.set(0f, 0f, 1f, 1f);
 		
-		int startX = MathUtils.floor(position.x);
-		int startY = MathUtils.floor(position.y);
+		int startX = MathUtils.floor(x);
+		int startY = MathUtils.floor(y);
 		
-		int endX = MathUtils.floor(position.x + size.x);
-		int endY = MathUtils.floor(position.y + size.y);
+		int endX = MathUtils.floor(x + width);
+		int endY = MathUtils.floor(y + height);
 		
 		for(int i = startX; i < endX; ++i) {
 			tmpBounds2.x = i;
@@ -83,34 +78,68 @@ public class Entity {
 		return false;
 	}
 	
-	public Vector2 getPosition() {
-		return position;
+	public float getX() {
+		return x;
 	}
 	
-	public Vector2 getSize() {
-		return size;
+	public float getY() {
+		return y;
 	}
 	
-	public Vector2 getVelocity() {
-		return velocity;
+	public void setX(float x) {
+		this.x = x;
+	}
+	
+	public void setY(float y) {
+		this.y = y;
+	}
+	
+	public float getVelocityX() {
+		return velocityX;
+	}
+	
+	public float getVelocityY() {
+		return velocityY;
+	}
+	
+	public void setVelocityX(float velocityX) {
+		this.velocityX = velocityX;
+	}
+	
+	public void setVelocityY(float velocityY) {
+		this.velocityY = velocityY;
+	}
+	
+	public float getWidth() {
+		return width;
+	}
+	
+	public float getHeight() {
+		return height;
+	}
+	
+	protected void setWidth(float width) {
+		this.width = width;
+	}
+	
+	protected void setHeight(float height) {
+		this.height = height;
 	}
 	
 	public Rectangle getBounds() {
-		return tmpRectangle.set(position.x, position.y, size.x, size.y);
+		return tmpRectangle.set(x, y, width, height);
 	}
 	
 	public EntityType getType() {
 		return type;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <T extends EntityBehaviour> T getBehaviour() {
-		return (T) behaviour;
+	public EntityView<?> getView() {
+		return view;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <T extends EntityView> T getView() {
-		return (T) view;
+	protected EntityView<?> createView() {
+		return new EntityView<Entity>(this);
 	}
 	
 	public World getWorld() {

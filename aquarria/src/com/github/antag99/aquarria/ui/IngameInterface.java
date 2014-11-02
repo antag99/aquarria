@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.IntIntMap;
 import com.github.antag99.aquarria.entity.Entity;
-import com.github.antag99.aquarria.entity.PlayerBehaviour;
+import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.item.Item;
 
 public class IngameInterface extends Table {
@@ -120,7 +120,7 @@ public class IngameInterface extends Table {
 				inventoryDisplay.setVisible(true);
 			} else {
 				if(!swapItem.isEmpty()) {
-					player.getWorld().dropItem(swapItem.copy(), player.getPosition().x, player.getPosition().y);
+					player.getWorld().dropItem(swapItem.copy(), player.getX(), player.getY());
 					swapItem.setStack(0);
 				}
 				hotbarDisplay.setSelectedIndex(hotbarSelectedIndex);
@@ -130,13 +130,12 @@ public class IngameInterface extends Table {
 		}
 	}
 
-	public void setPlayer(Entity player) {
+	public void setPlayer(PlayerEntity player) {
 		this.player = player;
 		
 		if(player != null) {
-			PlayerBehaviour behaviour = player.getBehaviour();
-			hotbarDisplay.setInventory(behaviour.getHotbar());
-			inventoryDisplay.setInventory(behaviour.getInventory());
+			hotbarDisplay.setInventory(player.getHotbar());
+			inventoryDisplay.setInventory(player.getInventory());
 		} else {
 			hotbarDisplay.setInventory(null);
 			inventoryDisplay.setInventory(null);

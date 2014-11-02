@@ -99,8 +99,8 @@ public class WorldRenderer extends Widget {
 		if (drawEntityBoxes) {
 			shapeRenderer.setColor(Color.GREEN);
 			for (Entity entity : world.getEntities()) {
-				shapeRenderer.rect(entity.getPosition().x, entity.getPosition().y,
-						entity.getSize().x, entity.getSize().y);
+				shapeRenderer.rect(entity.getX(), entity.getY(),
+						entity.getWidth(), entity.getHeight());
 			}
 		}
 

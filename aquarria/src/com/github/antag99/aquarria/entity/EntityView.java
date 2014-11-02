@@ -2,10 +2,10 @@ package com.github.antag99.aquarria.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 
-public class EntityView {
-	private Entity entity;
+public class EntityView<T extends Entity> {
+	private T entity;
 	
-	public EntityView(Entity entity) {
+	public EntityView(T entity) {
 		this.entity = entity;
 	}
 	
@@ -13,11 +13,11 @@ public class EntityView {
 	}
 	
 	public void draw(Batch batch) {
-		batch.draw(entity.getType().getTexture(), entity.getPosition().x, entity.getPosition().y,
-				entity.getSize().x, entity.getSize().y);
+		batch.draw(entity.getType().getTexture(), entity.getX(), entity.getY(),
+				entity.getWidth(), entity.getHeight());
 	}
 	
-	public Entity getEntity() {
+	public T getEntity() {
 		return entity;
 	}
 }
