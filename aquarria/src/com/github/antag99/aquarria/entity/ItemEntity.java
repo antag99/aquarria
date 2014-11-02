@@ -18,9 +18,16 @@ public class ItemEntity extends Entity {
 	
 	public void setItem(Item item) {
 		this.item = item;
-		
-		setWidth(item.getType().getWidth() / IngameScreen.PIXELS_PER_METER);
-		setHeight(item.getType().getHeight() / IngameScreen.PIXELS_PER_METER);
+	}
+	
+	@Override
+	public float getWidth() {
+		return item.getType().getWidth() / IngameScreen.PIXELS_PER_METER;
+	}
+	
+	@Override
+	public float getHeight() {
+		return item.getType().getHeight() / IngameScreen.PIXELS_PER_METER;
 	}
 	
 	@Override

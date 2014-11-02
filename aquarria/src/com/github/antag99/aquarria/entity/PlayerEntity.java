@@ -42,7 +42,16 @@ public class PlayerEntity extends Entity {
 			if(otherEntity instanceof ItemEntity) {
 				if(getBounds().overlaps(otherEntity.getBounds())) {
 					ItemEntity itemEntity = (ItemEntity) otherEntity;
-					Item item = inventory.addItem(itemEntity.getItem());
+					Item item = hotbar.stackItem(itemEntity.getItem());
+					if(!item.isEmpty()) {
+						item = inventory.stackItem(item);
+						if(!item.isEmpty()) {
+							item = hotbar.putItem(item);
+							if(!item.isEmpty()) {
+								item = inventory.putItem(item);
+							}
+						}
+					}
 					itemEntity.setItem(item);
 					if(item.isEmpty()) {
 						itemEntity.setActive(false);

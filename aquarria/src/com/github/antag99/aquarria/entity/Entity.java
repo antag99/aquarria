@@ -8,7 +8,6 @@ import com.github.antag99.aquarria.world.World;
 public class Entity {
 	private float x, y;
 	private float velocityX, velocityY;
-	private float width, height;
 	
 	private EntityView<?> view;
 	private EntityType type;
@@ -22,8 +21,6 @@ public class Entity {
 	public Entity(EntityType type) {
 		this.type = type;
 		view = createView();
-		width = type.getWeight();
-		height = type.getDefaultHeight();
 	}
 	
 	public void update(float delta) {
@@ -55,14 +52,14 @@ public class Entity {
 	private Rectangle tmpBounds2 = new Rectangle();
 	
 	public boolean inCollision() {
-		tmpBounds.set(x, y, width, height);
+		tmpBounds.set(x, y, getWidth(), getHeight());
 		tmpBounds2.set(0f, 0f, 1f, 1f);
 		
 		int startX = MathUtils.floor(x);
 		int startY = MathUtils.floor(y);
 		
-		int endX = MathUtils.floor(x + width);
-		int endY = MathUtils.floor(y + height);
+		int endX = MathUtils.floor(x + getWidth());
+		int endY = MathUtils.floor(y + getHeight());
 		
 		for(int i = startX; i < endX; ++i) {
 			tmpBounds2.x = i;
@@ -111,23 +108,15 @@ public class Entity {
 	}
 	
 	public float getWidth() {
-		return width;
+		return type.getDefaultWidth();
 	}
 	
 	public float getHeight() {
-		return height;
+		return type.getDefaultHeight();
 	}
-	
-	protected void setWidth(float width) {
-		this.width = width;
-	}
-	
-	protected void setHeight(float height) {
-		this.height = height;
-	}
-	
+
 	public Rectangle getBounds() {
-		return tmpRectangle.set(x, y, width, height);
+		return tmpRectangle.set(x, y, getWidth(), getHeight());
 	}
 	
 	public EntityType getType() {

@@ -39,10 +39,13 @@ public class Aquarria extends Game {
 		stage = new Stage(viewport, batch);
 		terrariaAssets = Gdx.files.local("assets-terraria");
 		
-		InternalFileHandleResolver internalFiles = new InternalFileHandleResolver();
+		// To workaround forgetting to refresh eclipse asset folder on first launch
+		DirectoryFileHandleResolver assetFiles = new DirectoryFileHandleResolver(Gdx.files.local("assets"));
 		DirectoryFileHandleResolver terrariaFiles = new DirectoryFileHandleResolver(terrariaAssets);
+		InternalFileHandleResolver internalFiles = new InternalFileHandleResolver();
 		
 		resolver = new FileHandleResolverMultiplexer(internalFiles);
+		resolver.addResolver(assetFiles);
 		resolver.addResolver(internalFiles);
 		resolver.addResolver(terrariaFiles);
 		
