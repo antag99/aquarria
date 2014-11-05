@@ -1,0 +1,9 @@
+{
+	"images/Player_Head.png" : [ 40, 1120 ],
+	"images/Player_Eyes.png" : [ 40, 1120 ],
+	"images/Player_Eye_Whites.png" : [ 40, 1120 ],
+	"images/Player_Shirt.png" : [ 40, 1120 ],
+	"images/Player_Undershirt.png" : [ 40, 1120 ],
+	"images/Player_Pants.png" : [ 40, 1120 ],
+	"images/Player_Shoes.png" : [ 40, 1120 ]
+}

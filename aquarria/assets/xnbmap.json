@@ -37,5 +37,15 @@
 	"images/Team.png" : "images/ui/team.png",
 	"images/Lock_0.png" : "images/ui/hotbarLocked.png",
 	"images/Lock_1.png" : "images/ui/hotbarUnlocked.png",
-	"images/Mana.png" : "images/ui/mana.png"
+	"images/Mana.png" : "images/ui/mana.png",
+	
+	"images/Player_Hair_1.png" : "images/player/hair.png",
+	"images/Player_Head.png" : "images/player/head.png",
+	"images/Player_Eyes.png" : "images/player/eyes.png",
+	"images/Player_Eye_Whites.png" : "images/player/eyeWhites.png",
+	"images/Player_Shirt.png" : "images/player/shirt.png",
+	"images/Player_Undershirt.png" : "images/player/undershirt.png",
+	"images/Player_Hands.png" : "images/player/hands.png",
+	"images/Player_Pants.png" : "images/player/pants.png",
+	"images/Player_Shoes.png" : "images/player/shoes.png"
 }

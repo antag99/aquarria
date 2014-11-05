@@ -90,4 +90,9 @@ public class PlayerEntity extends Entity {
 			hasWorldFocus = false;
 		}
 	}
+	
+	@Override
+	protected EntityView<?> createView() {
+		return new PlayerView(this);
+	}
 }

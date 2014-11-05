@@ -2,6 +2,8 @@ package com.github.antag99.aquarria;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 import com.badlogic.gdx.utils.JsonReader;
@@ -13,6 +15,7 @@ import com.github.antag99.aquarria.xnb.XnbTextureExtractor;
 
 public class ContentExtractor {
 	private JsonValue xnbMap;
+	private JsonValue padMap;
 	
 	private FileHandle contentDirectory;
 	private FileHandle outputAssetDirectory;
@@ -21,6 +24,7 @@ public class ContentExtractor {
 		this.contentDirectory = contentDirectory;
 		this.outputAssetDirectory = outputAssetDirectory;
 		xnbMap = new JsonReader().parse(Gdx.files.internal("xnbmap.json"));
+		padMap = new JsonReader().parse(Gdx.files.internal("padmap.json"));
 	}
 	
 	public void extract() {
@@ -48,6 +52,19 @@ public class ContentExtractor {
 			soundExtractor.extract(sound, rawSoundDir.child(sound.nameWithoutExtension() + ".wav"));
 		}
 		
+		// Some animations are 40x1120, and some 40x1118; fix that.
+		for(JsonValue value : padMap) {
+			FileHandle file = rawDir.child(value.name);
+			int width = value.asIntArray()[0];
+			int height = value.asIntArray()[1];
+			
+			Pixmap pixmap = new Pixmap(file);
+			Pixmap newPixmap = Utils.expand(pixmap, width, height);
+			pixmap.dispose();
+			PixmapIO.writePNG(file, newPixmap);
+			newPixmap.dispose();
+		}
+		
 		// Move image files from the raw/ directory to the target directory,
 		// according to the configuration.
 		for(JsonValue value : xnbMap) {
@@ -71,13 +88,5 @@ public class ContentExtractor {
 		String packFileName = "ui";
 		
 		TexturePacker.process(settings, inputDirectory, outputDirectory, packFileName);
-	}
-	
-	public FileHandle getContentDirectory() {
-		return contentDirectory;
-	}
-	
-	public FileHandle getOutputAssetDirectory() {
-		return outputAssetDirectory;
 	}
 }
