@@ -29,9 +29,4 @@ public class ItemEntity extends Entity {
 	public float getHeight() {
 		return item.getType().getHeight() / IngameScreen.PIXELS_PER_METER;
 	}
-	
-	@Override
-	protected EntityView<?> createView() {
-		return new ItemView(this);
-	}
 }

@@ -1,9 +1,10 @@
-package com.github.antag99.aquarria.world;
+package com.github.antag99.aquarria.ui.world;
 
 import static com.badlogic.gdx.math.MathUtils.ceil;
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static com.badlogic.gdx.math.MathUtils.floor;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,19 +17,43 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.world.World;
+import com.github.antag99.aquarria.world.WorldView;
 
 public class WorldRenderer extends Widget {
-
 	private WorldView view;
 	private boolean drawTileGrid = false;
 	private boolean drawEntityBoxes = false;
 	private ShapeRenderer shapeRenderer = null;
 
+	@SuppressWarnings("rawtypes")
+	private ObjectMap<Class, EntityRenderer> entityRenderers = new ObjectMap<Class, EntityRenderer>();
+
 	public WorldRenderer() {
 		setTouchable(Touchable.disabled);
+		
+		addEntityRenderer(new PlayerEntityRenderer());
+		addEntityRenderer(new ItemEntityRenderer());
+	}
+	
+	public void queueAssets(AssetManager assetManager) {
+		for(EntityRenderer<?, ?> entityRenderer : entityRenderers.values()) {
+			entityRenderer.queueAssets(assetManager);
+		}
+	}
+	
+	public void getAssets(AssetManager assetManager) {
+		for(EntityRenderer<?, ?> entityRenderer : entityRenderers.values()) {
+			entityRenderer.getAssets(assetManager);
+		}
+	}
+	
+	public void addEntityRenderer(EntityRenderer<?, ?> entityRenderer) {
+		entityRenderers.put(entityRenderer.getEntityClass(), entityRenderer);
 	}
 
 	public void setDrawEntityBoxes(boolean drawEntityBoxes) {
@@ -48,6 +73,7 @@ public class WorldRenderer extends Widget {
 	}
 
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 
@@ -85,7 +111,9 @@ public class WorldRenderer extends Widget {
 		}
 
 		for (Entity entity : world.getEntities()) {
-			entity.getView().draw(batch);
+			EntityRenderer entityRenderer = entityRenderers.get(entity.getClass());
+			
+			entityRenderer.renderEntity(batch, entity.getView());
 		}
 
 		boolean useShapeRenderer = drawEntityBoxes || drawTileGrid;

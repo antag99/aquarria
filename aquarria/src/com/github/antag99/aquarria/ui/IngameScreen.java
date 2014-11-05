@@ -12,9 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.github.antag99.aquarria.Aquarria;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.item.Item;
+import com.github.antag99.aquarria.ui.world.WorldRenderer;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
-import com.github.antag99.aquarria.world.WorldRenderer;
 import com.github.antag99.aquarria.world.WorldView;
 
 public class IngameScreen extends AquarriaScreen {
@@ -42,6 +42,9 @@ public class IngameScreen extends AquarriaScreen {
 		SkinParameter skinParameter = new SkinParameter("images/ui/atlas/ui.atlas");
 		AssetManager assetManager = aquarria.getAssetManager();
 		assetManager.load("skins/ingame.json", Skin.class, skinParameter);
+		
+		worldRenderer = new WorldRenderer();
+		worldRenderer.queueAssets(assetManager);
 	}
 	
 	@Override
@@ -50,6 +53,7 @@ public class IngameScreen extends AquarriaScreen {
 		
 		AssetManager assetManager = aquarria.getAssetManager();
 		skin = assetManager.get("skins/ingame.json");
+		worldRenderer.getAssets(assetManager);
 		
 		world = new World(1024, 512);
 		new WorldGenerator().generate(world, 0);
@@ -62,7 +66,6 @@ public class IngameScreen extends AquarriaScreen {
 		worldView = new WorldView();
 		worldView.setWorld(world);
 		
-		worldRenderer = new WorldRenderer();
 		worldRenderer.setView(worldView);
 		
 		ingameInterface = new IngameInterface(skin);
