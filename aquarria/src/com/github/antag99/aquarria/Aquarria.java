@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.github.antag99.aquarria.entity.EntityType;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.ui.IngameScreen;
@@ -102,10 +101,6 @@ public class Aquarria extends Game {
 		
 		System.out.print("Loading assets... ");
 		
-		for(EntityType entityType : EntityType.getEntityTypes())
-			if(entityType.getTexturePath() != null)
-				assetManager.load(entityType.getTexturePath(), TextureRegion.class);
-		
 		for(TileType tileType : TileType.getTileTypes())
 			if(tileType.getTexturePath() != null)
 				assetManager.load(tileType.getTexturePath(), TextureRegion.class);
@@ -117,9 +112,6 @@ public class Aquarria extends Game {
 		ingameScreen.load();
 		
 		assetManager.finishLoading();
-		
-		for(EntityType entityType : EntityType.getEntityTypes())
-			entityType.getTexture(assetManager);
 		
 		for(TileType tileType : TileType.getTileTypes())
 			tileType.getTexture(assetManager);
