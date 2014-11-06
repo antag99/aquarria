@@ -90,7 +90,7 @@ public class IngameScreen extends AquarriaScreen {
 
 		cam.position.x = player.getX() + player.getWidth() * 0.5f;
 		cam.position.y = player.getY() + player.getHeight() * 0.5f;
-		cam.zoom = 0.7f;
+		cam.zoom = 1f;
 
 		cam.update();
 		

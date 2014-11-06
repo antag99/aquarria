@@ -12,6 +12,7 @@ public class PlayerEntity extends Entity {
 	private Inventory inventory;
 	private Vector2 worldFocus = new Vector2();
 	private boolean hasWorldFocus = false;
+	private boolean grounded;
 
 	public PlayerEntity() {
 		super(EntityType.player);
@@ -29,17 +30,24 @@ public class PlayerEntity extends Entity {
 		boolean jump = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 		
 		if(moveLeft && !moveRight) {
-			setVelocityX(-4f);
+			setVelocityX(Math.min(getVelocityX(), 2f));
+			setVelocityX(Math.max(getVelocityX() - 4f * delta, -8f));
 		} else if(moveRight && !moveLeft) {
-			setVelocityX(4f);
+			setVelocityX(Math.max(getVelocityX(), 2f));
+			setVelocityX(Math.min(getVelocityX() + 4f * delta, 8f));
 		} else {
 			setVelocityX(0f);
 		}
 		
-		// FIXME: This will cause errors when in mid-air and velocity gets 0
-		if(jump && getVelocityY() == 0f) {
-			setVelocityY(5f);
+		setY(getY() - getHeight() / 50f);
+		grounded = inCollision();
+		setY(getY() + getHeight() / 50f);
+		
+		if(jump && grounded) {
+			setVelocityY(18f);
 		}
+		
+		super.update(delta);
 		
 		for(Entity otherEntity : getWorld().getEntities()) {
 			if(otherEntity instanceof ItemEntity) {
@@ -62,8 +70,6 @@ public class PlayerEntity extends Entity {
 				}
 			}
 		}
-		
-		super.update(delta);
 	}
 	
 	public Inventory getHotbar() {
@@ -76,6 +82,10 @@ public class PlayerEntity extends Entity {
 	
 	public Vector2 getWorldFocus() {
 		return hasWorldFocus ? worldFocus : null;
+	}
+	
+	public boolean isGrounded() {
+		return grounded;
 	}
 
 	public void setWorldFocus(Vector2 worldFocus) {

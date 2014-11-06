@@ -8,6 +8,7 @@ import com.github.antag99.aquarria.world.World;
 public class Entity {
 	private float x, y;
 	private float velocityX, velocityY;
+	private int direction = 1;
 	
 	private EntityView<?> view;
 	private EntityType type;
@@ -25,10 +26,7 @@ public class Entity {
 	
 	public void update(float delta) {
 		// Apply gravity
-		velocityY = velocityY - (4f * type.getWeight()) * delta;
-		if(velocityY < -8f * type.getWeight() && type.getWeight() != 0f) {
-			velocityY = -8f * type.getWeight();
-		}
+		velocityY = velocityY - (25f * type.getWeight()) * delta;
 		
 		// It works...
 		float moveX = velocityX * delta;
@@ -43,6 +41,12 @@ public class Entity {
 		if(type.isSolid() && inCollision()) {
 			y -= moveY;
 			velocityY = 0f;
+		}
+		
+		if(velocityX > 0f) {
+			direction = 1;
+		} else if(velocityX < 0f) {
+			direction = -1;
 		}
 		
 		view.update(delta);
@@ -105,6 +109,14 @@ public class Entity {
 	
 	public void setVelocityY(float velocityY) {
 		this.velocityY = velocityY;
+	}
+	
+	public int getDirection() {
+		return direction;
+	}
+	
+	public void setDirection(int direction) {
+		this.direction = direction;
 	}
 	
 	public float getWidth() {

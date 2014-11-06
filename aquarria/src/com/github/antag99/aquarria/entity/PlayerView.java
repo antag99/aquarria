@@ -16,21 +16,27 @@ public class PlayerView extends EntityView<PlayerEntity> {
 		
 		PlayerEntity player = getEntity();
 		
-		animationCounter += delta;
+		animationCounter += Math.abs(player.getVelocityX()) * delta;
 		
-		if(player.getVelocityX() != 0f) {
-			if (animationCounter > 0.2f) {
+		boolean advance = animationCounter > 0.4f;
+		if(advance) animationCounter -= 0.4f;
+			
+		if(!player.isGrounded()) {
+			legFrame = 5;
+			bodyFrame = 5;
+		} else if(player.getVelocityX() != 0f) {
+			if(legFrame < 7) {
+				legFrame = 7;
+			}
+			
+			if(advance) {
 				legFrame++;
 				
 				if(legFrame > 19) {
 					legFrame = 7;
-				} else if(legFrame < 7) {
-					legFrame = 19;
 				}
 				
 				bodyFrame = legFrame;
-				
-				animationCounter -= 0.2f;
 			}
 		} else {
 			legFrame = 0;
