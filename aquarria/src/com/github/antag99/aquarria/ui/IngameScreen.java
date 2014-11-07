@@ -89,8 +89,8 @@ public class IngameScreen extends AquarriaScreen {
 
 		OrthographicCamera cam = worldView.getCamera();
 
-		cam.position.x = player.getX() + player.getWidth() * 0.5f;
-		cam.position.y = player.getY() + player.getHeight() * 0.5f;
+		cam.position.x = MathUtils.clamp(player.getX() + player.getWidth() * 0.5f, cam.viewportWidth / 2f, world.getWidth() - cam.viewportWidth / 2f);
+		cam.position.y = MathUtils.clamp(player.getY() + player.getHeight() * 0.5f, cam.viewportHeight / 2f, world.getHeight() - cam.viewportHeight / 2f);
 		cam.zoom = 1f;
 
 		cam.update();
