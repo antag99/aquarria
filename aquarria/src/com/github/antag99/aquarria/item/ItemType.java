@@ -24,6 +24,7 @@ public class ItemType {
 	public static final ItemType air = new ItemType("items/air.json");
 	public static final ItemType dirt = new TileItemType("items/dirt.json");
 	public static final ItemType stone = new TileItemType("items/stone.json");
+	public static final ItemType pickaxe = new PickaxeItemType("items/pickaxe.json");
 	
 	private String internalName;
 	private String displayName;

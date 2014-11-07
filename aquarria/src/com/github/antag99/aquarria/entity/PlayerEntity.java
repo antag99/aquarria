@@ -19,6 +19,8 @@ public class PlayerEntity extends Entity {
 		
 		hotbar = new Inventory(10);
 		inventory = new Inventory(40);
+
+		hotbar.addItem(new Item(ItemType.pickaxe));
 		hotbar.addItem(new Item(ItemType.dirt, ItemType.dirt.getMaxStack()));
 		hotbar.addItem(new Item(ItemType.stone, ItemType.stone.getMaxStack()));
 	}

@@ -2,5 +2,6 @@
 	"internalName" : "grass",
 	"displayName" : "Grass",
 	"solid" : true,
-	"texture" : "images/tiles/grass.png"
+	"texture" : "images/tiles/grass.png",
+	"drop" : "dirt"
 }

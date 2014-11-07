@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.github.antag99.aquarria.entity.PlayerEntity;
 
 public class TileType {
 	private static Array<TileType> tileTypes = new Array<TileType>();
@@ -21,9 +22,9 @@ public class TileType {
 	}
 	
 	public static final TileType air = new TileType("tiles/air.json");
-	public static final TileType dirt = new TileType("tiles/dirt.json");
-	public static final TileType stone = new TileType("tiles/stone.json");
-	public static final TileType grass = new TileType("tiles/grass.json");
+	public static final TileType dirt = new DropTileType("tiles/dirt.json");
+	public static final TileType stone = new DropTileType("tiles/stone.json");
+	public static final TileType grass = new DropTileType("tiles/grass.json");
 
 	private String internalName;
 	private String displayName;
@@ -44,6 +45,9 @@ public class TileType {
 		
 		tileTypes.add(this);
 		tileTypesByName.put(internalName, this);
+	}
+	
+	public void destroyed(PlayerEntity player, int x, int y) {
 	}
 
 	public String getInternalName() {
