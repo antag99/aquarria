@@ -22,9 +22,12 @@ public class World {
 	
 	private Array<Entity> entities;
 	
+	private LightManager lightManager;
+	
 	public World(int width, int height) {
 		this.width = width;
 		this.height = height;
+		this.lightManager = new LightManager(this);
 		spawnX = width / 2f;
 		spawnY = height / 2f;
 		tileMatrix = new short[width * height];
@@ -105,6 +108,10 @@ public class World {
 	
 	public Array<Entity> getEntities() {
 		return entities;
+	}
+	
+	public LightManager getLightManager() {
+		return lightManager;
 	}
 	
 	public void update(float delta) {

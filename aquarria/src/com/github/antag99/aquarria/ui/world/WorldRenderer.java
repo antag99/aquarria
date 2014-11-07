@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.world.LightManager;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldView;
 
@@ -29,6 +30,7 @@ public class WorldRenderer extends Widget {
 	private boolean drawTileGrid = false;
 	private boolean drawEntityBoxes = false;
 	private ShapeRenderer shapeRenderer = null;
+	private TextureRegion lightTexture;
 
 	@SuppressWarnings("rawtypes")
 	private ObjectMap<Class, EntityRenderer> entityRenderers = new ObjectMap<Class, EntityRenderer>();
@@ -44,12 +46,14 @@ public class WorldRenderer extends Widget {
 		for(EntityRenderer<?, ?> entityRenderer : entityRenderers.values()) {
 			entityRenderer.queueAssets(assetManager);
 		}
+		assetManager.load("images/white.png", TextureRegion.class);
 	}
 	
 	public void getAssets(AssetManager assetManager) {
 		for(EntityRenderer<?, ?> entityRenderer : entityRenderers.values()) {
 			entityRenderer.getAssets(assetManager);
 		}
+		lightTexture = assetManager.get("images/white.png");
 	}
 	
 	public void addEntityRenderer(EntityRenderer<?, ?> entityRenderer) {
@@ -115,6 +119,30 @@ public class WorldRenderer extends Widget {
 			
 			entityRenderer.renderEntity(batch, entity.getView());
 		}
+		
+		LightManager lightManager = world.getLightManager();
+		lightManager.computeLight(startX, startY, endX - startX, endY - startY);
+		
+		for(int i = startX; i < endX; ++i) {
+			for(int j = startY; j < endY; ++j) {
+				float light = lightManager.getLight(i, j);
+
+				if(world.getTileType(i, j) != TileType.air) {
+					float topLeftLight = i > 0 && j + 1 < world.getHeight() ? lightManager.getLight(i - 1, j + 1) : light;
+					float bottomLeftLight = i > 0 && j > 0 ? lightManager.getLight(i - 1, j - 1) : light;
+					float bottomRightLight = j > 0 && i + 1 < world.getWidth() ? lightManager.getLight(i + 1, j - 1) : light;
+					float topRightLight = i + 1 < world.getWidth() && j + 1 < world.getHeight() ? lightManager.getLight(i + 1, j + 1) : light;
+					
+					drawGradient(batch, i, j, 1f, 1f, Color.toFloatBits(0f, 0f, 0f, 1f - MathUtils.clamp((topLeftLight + light) / 2f, 0f, 1f)),
+							Color.toFloatBits(0f, 0f, 0f, 1f - MathUtils.clamp((topRightLight + light) / 2f, 0f, 1f)),
+							Color.toFloatBits(0f, 0f, 0f, 1f - MathUtils.clamp((bottomLeftLight + light) / 2f, 0f, 1f)),
+							Color.toFloatBits(0f, 0f, 0f, 1f - MathUtils.clamp((bottomRightLight + light) / 2f, 0f, 1f)));
+				} else {
+					batch.setColor(0f, 0f, 0f, 1f - light);
+					batch.draw(lightTexture, i, j, 1f, 1f);
+				}
+			}
+		}
 
 		boolean useShapeRenderer = drawEntityBoxes || drawTileGrid;
 		if (useShapeRenderer) {
@@ -150,6 +178,50 @@ public class WorldRenderer extends Widget {
 		}
 		
 		batch.setProjectionMatrix(stageProjection);
+	}
+	
+	final float[] vertices = new float[20];
+
+	// http://www.badlogicgames.com/forum/viewtopic.php?f=11&t=9361#p42550
+	private void drawGradient(Batch batch,
+			float x, float y, float width, float height,
+			float topLeftColor, float topRightColor,
+			float bottomLeftColor, float bottomRightColor) {
+	   int idx = 0;
+	   float u = lightTexture.getU();
+	   float v = lightTexture.getV2();
+	   float u2 = lightTexture.getU2();
+	   float v2 = lightTexture.getV();
+	   
+	   //bottom left
+	   vertices[idx++] = x;
+	   vertices[idx++] = y;
+	   vertices[idx++] = bottomLeftColor;
+	   vertices[idx++] = u;
+	   vertices[idx++] = v;
+
+	   //top left
+	   vertices[idx++] = x;
+	   vertices[idx++] = y + height;
+	   vertices[idx++] = topLeftColor;
+	   vertices[idx++] = u;
+	   vertices[idx++] = v2;
+
+	   //top right
+	   vertices[idx++] = x + width;
+	   vertices[idx++] = y + height;
+	   vertices[idx++] = topRightColor;
+	   vertices[idx++] = u2;
+	   vertices[idx++] = v2;
+
+	   //bottom right
+	   vertices[idx++] = x + width;
+	   vertices[idx++] = y;
+	   vertices[idx++] = bottomRightColor;
+	   vertices[idx++] = u2;
+	   vertices[idx++] = v;
+	   
+	   batch.draw(lightTexture.getTexture(), vertices, 0, vertices.length);
 	}
 
 	public WorldView getView() {
