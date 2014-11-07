@@ -1,15 +1,16 @@
 ## Eclipse/Java
-.metadata
-.settings
-bin
 *.class
-*~
+*/.settings
+*/bin
+.metadata
 .recommenders
 
 ## Aquarria
-assets-terraria
-aquarria.json
+aquarria/assets-terraria
+aquarria/aquarria.json
+aquarria/debug
 
-## Hiero
+## Hiero/OS
 out*
+*~
 

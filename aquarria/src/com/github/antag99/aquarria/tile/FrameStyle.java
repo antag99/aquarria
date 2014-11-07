@@ -15,12 +15,12 @@ public abstract class FrameStyle {
 		public void findFrame(TileType type, int x, int y, World world, Random random, GridPoint2 frame) {
 			TileType top = y + 1 < world.getHeight() ? world.getTileType(x, y + 1) : TileType.air;
 			TileType right = x + 1 < world.getWidth() ? world.getTileType(x + 1, y) : TileType.air;
-			TileType bottom = y > 1 ? world.getTileType(x, y - 1) : TileType.air;
-			TileType left = x > 1 ? world.getTileType(x - 1, y) : TileType.air;
+			TileType bottom = y > 0 ? world.getTileType(x, y - 1) : TileType.air;
+			TileType left = x > 0 ? world.getTileType(x - 1, y) : TileType.air;
 			
 			frame.x = 1;
 			frame.y = 1;
-			
+
 			// TODO: Implement the different variations
 			
 			// X = merges with the current tile

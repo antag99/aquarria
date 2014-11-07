@@ -56,6 +56,11 @@ public class Entity {
 	private Rectangle tmpBounds2 = new Rectangle();
 	
 	public boolean inCollision() {
+		if(x < 0f || y < 0f || x + getWidth() > world.getWidth() ||
+				y + getHeight() > world.getHeight()) {
+			return true;
+		}
+		
 		tmpBounds.set(x, y, getWidth(), getHeight());
 		tmpBounds2.set(0f, 0f, 1f, 1f);
 		

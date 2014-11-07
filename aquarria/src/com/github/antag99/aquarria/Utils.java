@@ -7,8 +7,7 @@ public class Utils {
 	public static TextureRegion[] splitVertically(TextureRegion target, int count) {
 		TextureRegion[] result = new TextureRegion[count];
 		int width = target.getRegionWidth();
-		int height = target.getRegionHeight() / count + target.getRegionHeight() % count;
-		System.out.println(height);
+		int height = target.getRegionHeight() / count;
 		
 		for(int i = 0; i < count; ++i) {
 			result[i] = new TextureRegion(target, 0, i * height, width, height);
@@ -19,8 +18,6 @@ public class Utils {
 	
 	public static Pixmap expand(Pixmap pixmap, int width, int height) {
 		Pixmap result = new Pixmap(width, height, pixmap.getFormat());
-//		result.setColor(Color.CLEAR);
-//		result.fill();
 		result.drawPixmap(pixmap, 0, 0);
 		return result;
 	}

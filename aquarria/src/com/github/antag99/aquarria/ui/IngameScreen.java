@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader.SkinParameter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -56,7 +57,7 @@ public class IngameScreen extends AquarriaScreen {
 		worldRenderer.getAssets(assetManager);
 		
 		world = new World(1024, 512);
-		new WorldGenerator().generate(world, 0);
+		new WorldGenerator().generate(world, MathUtils.random.nextLong());
 		
 		player = new PlayerEntity();
 		player.setX(world.getSpawnX());
@@ -100,12 +101,16 @@ public class IngameScreen extends AquarriaScreen {
 			// The camera handles the different coordinate systems too, reset to input coordinates
 			mousePosition = tmpVector2.set(Gdx.input.getX(), Gdx.input.getY());
 			Vector3 worldFocus = cam.unproject(tmpVector3.set(mousePosition, 0f));
-			player.setWorldFocus(worldFocus.x, worldFocus.y);
-			
-			if(Gdx.input.justTouched()) {
-				Item focusedItem = ingameInterface.getFocusItem();
-				if(!focusedItem.isEmpty()) {
-					focusedItem.getType().useItem(player, focusedItem);
+			if(worldFocus.x >= 0f && worldFocus.y >= 0f &&
+					worldFocus.x < world.getWidth() &&
+					worldFocus.y < world.getHeight()) {
+				player.setWorldFocus(worldFocus.x, worldFocus.y);
+				
+				if(Gdx.input.justTouched()) {
+					Item focusedItem = ingameInterface.getFocusItem();
+					if(!focusedItem.isEmpty()) {
+						focusedItem.getType().useItem(player, focusedItem);
+					}
 				}
 			}
 		}

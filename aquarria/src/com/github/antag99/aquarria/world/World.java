@@ -58,6 +58,9 @@ public class World {
 	}
 	
 	public void setTileType(int x, int y, TileType type) {
+		if(x < 0 || x >= width || y < 0 || y >= height)
+			throw new IndexOutOfBoundsException();
+		
 		int id = tileMapping.get(type, -1);
 		if(id == -1) {
 			id = tileMapping.size;
