@@ -32,11 +32,11 @@ public class PlayerEntity extends Entity {
 		boolean jump = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 		
 		if(moveLeft && !moveRight) {
-			setVelocityX(Math.min(getVelocityX(), 2f));
-			setVelocityX(Math.max(getVelocityX() - 4f * delta, -8f));
+			setVelocityX(Math.min(getVelocityX(), 4f));
+			setVelocityX(Math.max(getVelocityX() - 5f * delta, -12f));
 		} else if(moveRight && !moveLeft) {
-			setVelocityX(Math.max(getVelocityX(), 2f));
-			setVelocityX(Math.min(getVelocityX() + 4f * delta, 8f));
+			setVelocityX(Math.max(getVelocityX(), 4f));
+			setVelocityX(Math.min(getVelocityX() + 5f * delta, 12f));
 		} else {
 			setVelocityX(0f);
 		}
