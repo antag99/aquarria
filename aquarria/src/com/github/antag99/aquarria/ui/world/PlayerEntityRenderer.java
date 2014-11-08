@@ -38,14 +38,14 @@ public class PlayerEntityRenderer extends EntityRenderer<PlayerEntity, PlayerVie
 	
 	@Override
 	public void getAssets(AssetManager assetManager) {
-		hairFrames = Utils.splitVertically(assetManager.get("images/player/hair.png"), 14);
-		headFrames = Utils.splitVertically(assetManager.get("images/player/head.png"), 20);
-		eyesFrames = Utils.splitVertically(assetManager.get("images/player/eyes.png"), 20);
-		eyeWhitesFrames = Utils.splitVertically(assetManager.get("images/player/eyeWhites.png"), 20);
-		shirtFrames = Utils.splitVertically(assetManager.get("images/player/shirt.png"), 20);
-		undershirtFrames = Utils.splitVertically(assetManager.get("images/player/undershirt.png"), 20);
-		pantsFrames = Utils.splitVertically(assetManager.get("images/player/pants.png"), 20);
-		shoesFrames = Utils.splitVertically(assetManager.get("images/player/shoes.png"), 20);
+		hairFrames = Utils.splitVertically(assetManager.get("images/player/hair.png", TextureRegion.class), 14);
+		headFrames = Utils.splitVertically(assetManager.get("images/player/head.png", TextureRegion.class), 20);
+		eyesFrames = Utils.splitVertically(assetManager.get("images/player/eyes.png", TextureRegion.class), 20);
+		eyeWhitesFrames = Utils.splitVertically(assetManager.get("images/player/eyeWhites.png", TextureRegion.class), 20);
+		shirtFrames = Utils.splitVertically(assetManager.get("images/player/shirt.png", TextureRegion.class), 20);
+		undershirtFrames = Utils.splitVertically(assetManager.get("images/player/undershirt.png", TextureRegion.class), 20);
+		pantsFrames = Utils.splitVertically(assetManager.get("images/player/pants.png", TextureRegion.class), 20);
+		shoesFrames = Utils.splitVertically(assetManager.get("images/player/shoes.png", TextureRegion.class), 20);
 	}
 
 	@Override

@@ -138,7 +138,7 @@ public class InventoryDisplay extends Table {
 	public class ItemSlot extends Widget {
 		int index;
 		
-		ItemSlot(int index) {
+		ItemSlot(final int index) {
 			this.index = index;
 			
 			addListener(new InputListener() {
