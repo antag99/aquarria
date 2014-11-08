@@ -69,11 +69,13 @@ public class Aquarria extends Game {
 					System.err.println("Error: Terraria directory not found. Edit aquarria.json manually. Exiting.");
 					properties.setTerrariaDirectory(new FileHandle("<terraria directory>"));
 					Gdx.app.exit();
+					return;
 				}
 			} else if(!terrariaDirectory.exists()) {
 				System.err.println("Error: The directory " + terrariaDirectory.path() +
 						" does not exist. Edit aquarria.json manually. Exiting.");
 				Gdx.app.exit();
+				return;
 			}
 			
 			if(terrariaDirectory != null && terrariaDirectory.exists()) {
