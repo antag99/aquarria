@@ -117,7 +117,13 @@ public class World {
 	public void update(float delta) {
 		for(int i = 0; i < entities.size; ++i) {
 			Entity entity = entities.get(i);
-			entity.update(delta);
+			if(entity.isActive()) {
+				entity.update(delta);
+			}
+		}
+		
+		for(int i = 0; i < entities.size; ++i) {
+			Entity entity = entities.get(i);
 			if(!entity.isActive()) {
 				entities.removeIndex(i);
 			}

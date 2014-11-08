@@ -12,7 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.github.antag99.aquarria.Aquarria;
 import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.item.Item;
+import com.github.antag99.aquarria.entity.PlayerEntity.ItemUseState;
+import com.github.antag99.aquarria.gdx.GraphicsDelegate;
 import com.github.antag99.aquarria.ui.world.WorldRenderer;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
@@ -31,6 +32,9 @@ public class IngameScreen extends AquarriaScreen {
 	
 	private Vector2 tmpVector2 = new Vector2();
 	private Vector3 tmpVector3 = new Vector3();
+	
+	private float debugGameSpeed = 1f;
+	private GraphicsDelegate debugGraphics;
 
 	public IngameScreen(Aquarria aquarria) {
 		super(aquarria);
@@ -46,6 +50,14 @@ public class IngameScreen extends AquarriaScreen {
 		
 		worldRenderer = new WorldRenderer();
 		worldRenderer.queueAssets(assetManager);
+		
+		debugGraphics = new GraphicsDelegate(Gdx.graphics) {
+			@Override
+			public float getDeltaTime() {
+				return super.getDeltaTime() * debugGameSpeed;
+			}
+		};
+		Gdx.graphics = debugGraphics;
 	}
 	
 	@Override
@@ -85,6 +97,16 @@ public class IngameScreen extends AquarriaScreen {
 			worldRenderer.setDrawEntityBoxes(!worldRenderer.getDrawEntityBoxes());
 		}
 		
+		if(Gdx.input.isKeyJustPressed(Input.Keys.F7)) {
+			debugGameSpeed *= 0.5f;
+			if(debugGameSpeed < 0.125f) {
+				debugGameSpeed = 4f;
+			}
+			System.out.println("Game speed: " + (int)(debugGameSpeed * 100) + "%");
+		}
+		
+		delta = Gdx.graphics.getDeltaTime();
+		
 		world.update(delta);
 
 		OrthographicCamera cam = worldView.getCamera();
@@ -105,14 +127,30 @@ public class IngameScreen extends AquarriaScreen {
 					worldFocus.x < world.getWidth() &&
 					worldFocus.y < world.getHeight()) {
 				player.setWorldFocus(worldFocus.x, worldFocus.y);
-				
-				if(Gdx.input.justTouched()) {
-					Item focusedItem = ingameInterface.getFocusItem();
-					if(!focusedItem.isEmpty()) {
-						focusedItem.getType().useItem(player, focusedItem);
-					}
+			}
+		} else {
+			player.setWorldFocus(null);
+		}
+		
+		if(player.getWorldFocus() != null) {
+			if(Gdx.input.justTouched()) {
+				if(player.getUseState() == ItemUseState.RELASED) {
+					player.setUseState(ItemUseState.ACTIVE);
+				} else if(player.getUseState() == ItemUseState.NONE) {
+					player.setUseState(ItemUseState.PRESSED);
+					player.setUsedItem(ingameInterface.getFocusItem());
 				}
 			}
+			
+			if(!Gdx.input.isTouched()) {
+				if(player.getUseState() != ItemUseState.NONE) {
+					player.setUseState(ItemUseState.RELASED);
+				}
+			}
+		} else {
+			player.setUseState(ItemUseState.NONE);
+			player.setUseTime(0f);
+			player.setUsedItem(null);
 		}
 	}
 	

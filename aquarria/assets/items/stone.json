@@ -5,5 +5,7 @@
 	"height" : 16,
 	"maxStack" : 99,
 	"texture" : "images/items/stone.png",
-	"createdTile" : "stone"
+	"createdTile" : "stone",
+	"usageDelay" : 0.2,
+	"repeated" : true
 }

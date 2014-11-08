@@ -84,7 +84,13 @@ public class ItemType {
 		return texture;
 	}
 	
-	public boolean useItem(PlayerEntity player, Item item) {
+	public boolean canUseItem(PlayerEntity player, Item item) {
 		return false;
+	}
+	
+	public void beginUseItem(PlayerEntity player, Item item) {
+	}
+	
+	public void updateUseItem(PlayerEntity player, Item item, float delta) {
 	}
 }

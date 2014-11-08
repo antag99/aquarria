@@ -13,6 +13,17 @@ public class PlayerEntity extends Entity {
 	private Vector2 worldFocus = new Vector2();
 	private boolean hasWorldFocus = false;
 	private boolean grounded;
+	
+	private ItemUseState useState = ItemUseState.NONE;
+	private float useTime = 0f;
+	private Item usedItem;
+	
+	public enum ItemUseState {
+		ACTIVE,
+		RELASED,
+		PRESSED,
+		NONE
+	}
 
 	public PlayerEntity() {
 		super(EntityType.player);
@@ -29,7 +40,7 @@ public class PlayerEntity extends Entity {
 	public void update(float delta) {
 		boolean moveLeft = Gdx.input.isKeyPressed(Input.Keys.A);
 		boolean moveRight = Gdx.input.isKeyPressed(Input.Keys.D);
-		boolean jump = Gdx.input.isKeyPressed(Input.Keys.SPACE);
+		boolean jump = Gdx.input.isKeyJustPressed(Input.Keys.SPACE);
 		
 		if(moveLeft && !moveRight) {
 			setVelocityX(Math.min(getVelocityX(), 4f));
@@ -46,7 +57,7 @@ public class PlayerEntity extends Entity {
 		setY(getY() + getHeight() / 50f);
 		
 		if(jump && grounded) {
-			setVelocityY(18f);
+			setVelocityY(20f);
 		}
 		
 		super.update(delta);
@@ -72,6 +83,20 @@ public class PlayerEntity extends Entity {
 				}
 			}
 		}
+		
+		if(useState == ItemUseState.PRESSED) {
+			if(usedItem.getType().canUseItem(this, usedItem)) {
+				useState = ItemUseState.ACTIVE;
+				usedItem.getType().beginUseItem(this, usedItem);
+			}
+		}
+		
+		if(useState == ItemUseState.ACTIVE || useState == ItemUseState.RELASED) {
+			useTime += delta;
+			usedItem.getType().updateUseItem(this, usedItem, delta);
+		} else {
+			useTime = 0f;
+		}
 	}
 	
 	public Inventory getHotbar() {
@@ -91,7 +116,36 @@ public class PlayerEntity extends Entity {
 	}
 
 	public void setWorldFocus(Vector2 worldFocus) {
-		setWorldFocus(worldFocus.x, worldFocus.y);
+		if(worldFocus != null) {
+			setWorldFocus(worldFocus.x, worldFocus.y);
+			hasWorldFocus = true;
+		} else {
+			hasWorldFocus = false;
+		}
+	}
+	
+	public ItemUseState getUseState() {
+		return useState;
+	}
+	
+	public void setUseState(ItemUseState useState) {
+		this.useState = useState;
+	}
+	
+	public float getUseTime() {
+		return useTime;
+	}
+	
+	public void setUseTime(float useTime) {
+		this.useTime = useTime;
+	}
+	
+	public Item getUsedItem() {
+		return usedItem;
+	}
+	
+	public void setUsedItem(Item usedItem) {
+		this.usedItem = usedItem;
 	}
 	
 	public void setWorldFocus(float x, float y) {

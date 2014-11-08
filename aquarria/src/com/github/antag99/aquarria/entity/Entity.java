@@ -26,13 +26,15 @@ public class Entity {
 	
 	public void update(float delta) {
 		// Apply gravity
-		velocityY = velocityY - (25f * type.getWeight()) * delta;
+		velocityY = velocityY - (35f * type.getWeight()) * delta;
 		
 		// It works...
 		float moveX = velocityX * delta;
 		x += moveX;
 		if(type.isSolid() && inCollision()) {
 			x -= moveX;
+			while(!inCollision()) x += Math.signum(moveX) * 0.1f;
+			x -= Math.signum(moveX) * 0.1f;
 			velocityX = 0f;
 		}
 		
@@ -40,6 +42,8 @@ public class Entity {
 		y += moveY;
 		if(type.isSolid() && inCollision()) {
 			y -= moveY;
+			while(!inCollision()) y += Math.signum(moveY) * 0.1f;
+			y -= Math.signum(moveY) * 0.1f;
 			velocityY = 0f;
 		}
 		

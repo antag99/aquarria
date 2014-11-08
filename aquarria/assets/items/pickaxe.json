@@ -4,5 +4,7 @@
 	"width" : 24,
 	"height" : 28,
 	"maxStack" : 1,
-	"texture" : "images/items/pickaxe.png"
+	"texture" : "images/items/pickaxe.png",
+	"usageDelay" : 0.2,
+	"repeated" : true
 }

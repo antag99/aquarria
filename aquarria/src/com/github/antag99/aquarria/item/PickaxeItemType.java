@@ -9,7 +9,7 @@ import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.world.World;
 
-public class PickaxeItemType extends ItemType {
+public class PickaxeItemType extends UsableItemType {
 	public PickaxeItemType(String path) {
 		this(new JsonReader().parse(Gdx.files.internal(path)));
 	}
@@ -19,7 +19,7 @@ public class PickaxeItemType extends ItemType {
 	}
 
 	@Override
-	public boolean useItem(PlayerEntity player, Item item) {
+	protected void useItem(PlayerEntity player, Item item, int use) {
 		Vector2 worldFocus = player.getWorldFocus();
 		
 		World world = player.getWorld();
@@ -33,7 +33,5 @@ public class PickaxeItemType extends ItemType {
 			world.setTileType(tileX, tileY, TileType.air);
 			type.destroyed(player, tileX, tileY);
 		}
-		
-		return true;
 	}
 }

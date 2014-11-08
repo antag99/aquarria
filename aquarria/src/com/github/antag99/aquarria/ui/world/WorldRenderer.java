@@ -115,9 +115,11 @@ public class WorldRenderer extends Widget {
 		}
 
 		for (Entity entity : world.getEntities()) {
-			EntityRenderer entityRenderer = entityRenderers.get(entity.getClass());
-			
-			entityRenderer.renderEntity(batch, entity.getView());
+			if(entity.isActive()) {
+				EntityRenderer entityRenderer = entityRenderers.get(entity.getClass());
+				
+				entityRenderer.renderEntity(batch, entity.getView());
+			}
 		}
 		
 		LightManager lightManager = world.getLightManager();
@@ -133,10 +135,11 @@ public class WorldRenderer extends Widget {
 					float bottomRightLight = j > 0 && i + 1 < world.getWidth() ? lightManager.getLight(i + 1, j - 1) : light;
 					float topRightLight = i + 1 < world.getWidth() && j + 1 < world.getHeight() ? lightManager.getLight(i + 1, j + 1) : light;
 					
-					drawGradient(batch, i, j, 1f, 1f, Color.toFloatBits(0f, 0f, 0f, 1f - MathUtils.clamp((topLeftLight + light) / 2f, 0f, 1f)),
-							Color.toFloatBits(0f, 0f, 0f, 1f - MathUtils.clamp((topRightLight + light) / 2f, 0f, 1f)),
-							Color.toFloatBits(0f, 0f, 0f, 1f - MathUtils.clamp((bottomLeftLight + light) / 2f, 0f, 1f)),
-							Color.toFloatBits(0f, 0f, 0f, 1f - MathUtils.clamp((bottomRightLight + light) / 2f, 0f, 1f)));
+					drawGradient(batch, i, j, 1f, 1f,
+							Color.toFloatBits(0f, 0f, 0f, 1f - topLeftLight * light),
+							Color.toFloatBits(0f, 0f, 0f, 1f - topRightLight * light),
+							Color.toFloatBits(0f, 0f, 0f, 1f - bottomLeftLight * light),
+							Color.toFloatBits(0f, 0f, 0f, 1f - bottomRightLight * light));
 				} else {
 					batch.setColor(0f, 0f, 0f, 1f - light);
 					batch.draw(lightTexture, i, j, 1f, 1f);
