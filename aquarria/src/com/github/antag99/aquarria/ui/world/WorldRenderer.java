@@ -85,7 +85,6 @@ public class WorldRenderer extends Widget {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 
@@ -105,77 +104,11 @@ public class WorldRenderer extends Widget {
 		int endX = clamp(ceil(cam.position.x + margin), 0, world.getWidth());
 		int endY = clamp(ceil(cam.position.y + margin), 0, world.getHeight());
 
-		GridPoint2 frame = new GridPoint2();
-
-		for (int i = startX; i < endX; ++i) {
-			for (int j = startY; j < endY; ++j) {
-				TileType type = world.getTileType(i, j);
-				TextureRegion texture = type.getTexture();
-
-				if (texture != null) {
-					FrameStyle.defaultFrameStyle.findFrame(type, i, j, world, MathUtils.random, frame);
-					int srcX = texture.getRegionX() + frame.x * 18;
-					int srcY = texture.getRegionY() + frame.y * 18;
-					Texture srcTexture = texture.getTexture();
-					batch.draw(srcTexture, i, j, 1f, 1f, srcX, srcY, 16, 16, false, false);
-				}
-			}
-		}
-
-		for (Entity entity : world.getEntities()) {
-			if(entity.isActive()) {
-				EntityRenderer entityRenderer = entityRenderers.get(entity.getClass());
-				
-				entityRenderer.renderEntity(batch, entity.getView());
-			}
-		}
+		drawEntities(batch, world, startX, startY, endX, endY);
+		drawLiquid(batch, world, startX, startY, endX, endY);
+		drawTiles(batch, world, startX, startY, endX, endY);
+		drawLight(batch, world, startX, startY, endX, endY);
 		
-		LiquidManager liquidManager = world.getLiquidManager();
-
-		batch.setColor(1f, 1f, 1f, 0.8f);
-		for(int i = startX; i < endX; ++i) {
-			for(int j = startY; j < endY; ++j) {
-				int liquid = liquidManager.getLiquid(i, j);
-				if(liquid != 0) {
-					float liquidPercentage = liquid / 255f;
-					
-					boolean hasTopLiquid = j < world.getHeight() && liquidManager.getLiquid(i, j + 1) != 0;
-					
-					if(hasTopLiquid) {
-						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage);
-					} else {
-						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage - 0.25f);
-						batch.draw(waterTopTexture, i, j + liquidPercentage - 0.25f, 1f, 0.25f);
-					}
-				}
-			}
-		}
-		
-		LightManager lightManager = world.getLightManager();
-		lightManager.computeLight(startX, startY, endX - startX, endY - startY);
-		
-		for(int i = startX; i < endX; ++i) {
-			for(int j = startY; j < endY; ++j) {
-				float light = lightManager.getLight(i, j);
-
-				if(world.getTileType(i, j) != TileType.air) {
-					float topLeftLight = i > 0 && j + 1 < world.getHeight() ? lightManager.getLight(i - 1, j + 1) : light;
-					float bottomLeftLight = i > 0 && j > 0 ? lightManager.getLight(i - 1, j - 1) : light;
-					float bottomRightLight = j > 0 && i + 1 < world.getWidth() ? lightManager.getLight(i + 1, j - 1) : light;
-					float topRightLight = i + 1 < world.getWidth() && j + 1 < world.getHeight() ? lightManager.getLight(i + 1, j + 1) : light;
-					
-					drawGradient(batch, i, j, 1f, 1f,
-							Color.toFloatBits(0f, 0f, 0f, 1f - topLeftLight * light),
-							Color.toFloatBits(0f, 0f, 0f, 1f - topRightLight * light),
-							Color.toFloatBits(0f, 0f, 0f, 1f - bottomLeftLight * light),
-							Color.toFloatBits(0f, 0f, 0f, 1f - bottomRightLight * light));
-				} else {
-					batch.setColor(0f, 0f, 0f, 1f - light);
-					batch.draw(lightTexture, i, j, 1f, 1f);
-				}
-			}
-		}
-
 		boolean useShapeRenderer = drawEntityBoxes || drawTileGrid;
 		if (useShapeRenderer) {
 			if (shapeRenderer == null) {
@@ -210,6 +143,86 @@ public class WorldRenderer extends Widget {
 		}
 		
 		batch.setProjectionMatrix(stageProjection);
+	}
+	
+	private void drawLiquid(Batch batch, World world, int startX, int startY, int endX, int endY) {
+		LiquidManager liquidManager = world.getLiquidManager();
+
+		batch.setColor(1f, 1f, 1f, 0.8f);
+		for(int i = startX; i < endX; ++i) {
+			for(int j = startY; j < endY; ++j) {
+				int liquid = liquidManager.getLiquid(i, j);
+				if(liquid != 0) {
+					float liquidPercentage = liquid / 255f;
+					
+					boolean hasTopLiquid = j < world.getHeight() && liquidManager.getLiquid(i, j + 1) != 0;
+					
+					if(hasTopLiquid) {
+						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage);
+					} else {
+						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage - 0.25f);
+						batch.draw(waterTopTexture, i, j + liquidPercentage - 0.25f, 1f, 0.25f);
+					}
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void drawEntities(Batch batch, World world, int startX, int startY, int endX, int endY) {
+		for (Entity entity : world.getEntities()) {
+			if(entity.isActive()) {
+				EntityRenderer entityRenderer = entityRenderers.get(entity.getClass());
+				
+				entityRenderer.renderEntity(batch, entity.getView());
+			}
+		}
+	}
+	
+	private void drawTiles(Batch batch, World world, int startX, int startY, int endX, int endY) {
+		GridPoint2 frame = new GridPoint2();
+
+		for (int i = startX; i < endX; ++i) {
+			for (int j = startY; j < endY; ++j) {
+				TileType type = world.getTileType(i, j);
+				TextureRegion texture = type.getTexture();
+
+				if (texture != null) {
+					FrameStyle.defaultFrameStyle.findFrame(type, i, j, world, MathUtils.random, frame);
+					int srcX = texture.getRegionX() + frame.x * 18;
+					int srcY = texture.getRegionY() + frame.y * 18;
+					Texture srcTexture = texture.getTexture();
+					batch.draw(srcTexture, i, j, 1f, 1f, srcX, srcY, 16, 16, false, false);
+				}
+			}
+		}
+	}
+	
+	private void drawLight(Batch batch, World world, int startX, int startY, int endX, int endY) {
+		LightManager lightManager = world.getLightManager();
+		lightManager.computeLight(startX, startY, endX - startX, endY - startY);
+		
+		for(int i = startX; i < endX; ++i) {
+			for(int j = startY; j < endY; ++j) {
+				float light = lightManager.getLight(i, j);
+
+				if(world.getTileType(i, j) != TileType.air) {
+					float topLeftLight = i > 0 && j + 1 < world.getHeight() ? lightManager.getLight(i - 1, j + 1) : light;
+					float bottomLeftLight = i > 0 && j > 0 ? lightManager.getLight(i - 1, j - 1) : light;
+					float bottomRightLight = j > 0 && i + 1 < world.getWidth() ? lightManager.getLight(i + 1, j - 1) : light;
+					float topRightLight = i + 1 < world.getWidth() && j + 1 < world.getHeight() ? lightManager.getLight(i + 1, j + 1) : light;
+					
+					drawGradient(batch, i, j, 1f, 1f,
+							Color.toFloatBits(0f, 0f, 0f, 1f - topLeftLight * light),
+							Color.toFloatBits(0f, 0f, 0f, 1f - topRightLight * light),
+							Color.toFloatBits(0f, 0f, 0f, 1f - bottomLeftLight * light),
+							Color.toFloatBits(0f, 0f, 0f, 1f - bottomRightLight * light));
+				} else {
+					batch.setColor(0f, 0f, 0f, 1f - light);
+					batch.draw(lightTexture, i, j, 1f, 1f);
+				}
+			}
+		}
 	}
 	
 	final float[] vertices = new float[20];

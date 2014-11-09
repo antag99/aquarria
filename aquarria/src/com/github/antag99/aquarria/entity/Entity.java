@@ -25,11 +25,13 @@ public class Entity {
 	}
 	
 	public void update(float delta) {
+		boolean inWater = inWater();
+		
 		// Apply gravity
 		velocityY = velocityY - (35f * type.getWeight()) * delta;
 		
 		// It works...
-		float moveX = velocityX * delta;
+		float moveX = velocityX * delta * (inWater ? 0.5f : 1f);
 		x += moveX;
 		if(type.isSolid() && inCollision()) {
 			x -= moveX;
@@ -38,7 +40,7 @@ public class Entity {
 			velocityX = 0f;
 		}
 		
-		float moveY = velocityY * delta;
+		float moveY = velocityY * delta * (inWater ? 0.5f : 1f);
 		y += moveY;
 		if(type.isSolid() && inCollision()) {
 			y -= moveY;
@@ -80,6 +82,24 @@ public class Entity {
 				tmpBounds2.y = j;
 				
 				if(world.getTileType(i, j).isSolid() && tmpBounds.overlaps(tmpBounds2)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean inWater() {
+		int startX = MathUtils.floor(x);
+		int startY = MathUtils.floor(y);
+		
+		int endX = MathUtils.ceil(x + getWidth());
+		int endY = MathUtils.ceil(y + getHeight());
+		
+		for(int i = startX; i < endX; ++i) {
+			for(int j = startY; j < endY; ++j) {
+				if(world.getLiquidManager().getLiquid(i, j) >= 64) {
 					return true;
 				}
 			}

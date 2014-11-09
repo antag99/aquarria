@@ -61,6 +61,8 @@ public class LiquidManager {
 	}
 	
 	private void flow(int x, int y) {
+		if(world.getTileType(x, y).isSolid()) return;
+		
 		if(!flow(x, y, x, y - 1, 16, false) || getLiquid(x, y - 1) == MAX_LIQUID) {
 			// Randomizing the order prevents issues related to
 			// water not flowing in some fixed direction when just one unit is left.
