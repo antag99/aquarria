@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.Utils;
 import com.github.antag99.aquarria.entity.PlayerEntity;
+import com.github.antag99.aquarria.entity.PlayerEntity.ItemUseState;
 import com.github.antag99.aquarria.entity.PlayerView;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.ui.IngameScreen;
@@ -83,7 +84,7 @@ public class PlayerEntityRenderer extends EntityRenderer<PlayerEntity, PlayerVie
 		batch.setColor(160 / 255f, 105 / 255f, 60 / 255f, 1f);
 		batch.draw(setFlip(shoesFrames[view.getLegFrame()], flip), x, y, width, height);
 		
-		if(player.getUseTime() != 0f) {
+		if(player.getUseState() == ItemUseState.ACTIVE || player.getUseState() == ItemUseState.RELASED) {
 			Item item = player.getUsedItem();
 			TextureRegion itemTexture = item.getType().getTexture();
 			float itemOffsetX = view.getUseOffsetX();

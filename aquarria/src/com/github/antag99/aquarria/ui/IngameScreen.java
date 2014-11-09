@@ -143,7 +143,7 @@ public class IngameScreen extends AquarriaScreen {
 			}
 			
 			if(!Gdx.input.isTouched()) {
-				if(player.getUseState() != ItemUseState.NONE) {
+				if(player.getUseState() == ItemUseState.ACTIVE) {
 					player.setUseState(ItemUseState.RELASED);
 				}
 			}

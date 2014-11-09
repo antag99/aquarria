@@ -88,6 +88,8 @@ public class PlayerEntity extends Entity {
 			if(!usedItem.isEmpty() && usedItem.getType().canUseItem(this, usedItem)) {
 				useState = ItemUseState.ACTIVE;
 				usedItem.getType().beginUseItem(this, usedItem);
+			} else {
+				useState = ItemUseState.NONE;
 			}
 		}
 		
