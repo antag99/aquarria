@@ -1,6 +1,5 @@
 package com.github.antag99.aquarria.entity;
 
-import com.github.antag99.aquarria.entity.PlayerEntity.ItemUseState;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.item.ItemUsageStyle;
 
@@ -53,7 +52,7 @@ public class PlayerView extends EntityView<PlayerEntity> {
 			bodyFrame = 0;
 		}
 		
-		if(player.getUseState() == ItemUseState.ACTIVE || player.getUseState() == ItemUseState.RELASED) {
+		if(player.isUsingItem()) {
 			ItemType usedItemType = player.getUsedItem().getType();
 			ItemUsageStyle style = usedItemType.getUsageStyle();
 			float usageProgress = (player.getUseTime() % usedItemType.getUsageAnimationTime()) / usedItemType.getUsageAnimationTime();

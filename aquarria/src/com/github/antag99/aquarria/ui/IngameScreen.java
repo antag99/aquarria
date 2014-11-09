@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.github.antag99.aquarria.Aquarria;
 import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.entity.PlayerEntity.ItemUseState;
 import com.github.antag99.aquarria.gdx.GraphicsDelegate;
 import com.github.antag99.aquarria.ui.world.WorldRenderer;
 import com.github.antag99.aquarria.world.World;
@@ -134,21 +133,20 @@ public class IngameScreen extends AquarriaScreen {
 		
 		if(player.getWorldFocus() != null) {
 			if(Gdx.input.justTouched()) {
-				if(player.getUseState() == ItemUseState.RELASED) {
-					player.setUseState(ItemUseState.ACTIVE);
-				} else if(player.getUseState() == ItemUseState.NONE) {
-					player.setUseState(ItemUseState.PRESSED);
-					player.setUsedItem(ingameInterface.getFocusItem());
+				if(!player.getRepeatUsingItem()) {
+					player.setRepeatUsingItem(true);
 				}
+				player.setUsedItem(ingameInterface.getFocusItem());
 			}
 			
 			if(!Gdx.input.isTouched()) {
-				if(player.getUseState() == ItemUseState.ACTIVE) {
-					player.setUseState(ItemUseState.RELASED);
+				if(player.getRepeatUsingItem()) {
+					player.setRepeatUsingItem(false);
 				}
 			}
 		} else {
-			player.setUseState(ItemUseState.NONE);
+			player.setRepeatUsingItem(false);
+			player.setUsingItem(false);
 			player.setUseTime(0f);
 			player.setUsedItem(null);
 		}

@@ -13,17 +13,12 @@ public class PlayerEntity extends Entity {
 	private Vector2 worldFocus = new Vector2();
 	private boolean hasWorldFocus = false;
 	private boolean grounded;
-	
-	private ItemUseState useState = ItemUseState.NONE;
+
 	private float useTime = 0f;
 	private Item usedItem;
 	
-	public enum ItemUseState {
-		ACTIVE,
-		RELASED,
-		PRESSED,
-		NONE
-	}
+	private boolean usingItem;
+	private boolean repeatUsingItem;
 
 	public PlayerEntity() {
 		super(EntityType.player);
@@ -84,16 +79,17 @@ public class PlayerEntity extends Entity {
 			}
 		}
 		
-		if(useState == ItemUseState.PRESSED) {
+		if(repeatUsingItem && !usingItem) {
 			if(!usedItem.isEmpty() && usedItem.getType().canUseItem(this, usedItem)) {
-				useState = ItemUseState.ACTIVE;
+				usingItem = true;
 				usedItem.getType().beginUseItem(this, usedItem);
 			} else {
-				useState = ItemUseState.NONE;
+				usingItem = false;
+				repeatUsingItem = false;
 			}
 		}
 		
-		if(useState == ItemUseState.ACTIVE || useState == ItemUseState.RELASED) {
+		if(usingItem) {
 			useTime += delta;
 			usedItem.getType().updateUseItem(this, usedItem, delta);
 			if(useTime % usedItem.getType().getUsageTime() < delta) {
@@ -101,8 +97,9 @@ public class PlayerEntity extends Entity {
 					usedItem.setStack(usedItem.getStack() - 1);
 				}
 				
-				if(usedItem.isEmpty() || !usedItem.getType().getUsageRepeat() || useState == ItemUseState.RELASED) {
-					useState = ItemUseState.NONE;
+				if(usedItem.isEmpty() || !usedItem.getType().getUsageRepeat() || !repeatUsingItem) {
+					usingItem = false;
+					repeatUsingItem = false;
 					useTime = 0f;
 				}
 			}
@@ -136,12 +133,20 @@ public class PlayerEntity extends Entity {
 		}
 	}
 	
-	public ItemUseState getUseState() {
-		return useState;
+	public boolean isUsingItem() {
+		return usingItem;
 	}
 	
-	public void setUseState(ItemUseState useState) {
-		this.useState = useState;
+	public void setUsingItem(boolean usingItem) {
+		this.usingItem = usingItem;
+	}
+	
+	public boolean getRepeatUsingItem() {
+		return repeatUsingItem;
+	}
+	
+	public void setRepeatUsingItem(boolean repeatUsingItem) {
+		this.repeatUsingItem = repeatUsingItem;
 	}
 	
 	public float getUseTime() {
