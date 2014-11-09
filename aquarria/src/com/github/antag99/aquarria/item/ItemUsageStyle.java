@@ -10,11 +10,11 @@ public abstract class ItemUsageStyle {
 		@Override
 		public float getUsedItemOffsetX(PlayerView player, float usageProgress) {
 			float useOffsetX;
-			if(usageProgress < 0.2f * 1f / 4f) {
+			if(usageProgress < 1f / 4f) {
 				useOffsetX = 1.15f;
-			} else if(usageProgress < 0.2f * 2f / 4f) {
+			} else if(usageProgress < 2f / 4f) {
 				useOffsetX = 0.2f;
-			} else if(usageProgress < 0.2f * 3f / 4f) {
+			} else if(usageProgress < 3f / 4f) {
 				useOffsetX = 0.1f;
 			} else {
 				useOffsetX = 0.2f;
