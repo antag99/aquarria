@@ -47,5 +47,8 @@
 	"images/Player_Undershirt.png" : "images/player/undershirt.png",
 	"images/Player_Hands.png" : "images/player/hands.png",
 	"images/Player_Pants.png" : "images/player/pants.png",
-	"images/Player_Shoes.png" : "images/player/shoes.png"
+	"images/Player_Shoes.png" : "images/player/shoes.png",
+	
+	"images/Liquid_0.png" : "images/tiles/water.png",
+	"images/Liquid_1.png" : "images/tiles/lava.png"
 }

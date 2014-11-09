@@ -30,9 +30,9 @@ public class Utils {
 		return result;
 	}
 	
-	public static Pixmap expand(Pixmap pixmap, int width, int height) {
+	public static Pixmap resizeCanvas(Pixmap pixmap, int width, int height) {
 		Pixmap result = new Pixmap(width, height, pixmap.getFormat());
-		result.drawPixmap(pixmap, 0, 0);
+		result.drawPixmap(pixmap, 0, 0, 0, 0, Math.min(pixmap.getWidth(), width), Math.min(pixmap.getHeight(), height));
 		return result;
 	}
 }

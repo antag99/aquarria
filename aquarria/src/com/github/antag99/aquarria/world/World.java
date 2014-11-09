@@ -23,11 +23,13 @@ public class World {
 	private Array<Entity> entities;
 	
 	private LightManager lightManager;
+	private LiquidManager liquidManager;
 	
 	public World(int width, int height) {
 		this.width = width;
 		this.height = height;
-		this.lightManager = new LightManager(this);
+		lightManager = new LightManager(this);
+		liquidManager = new LiquidManager(this);
 		spawnX = width / 2f;
 		spawnY = height / 2f;
 		tileMatrix = new short[width * height];
@@ -56,13 +58,23 @@ public class World {
 		this.spawnY = spawnY;
 	}
 	
+	public void checkBounds(int x, int y) {
+		if(x < 0 || x >= width) throw new ArrayIndexOutOfBoundsException(x);
+		if(y < 0 || y >= height) throw new ArrayIndexOutOfBoundsException(y);
+	}
+	
+	public boolean inBounds(int x, int y) {
+		return x >= 0 && x < width && y >= 0 && y < height; 
+	}
+	
 	public TileType getTileType(int x, int y) {
+		checkBounds(x, y);
+		
 		return idMapping.get(tileMatrix[y * width + x]);
 	}
 	
 	public void setTileType(int x, int y, TileType type) {
-		if(x < 0 || x >= width || y < 0 || y >= height)
-			throw new IndexOutOfBoundsException();
+		checkBounds(x, y);
 		
 		int id = tileMapping.get(type, -1);
 		if(id == -1) {
@@ -82,10 +94,14 @@ public class World {
 	}
 	
 	public int getSurfaceLevel(int x) {
+		checkBounds(x, 0);
+		
 		return surfaceLevel[x];
 	}
 	
 	public void setSurfaceLevel(int x, int level) {
+		checkBounds(x, 0);
+		
 		surfaceLevel[x] = (short) level;
 	}
 	
@@ -114,7 +130,13 @@ public class World {
 		return lightManager;
 	}
 	
+	public LiquidManager getLiquidManager() {
+		return liquidManager;
+	}
+	
 	public void update(float delta) {
+		liquidManager.update(delta);
+		
 		for(int i = 0; i < entities.size; ++i) {
 			Entity entity = entities.get(i);
 			if(entity.isActive()) {

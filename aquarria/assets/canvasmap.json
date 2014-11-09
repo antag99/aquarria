@@ -5,5 +5,8 @@
 	"images/Player_Shirt.png" : [ 40, 1120 ],
 	"images/Player_Undershirt.png" : [ 40, 1120 ],
 	"images/Player_Pants.png" : [ 40, 1120 ],
-	"images/Player_Shoes.png" : [ 40, 1120 ]
+	"images/Player_Shoes.png" : [ 40, 1120 ],
+	
+	"images/Liquid_0.png" : [ 16, 16 ],
+	"images/Liquid_1.png" : [ 16, 16 ]
 }

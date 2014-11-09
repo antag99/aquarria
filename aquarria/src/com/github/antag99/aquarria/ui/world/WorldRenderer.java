@@ -22,6 +22,7 @@ import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.world.LightManager;
+import com.github.antag99.aquarria.world.LiquidManager;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldView;
 
@@ -31,6 +32,8 @@ public class WorldRenderer extends Widget {
 	private boolean drawEntityBoxes = false;
 	private ShapeRenderer shapeRenderer = null;
 	private TextureRegion lightTexture;
+	private TextureRegion waterTopTexture;
+	private TextureRegion waterFullTexture;
 
 	@SuppressWarnings("rawtypes")
 	private ObjectMap<Class, EntityRenderer> entityRenderers = new ObjectMap<Class, EntityRenderer>();
@@ -47,6 +50,7 @@ public class WorldRenderer extends Widget {
 			entityRenderer.queueAssets(assetManager);
 		}
 		assetManager.load("images/white.png", TextureRegion.class);
+		assetManager.load("images/tiles/water.png", TextureRegion.class);
 	}
 	
 	public void getAssets(AssetManager assetManager) {
@@ -54,6 +58,10 @@ public class WorldRenderer extends Widget {
 			entityRenderer.getAssets(assetManager);
 		}
 		lightTexture = assetManager.get("images/white.png");
+		
+		TextureRegion waterTexture = assetManager.get("images/tiles/water.png");
+		waterTopTexture = new TextureRegion(waterTexture, 0, 0, waterTexture.getRegionWidth(), 4);
+		waterFullTexture = new TextureRegion(waterTexture, 0, 4, waterTexture.getRegionWidth(), waterTexture.getRegionHeight() - 4);
 	}
 	
 	public void addEntityRenderer(EntityRenderer<?, ?> entityRenderer) {
@@ -119,6 +127,27 @@ public class WorldRenderer extends Widget {
 				EntityRenderer entityRenderer = entityRenderers.get(entity.getClass());
 				
 				entityRenderer.renderEntity(batch, entity.getView());
+			}
+		}
+		
+		LiquidManager liquidManager = world.getLiquidManager();
+
+		batch.setColor(1f, 1f, 1f, 0.8f);
+		for(int i = startX; i < endX; ++i) {
+			for(int j = startY; j < endY; ++j) {
+				int liquid = liquidManager.getLiquid(i, j);
+				if(liquid != 0) {
+					float liquidPercentage = liquid / 255f;
+					
+					boolean hasTopLiquid = j < world.getHeight() && liquidManager.getLiquid(i, j + 1) != 0;
+					
+					if(hasTopLiquid) {
+						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage);
+					} else {
+						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage - 0.25f);
+						batch.draw(waterTopTexture, i, j + liquidPercentage - 0.25f, 1f, 0.25f);
+					}
+				}
 			}
 		}
 		

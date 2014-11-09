@@ -15,7 +15,7 @@ import com.github.antag99.aquarria.xnb.XnbTextureExtractor;
 
 public class ContentExtractor {
 	private JsonValue xnbMap;
-	private JsonValue padMap;
+	private JsonValue canvasMap;
 	
 	private FileHandle contentDirectory;
 	private FileHandle outputAssetDirectory;
@@ -24,7 +24,7 @@ public class ContentExtractor {
 		this.contentDirectory = contentDirectory;
 		this.outputAssetDirectory = outputAssetDirectory;
 		xnbMap = new JsonReader().parse(Gdx.files.internal("xnbmap.json"));
-		padMap = new JsonReader().parse(Gdx.files.internal("padmap.json"));
+		canvasMap = new JsonReader().parse(Gdx.files.internal("canvasmap.json"));
 	}
 	
 	public void extract() {
@@ -53,13 +53,13 @@ public class ContentExtractor {
 		}
 		
 		// Some animations are 40x1120, and some 40x1118; fix that.
-		for(JsonValue value : padMap) {
+		for(JsonValue value : canvasMap) {
 			FileHandle file = rawDir.child(value.name);
 			int width = value.asIntArray()[0];
 			int height = value.asIntArray()[1];
 			
 			Pixmap pixmap = new Pixmap(file);
-			Pixmap newPixmap = Utils.expand(pixmap, width, height);
+			Pixmap newPixmap = Utils.resizeCanvas(pixmap, width, height);
 			pixmap.dispose();
 			PixmapIO.writePNG(file, newPixmap);
 			newPixmap.dispose();
