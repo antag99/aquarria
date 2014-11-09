@@ -5,6 +5,7 @@
 	"height" : 28,
 	"maxStack" : 1,
 	"texture" : "images/items/pickaxe.png",
-	"usageDelay" : 0.2,
-	"repeated" : true
+	"usageTime" : 0.3,
+	"consumable" : false,
+	"usageRepeat" : true
 }

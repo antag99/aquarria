@@ -9,7 +9,7 @@ import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.world.World;
 
-public class TileItemType extends UsableItemType {
+public class TileItemType extends ItemType {
 	private String createdTileName;
 	private TileType createdTile = null;
 
@@ -24,7 +24,7 @@ public class TileItemType extends UsableItemType {
 	}
 
 	@Override
-	protected void useItem(PlayerEntity player, Item item, int use) {
+	public boolean useItem(PlayerEntity player, Item item) {
 		if (createdTile == null) {
 			createdTile = TileType.forName(createdTileName);
 		}
@@ -35,8 +35,17 @@ public class TileItemType extends UsableItemType {
 		int tileY = MathUtils.floor(worldFocus.y);
 
 		World world = player.getWorld();
-		world.setTileType(tileX, tileY, createdTile);
-
-		item.setStack(item.getStack() - 1);
+		if(world.getTileType(tileX, tileY) == TileType.air) {
+			world.setTileType(tileX, tileY, createdTile);
+	
+			return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean canUseItem(PlayerEntity player, Item item) {
+		return true;
 	}
 }

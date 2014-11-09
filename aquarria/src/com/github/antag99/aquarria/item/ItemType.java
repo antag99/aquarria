@@ -32,6 +32,11 @@ public class ItemType {
 	private float width;
 	private float height;
 	private String texturePath;
+	private float usageTime;
+	private float usageAnimationTime;
+	private boolean usageRepeat;
+	private boolean consumable;
+	private ItemUsageStyle usageStyle;
 	
 	private TextureRegion texture;
 	
@@ -46,6 +51,11 @@ public class ItemType {
 		width = properties.getFloat("width", 0f);
 		height = properties.getFloat("height", 0f);
 		texturePath = properties.getString("texture", null);
+		usageTime = properties.getFloat("usageTime", 0f);
+		usageAnimationTime = properties.getFloat("usageAnimationTime", usageTime);
+		usageRepeat = properties.getBoolean("usageRepeat", false);
+		consumable = properties.getBoolean("consumable", false);
+		usageStyle = ItemUsageStyle.forName(properties.getString("usageStyle", "swing"));
 		
 		itemTypes.add(this);
 		itemTypesByName.put(internalName, this);
@@ -84,6 +94,26 @@ public class ItemType {
 		return texture;
 	}
 	
+	public float getUsageTime() {
+		return usageTime;
+	}
+	
+	public float getUsageAnimationTime() {
+		return usageAnimationTime;
+	}
+	
+	public boolean getUsageRepeat() {
+		return usageRepeat;
+	}
+	
+	public boolean isConsumable() {
+		return consumable;
+	}
+	
+	public ItemUsageStyle getUsageStyle() {
+		return usageStyle;
+	}
+	
 	public boolean canUseItem(PlayerEntity player, Item item) {
 		return false;
 	}
@@ -92,5 +122,9 @@ public class ItemType {
 	}
 	
 	public void updateUseItem(PlayerEntity player, Item item, float delta) {
+	}
+	
+	public boolean useItem(PlayerEntity player, Item item) {
+		return false;
 	}
 }

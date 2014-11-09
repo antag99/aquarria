@@ -85,7 +85,7 @@ public class PlayerEntity extends Entity {
 		}
 		
 		if(useState == ItemUseState.PRESSED) {
-			if(usedItem.getType().canUseItem(this, usedItem)) {
+			if(!usedItem.isEmpty() && usedItem.getType().canUseItem(this, usedItem)) {
 				useState = ItemUseState.ACTIVE;
 				usedItem.getType().beginUseItem(this, usedItem);
 			}
@@ -94,6 +94,16 @@ public class PlayerEntity extends Entity {
 		if(useState == ItemUseState.ACTIVE || useState == ItemUseState.RELASED) {
 			useTime += delta;
 			usedItem.getType().updateUseItem(this, usedItem, delta);
+			if(useTime % usedItem.getType().getUsageTime() < delta) {
+				if(usedItem.getType().useItem(this, usedItem) && usedItem.getType().isConsumable()) {
+					usedItem.setStack(usedItem.getStack() - 1);
+				}
+				
+				if(usedItem.isEmpty() || !usedItem.getType().getUsageRepeat() || useState == ItemUseState.RELASED) {
+					useState = ItemUseState.NONE;
+					useTime = 0f;
+				}
+			}
 		} else {
 			useTime = 0f;
 		}

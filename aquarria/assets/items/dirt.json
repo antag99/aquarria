@@ -6,6 +6,7 @@
 	"maxStack" : 99,
 	"texture" : "images/items/dirt.png",
 	"createdTile" : "dirt",
-	"usageDelay" : 0.2,
-	"repeated" : true
+	"consumable" : true,
+	"usageTime" : 0.3,
+	"usageRepeat" : true
 }

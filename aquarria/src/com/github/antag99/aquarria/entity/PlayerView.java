@@ -1,7 +1,9 @@
 package com.github.antag99.aquarria.entity;
 
-import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.ui.IngameScreen;
+import com.github.antag99.aquarria.entity.PlayerEntity.ItemUseState;
+import com.github.antag99.aquarria.item.ItemType;
+import com.github.antag99.aquarria.item.ItemUsageStyle;
+
 
 
 public class PlayerView extends EntityView<PlayerEntity> {
@@ -51,31 +53,15 @@ public class PlayerView extends EntityView<PlayerEntity> {
 			bodyFrame = 0;
 		}
 		
-		if(player.getUseTime() != 0f) {
-			float useTime = player.getUseTime();
-			while(useTime > 0.2f) useTime -= 0.2f;
+		if(player.getUseState() == ItemUseState.ACTIVE || player.getUseState() == ItemUseState.RELASED) {
+			ItemType usedItemType = player.getUsedItem().getType();
+			ItemUsageStyle style = usedItemType.getUsageStyle();
+			float usageProgress = (player.getUseTime() % usedItemType.getUsageAnimationTime()) / usedItemType.getUsageAnimationTime();
 			
-			bodyFrame = (int) (useTime * 5f * 4) + 1;
-			useRotation = useTime * 5f * 180f;
-
-			if(useTime < 0.2f * 1f / 4f) {
-				useOffsetX = player.getWidth() - 0.1f;
-				useOffsetY = -(1f - 24f / 56f) + player.getHeight();
-			} else if(useTime < 0.2f * 2f / 4f) {
-				useOffsetX = 0.2f;
-				useOffsetY = player.getHeight() / 2f + 0.5f;
-			} else if(useTime < 0.2f * 3f / 4f) {
-				useOffsetX = 0.1f;
-				useOffsetY = 0.7f;
-			} else {
-				useOffsetX = 0.2f;
-				useOffsetY = 0.3f;
-			}
-			
-			if(player.getDirection() != -1) {
-				useRotation = 360f - useRotation + 90f;
-				useOffsetX = player.getWidth() - useOffsetX;
-			}
+			useOffsetX = style.getUsedItemOffsetX(this, usageProgress);
+			useOffsetY = style.getUsedItemOffsetY(this, usageProgress);
+			useRotation = style.getUsedItemRotation(this, usageProgress);
+			bodyFrame = style.getPlayerBodyFrame(this, usageProgress);
 		}
 	}
 	
