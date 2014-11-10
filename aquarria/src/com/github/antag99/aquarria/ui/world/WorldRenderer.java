@@ -155,7 +155,7 @@ public class WorldRenderer extends Widget {
 				if(liquid != 0) {
 					float liquidPercentage = liquid / 255f;
 					
-					boolean hasTopLiquid = j < world.getHeight() && liquidManager.getLiquid(i, j + 1) != 0;
+					boolean hasTopLiquid = j < world.getHeight() && (liquidManager.getLiquid(i, j + 1) != 0 || (liquid == 255 && world.getTileType(i, j + 1).isSolid()));
 					
 					if(hasTopLiquid) {
 						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage);

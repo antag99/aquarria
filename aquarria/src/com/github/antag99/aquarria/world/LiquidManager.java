@@ -75,7 +75,7 @@ public class LiquidManager {
 	/** @param smooth Whether the liquids between the two tiles should be smoothed to the same amount.
 	 * @return Whether any liquid was moved. */
 	private boolean flow(int srcX, int srcY, int dstX, int dstY, int speed, boolean smooth) {
-		if(!world.getTileType(dstX, dstY).isSolid()) {
+		if(world.inBounds(dstX, dstY) && !world.getTileType(dstX, dstY).isSolid()) {
 			int srcLiquid = getLiquid(srcX, srcY);
 			int dstLiquid = getLiquid(dstX, dstY);
 
