@@ -19,6 +19,7 @@ public class EntityType {
 	private String displayName;
 	private boolean solid;
 	private float weight;
+	private int maxHealth;
 	
 	private float defaultWidth;
 	private float defaultHeight;
@@ -29,6 +30,7 @@ public class EntityType {
 		displayName = value.getString("displayName", "");
 		solid = value.getBoolean("solid", true);
 		weight = value.getFloat("weight", 1f);
+		maxHealth = value.getInt("maxHealth", 0);
 		
 		defaultWidth = value.getFloat("width");
 		defaultHeight = value.getFloat("height");
@@ -50,6 +52,10 @@ public class EntityType {
 	
 	public float getWeight() {
 		return weight;
+	}
+	
+	public int getMaxHealth() {
+		return maxHealth;
 	}
 	
 	public float getDefaultWidth() {

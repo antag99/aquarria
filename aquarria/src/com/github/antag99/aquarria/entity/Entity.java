@@ -19,9 +19,12 @@ public class Entity {
 	
 	private Rectangle tmpRectangle = new Rectangle();
 	
+	private int health;
+	
 	public Entity(EntityType type) {
 		this.type = type;
 		view = createView();
+		health = type.getMaxHealth();
 	}
 	
 	public void update(float delta) {
@@ -43,6 +46,11 @@ public class Entity {
 		float moveY = velocityY * delta * (inWater ? 0.5f : 1f);
 		y += moveY;
 		if(type.isSolid() && inCollision()) {
+			if(velocityY < -50f) {
+				int fallDamage = (int)(-velocityY * 2) - 100;
+				setHealth(Math.max(getHealth() - fallDamage, 0));
+			}
+			
 			y -= moveY;
 			while(!inCollision()) y += Math.signum(moveY) * 0.1f;
 			y -= Math.signum(moveY) * 0.1f;
@@ -186,5 +194,13 @@ public class Entity {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	
+	public int getHealth() {
+		return health;
+	}
+	
+	public void setHealth(int health) {
+		this.health = health;
 	}
 }

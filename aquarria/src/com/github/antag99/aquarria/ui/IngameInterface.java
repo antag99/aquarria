@@ -92,7 +92,7 @@ public class IngameInterface extends Table {
 		manaDisplay.setCountY(20);
 		manaDisplay.setSpacing(2f);
 		
-		healthText = new Label("Life: 400/400", skin, "healthText");
+		healthText = new Label("Life", skin, "healthText");
 		manaText = new Label("Mana", skin, "manaText");
 		
 		rightTable.add(healthText).space(4f);
@@ -142,6 +142,8 @@ public class IngameInterface extends Table {
 	
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
+		healthText.setText("Life: " + player.getHealth() + "/" + player.getType().getMaxHealth());
+		
 		super.draw(batch, parentAlpha);
 		
 		if(!swapItem.isEmpty()) {
