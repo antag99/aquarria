@@ -34,6 +34,8 @@ public class IngameScreen extends AquarriaScreen {
 	
 	private float debugGameSpeed = 1f;
 	private GraphicsDelegate debugGraphics;
+	
+	private boolean debugStage;
 
 	public IngameScreen(Aquarria aquarria) {
 		super(aquarria);
@@ -94,6 +96,11 @@ public class IngameScreen extends AquarriaScreen {
 		
 		if(Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
 			worldRenderer.setDrawEntityBoxes(!worldRenderer.getDrawEntityBoxes());
+		}
+		
+		if(Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
+			debugStage = !debugStage;
+			root.getStage().setDebugAll(debugStage);
 		}
 		
 		if(Gdx.input.isKeyJustPressed(Input.Keys.F7)) {

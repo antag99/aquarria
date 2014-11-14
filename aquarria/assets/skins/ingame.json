@@ -1,6 +1,7 @@
 {
 	"com.badlogic.gdx.graphics.g2d.BitmapFont" : {
-		"stack" : { "file" : "fonts/stackFont.fnt" }
+		"stack" : { "file" : "fonts/stackFont.fnt" },
+		"ui" : { "file" : "fonts/uiFont.fnt" }
 	},
 	
 	"com.github.antag99.aquarria.ui.InventoryDisplay$InventoryDisplayStyle" : {
@@ -12,6 +13,27 @@
 		"inventory" : {
 			"stackFont" : "stack",
 			"slotBackground" : "slot/blue"
+		}
+	},
+	
+	"com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle" : {
+		"hotbarText" : {
+			"font" : "ui"
+		},
+		"healthText" : {
+			"font" : "ui"
+		},
+		"manaText" : {
+			"font" : "ui"
+		}
+	},
+	
+	"com.github.antag99.aquarria.ui.StatusDisplay$StatusDisplayStyle" : {
+		"health" : {
+			"itemTexture" : "heart"
+		},
+		"mana" : {
+			"itemTexture" : "mana"
 		}
 	}
 }

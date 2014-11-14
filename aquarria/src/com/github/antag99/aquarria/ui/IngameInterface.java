@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.IntIntMap;
@@ -15,9 +16,18 @@ import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.item.Item;
 
 public class IngameInterface extends Table {
+	private Table leftTable;
+	private Table rightTable;
+	
 	private InventoryDisplay hotbarDisplay;
 	private InventoryDisplay inventoryDisplay;
 	private int hotbarSelectedIndex = 0;
+	private StatusDisplay healthDisplay;
+	private StatusDisplay manaDisplay;
+	
+	private Label hotbarText;
+	private Label healthText;
+	private Label manaText;
 
 	private Item swapItem;
 	private PlayerEntity player;
@@ -46,17 +56,50 @@ public class IngameInterface extends Table {
 		
 		left();
 		top();
+		pad(4f);
+		
+		leftTable = new Table();
+		leftTable.left().top();
+		rightTable = new Table();
+		rightTable.right().top();
+		
+		add(leftTable).fill().expand();
+		add(rightTable).fill().expand();
+		
+		hotbarText = new Label("Items", skin, "hotbarText");
 		
 		hotbarDisplay = new InventoryDisplay(10, 1, skin, "hotbar");
-		inventoryDisplay = new InventoryDisplay(10, 4, skin, "inventory");
 		hotbarDisplay.setSwapItem(swapItem);
-		inventoryDisplay.setSwapItem(swapItem);
-		
-		add(hotbarDisplay).width(50f * 10).height(50f);
-		row();
-		add(inventoryDisplay).width(50f * 10).height(50f * 4).left();
 		hotbarDisplay.setSelectedIndex(0);
 		
+		inventoryDisplay = new InventoryDisplay(10, 4, skin, "inventory");
+		inventoryDisplay.setSwapItem(swapItem);
+		
+		leftTable.add(hotbarText).left().expandX();
+		leftTable.row();
+		leftTable.add(hotbarDisplay).size(50f * 10, 50f).left().expandX();
+		leftTable.row();
+		leftTable.add(inventoryDisplay).size(50f * 10, 50f * 4).left().expandX();
+		leftTable.row();
+		
+		healthDisplay = new StatusDisplay(skin, "health");
+		healthDisplay.setCountX(10);
+		healthDisplay.setCountY(2);
+		healthDisplay.setSpacing(2f);
+		
+		manaDisplay = new StatusDisplay(skin, "mana");
+		manaDisplay.setCountX(1);
+		manaDisplay.setCountY(20);
+		manaDisplay.setSpacing(2f);
+		
+		healthText = new Label("Life: 400/400", skin, "healthText");
+		manaText = new Label("Mana", skin, "manaText");
+		
+		rightTable.add(healthText).space(4f);
+		rightTable.add(manaText).right().space(4f);
+		rightTable.row();
+		rightTable.add(healthDisplay).size(22f * 10, 22f * 2).right().top();
+		rightTable.add(manaDisplay).size(22f, 24f * 20).center().top();
 		
 		addListener(new InputListener() {
 			@Override

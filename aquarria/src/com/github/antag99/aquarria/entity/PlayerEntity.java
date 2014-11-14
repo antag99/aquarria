@@ -19,7 +19,8 @@ public class PlayerEntity extends Entity {
 	
 	private boolean usingItem;
 	private boolean repeatUsingItem;
-
+	
+	
 	public PlayerEntity() {
 		super(EntityType.player);
 		
