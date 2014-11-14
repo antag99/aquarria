@@ -172,6 +172,8 @@ public class WorldRenderer extends Widget {
 	private void drawEntities(Batch batch, World world, int startX, int startY, int endX, int endY) {
 		for (Entity entity : world.getEntities()) {
 			if(entity.isActive()) {
+				batch.setColor(Color.WHITE);
+				
 				EntityRenderer entityRenderer = entityRenderers.get(entity.getClass());
 				
 				entityRenderer.renderEntity(batch, entity.getView());
@@ -180,6 +182,8 @@ public class WorldRenderer extends Widget {
 	}
 	
 	private void drawTiles(Batch batch, World world, int startX, int startY, int endX, int endY) {
+		batch.setColor(Color.WHITE);
+		
 		GridPoint2 frame = new GridPoint2();
 
 		for (int i = startX; i < endX; ++i) {
