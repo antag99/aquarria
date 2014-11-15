@@ -143,6 +143,16 @@ public class IngameInterface extends Table {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		healthText.setText("Life: " + player.getHealth() + "/" + player.getType().getMaxHealth());
+		if(hotbarDisplay.getSelectedIndex() == -1) {
+			hotbarText.setText("Inventory");
+		} else {
+			Item heldItem = player.getHotbar().getItem(hotbarDisplay.getSelectedIndex());
+			if(heldItem.isEmpty()) {
+				hotbarText.setText("Items");
+			} else {
+				hotbarText.setText(heldItem.getType().getDisplayName());
+			}
+		}
 		
 		super.draw(batch, parentAlpha);
 		
