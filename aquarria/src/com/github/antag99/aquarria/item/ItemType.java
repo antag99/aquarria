@@ -6,19 +6,16 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
+import com.github.antag99.aquarria.AbstractType;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 
-public class ItemType {
-	private static Array<ItemType> itemTypes = new Array<ItemType>();
-	private static ObjectMap<String, ItemType> itemTypesByName = new ObjectMap<String, ItemType>();
-	
+public class ItemType extends AbstractType {
 	public static Array<ItemType> getItemTypes() {
-		return itemTypes;
+		return AbstractType.getTypes(ItemType.class);
 	}
 	
 	public static ItemType forName(String internalName) {
-		return itemTypesByName.get(internalName);
+		return AbstractType.forName(ItemType.class, internalName);
 	}
 	
 	public static final ItemType air = new ItemType("items/air.json");
@@ -45,7 +42,8 @@ public class ItemType {
 	}
 	
 	public ItemType(JsonValue properties) {
-		internalName = properties.getString("internalName");
+		super(properties.getString("internalName"));
+		
 		displayName = properties.getString("displayName");
 		maxStack = properties.getInt("maxStack", 1);
 		width = properties.getFloat("width", 0f);
@@ -56,9 +54,6 @@ public class ItemType {
 		usageRepeat = properties.getBoolean("usageRepeat", false);
 		consumable = properties.getBoolean("consumable", false);
 		usageStyle = ItemUsageStyle.forName(properties.getString("usageStyle", "swing"));
-		
-		itemTypes.add(this);
-		itemTypesByName.put(internalName, this);
 	}
 	
 	public String getInternalName() {
@@ -81,13 +76,23 @@ public class ItemType {
 		return maxStack;
 	}
 	
-	public String getTexturePath() {
-		return texturePath;
+	@Override
+	protected void queueAssets(AssetManager assetManager) {
+		if(texturePath != null) {
+			assetManager.load(texturePath, TextureRegion.class);
+		}
 	}
 	
-	public void getTexture(AssetManager assetManager) {
-		if(texturePath != null)
+	@Override
+	protected void getAssets(AssetManager assetManager) {
+		if(texturePath != null) {
 			texture = assetManager.get(texturePath);
+		}
+	}
+	
+	@Override
+	protected Class<? extends AbstractType> getTypeClass() {
+		return ItemType.class;
 	}
 	
 	public TextureRegion getTexture() {

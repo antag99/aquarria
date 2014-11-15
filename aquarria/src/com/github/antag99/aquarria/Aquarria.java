@@ -12,8 +12,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.github.antag99.aquarria.entity.EntityType;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.ui.IngameScreen;
 import com.github.antag99.aquarria.xnb.Steam;
 
@@ -103,23 +105,19 @@ public class Aquarria extends Game {
 		
 		System.out.print("Loading assets... ");
 		
-		for(TileType tileType : TileType.getTileTypes())
-			if(tileType.getTexturePath() != null)
-				assetManager.load(tileType.getTexturePath(), TextureRegion.class);
+		/* HACK HACK */
+		Utils.forceLoad(ItemType.class);
+		Utils.forceLoad(TileType.class);
+		Utils.forceLoad(WallType.class);
+		Utils.forceLoad(EntityType.class);
 		
-		for(ItemType itemType : ItemType.getItemTypes())
-			if(itemType.getTexturePath() != null)
-				assetManager.load(itemType.getTexturePath(), TextureRegion.class);
+		AbstractType.queueAll(assetManager);
 		
 		ingameScreen.load();
 		
 		assetManager.finishLoading();
-		
-		for(TileType tileType : TileType.getTileTypes())
-			tileType.getTexture(assetManager);
-		
-		for(ItemType itemType : ItemType.getItemTypes())
-			itemType.getTexture(assetManager);
+
+		AbstractType.getAll(assetManager);
 		
 		ingameScreen.initialize();
 		

@@ -72,4 +72,16 @@ public class Utils {
 		
 		return result;
 	}
+	
+	public static void forceLoad(Class<?> clazz) {
+		if(clazz == null) {
+			throw new NullPointerException();
+		}
+		
+		try {
+			Class.forName(clazz.getName(), true, clazz.getClassLoader());
+		} catch(Exception ex) {
+			throw new AssertionError(ex);
+		}
+	}
 }

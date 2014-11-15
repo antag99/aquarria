@@ -6,19 +6,16 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
+import com.github.antag99.aquarria.AbstractType;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 
-public class TileType {
-	private static Array<TileType> tileTypes = new Array<TileType>();
-	private static ObjectMap<String, TileType> tileTypesByName = new ObjectMap<String, TileType>();
-	
+public class TileType extends AbstractType {
 	public static Array<TileType> getTileTypes() {
-		return tileTypes;
+		return AbstractType.getTypes(TileType.class);
 	}
 	
 	public static TileType forName(String internalName) {
-		return tileTypesByName.get(internalName);
+		return AbstractType.forName(TileType.class, internalName);
 	}
 	
 	public static final TileType air = new TileType("tiles/air.json");
@@ -26,7 +23,6 @@ public class TileType {
 	public static final TileType stone = new DropTileType("tiles/stone.json");
 	public static final TileType grass = new DropTileType("tiles/grass.json");
 
-	private String internalName;
 	private String displayName;
 	private boolean solid;
 	private String texturePath;
@@ -38,20 +34,14 @@ public class TileType {
 	}
 	
 	public TileType(JsonValue properties) {
-		internalName = properties.getString("internalName");
+		super(properties.getString("internalName"));
+		
 		displayName = properties.getString("displayName", "");
 		texturePath = properties.getString("texture", null);
 		solid = properties.getBoolean("solid", true);
-		
-		tileTypes.add(this);
-		tileTypesByName.put(internalName, this);
 	}
 	
 	public void destroyed(PlayerEntity player, int x, int y) {
-	}
-
-	public String getInternalName() {
-		return internalName;
 	}
 
 	public String getDisplayName() {
@@ -62,17 +52,26 @@ public class TileType {
 		return solid;
 	}
 	
-	public String getTexturePath() {
-		return texturePath;
+	public TextureRegion getTexture() {
+		return texture;
 	}
 	
-	public void getTexture(AssetManager assetManager) {
+	@Override
+	protected void queueAssets(AssetManager assetManager) {
+		if(texturePath != null) {
+			assetManager.load(texturePath, TextureRegion.class);
+		}
+	}
+	
+	@Override
+	protected void getAssets(AssetManager assetManager) {
 		if(texturePath != null) {
 			texture = assetManager.get(texturePath);
 		}
 	}
 	
-	public TextureRegion getTexture() {
-		return texture;
+	@Override
+	protected Class<? extends AbstractType> getTypeClass() {
+		return TileType.class;
 	}
 }
