@@ -20,6 +20,7 @@ import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.FrameStyle.Frame;
 import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
 import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.world.LightManager;
 import com.github.antag99.aquarria.world.LiquidManager;
 import com.github.antag99.aquarria.world.World;
@@ -103,9 +104,10 @@ public class WorldRenderer extends Widget {
 		int endX = clamp(ceil(cam.position.x + margin), 0, world.getWidth());
 		int endY = clamp(ceil(cam.position.y + margin), 0, world.getHeight());
 
+		drawWalls(batch, world, startX, startY, endX, endY);
+		drawTiles(batch, world, startX, startY, endX, endY);
 		drawEntities(batch, world, startX, startY, endX, endY);
 		drawLiquid(batch, world, startX, startY, endX, endY);
-		drawTiles(batch, world, startX, startY, endX, endY);
 		drawLight(batch, world, startX, startY, endX, endY);
 		
 		boolean useShapeRenderer = drawEntityBoxes || drawTileGrid;
@@ -192,6 +194,23 @@ public class WorldRenderer extends Widget {
 					Frame frame = FrameStyle.block.findFrame(world, i, j);
 					TextureRegion texture = skin.getFrameTexture(frame);
 					batch.draw(texture, i, j, 1f, 1f);
+				}
+			}
+		}
+	}
+	
+	private void drawWalls(Batch batch, World world, int startX, int startY, int endX, int endY) {
+		batch.setColor(Color.WHITE);
+
+		for (int i = startX; i < endX; ++i) {
+			for (int j = startY; j < endY; ++j) {
+				WallType type = world.getWallType(i, j);
+				FrameSkin skin = type.getSkin();
+
+				if (skin != null) {
+					Frame frame = FrameStyle.wall.findFrame(world, i, j);
+					TextureRegion texture = skin.getFrameTexture(frame);
+					batch.draw(texture, i - 0.5f, j - 0.5f, 2f, 2f);
 				}
 			}
 		}

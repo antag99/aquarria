@@ -7,5 +7,12 @@
 	},
 	"images/tiles/stone.png" : {
 		"template" : "tiletemplate.atlas"
+	},
+	
+	"images/walls/dirt.png" : {
+		"template" : "walltemplate.atlas"
+	},
+	"images/walls/stone.png" : {
+		"template" : "walltemplate.atlas"
 	}
 }

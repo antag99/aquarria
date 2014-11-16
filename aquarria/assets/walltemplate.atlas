@@ -1,0 +1,118 @@
+
+%imageFile%
+size: %imageWidth%,%imageHeight%
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+leftEdge
+  rotate: false
+  xy: 0, 0
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+topEdge
+  rotate: false
+  xy: 36, 0
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+rightEdge
+  rotate: false
+  xy: 144, 0
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+bottomEdge
+  rotate: false
+  xy: 36, 72
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+full
+  rotate: false
+  xy: 36, 36
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+verticalStrip
+  rotate: false
+  xy: 180, 0
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+horizontalStrip
+  rotate: false
+  xy: 216, 144
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+bottomStrip
+  rotate: false
+  xy: 216, 0
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+topStrip
+  rotate: false
+  xy: 216, 108
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+leftStrip
+  rotate: false
+  xy: 432, 0
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+rightStrip
+  rotate: false
+  xy: 324, 0
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+topLeftCorner
+  rotate: false
+  xy: 0, 108
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+topRightCorner
+  rotate: false
+  xy: 36, 108
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+bottomLeftCorner
+  rotate: false
+  xy: 0, 144
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+bottomRightCorner
+  rotate: false
+  xy: 36, 144
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1
+empty
+  rotate: false
+  xy: 324, 108
+  size: 32, 32
+  orig: 0, 0
+  offset: 0, 0
+  index: -1

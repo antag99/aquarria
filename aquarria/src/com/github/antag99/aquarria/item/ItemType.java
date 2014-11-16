@@ -23,6 +23,9 @@ public class ItemType extends AbstractType {
 	public static final ItemType stone = new TileItemType("items/stone.json");
 	public static final ItemType pickaxe = new PickaxeItemType("items/pickaxe.json");
 	
+	public static final ItemType dirtWall = new WallItemType("items/dirtWall.json");
+	public static final ItemType stoneWall = new WallItemType("items/stoneWall.json");
+	
 	private String internalName;
 	private String displayName;
 	private int maxStack;

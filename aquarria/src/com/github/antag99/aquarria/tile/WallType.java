@@ -1,12 +1,14 @@
 package com.github.antag99.aquarria.tile;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.AbstractType;
+import com.github.antag99.aquarria.entity.PlayerEntity;
+import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
 
 public class WallType extends AbstractType {
 	public static Array<WallType> getWallTypes() {
@@ -17,41 +19,48 @@ public class WallType extends AbstractType {
 		return AbstractType.forName(WallType.class, internalName);
 	}
 	
+	public static final WallType air = new WallType("walls/air.json");
+	public static final WallType dirt = new WallType("walls/dirt.json");
+	public static final WallType stone = new WallType("walls/stone.json");
+	
 	private String displayName;
-	private String texturePath;
+	private String skinPath;
 	
-	private TextureRegion texture;
+	private FrameSkin skin;
 	
-	public WallType(FileHandle file) {
-		this(new JsonReader().parse(file));
+	public WallType(String path) {
+		this(new JsonReader().parse(Gdx.files.internal(path)));
 	}
 	
 	public WallType(JsonValue properties) {
 		super(properties.getString("internalName"));
 		
 		displayName = properties.getString("displayName", "");
-		texturePath = properties.getString("texturePath", null);
+		skinPath = properties.getString("skin", null);
 	}
 	
 	public String getDisplayName() {
 		return displayName;
 	}
 	
-	public TextureRegion getTexture() {
-		return texture;
+	public FrameSkin getSkin() {
+		return skin;
+	}
+
+	public void destroyed(PlayerEntity player, int x, int y) {
 	}
 	
 	@Override
 	protected void queueAssets(AssetManager assetManager) {
-		if(texturePath != null) {
-			assetManager.load(texturePath, TextureRegion.class);
+		if(skinPath != null) {
+			assetManager.load(skinPath, TextureAtlas.class);
 		}
 	}
 	
 	@Override
 	protected void getAssets(AssetManager assetManager) {
-		if(texturePath != null) {
-			texture = assetManager.get(texturePath);
+		if(skinPath != null) {
+			skin = new FrameSkin(assetManager.get(skinPath, TextureAtlas.class));
 		}
 	}
 	

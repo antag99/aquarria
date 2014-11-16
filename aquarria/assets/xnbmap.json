@@ -3,9 +3,15 @@
 	"images/Tiles_1.png" : "images/tiles/stone.png",
 	"images/Tiles_2.png" : "images/tiles/grass.png",
 	
+	"images/Wall_2.png" : "images/walls/dirt.png",
+	"images/Wall_1.png" : "images/walls/stone.png",
+	
 	"images/Item_1.png" : "images/items/pickaxe.png",
 	"images/Item_2.png" : "images/items/dirt.png",
 	"images/Item_3.png" : "images/items/stone.png",
+	
+	"images/Item_30.png" : "images/items/dirtWall.png",
+	"images/Item_26.png" : "images/items/stoneWall.png",
 	
 	"images/Background_0.png" : "images/ui/background/sky.png",
 	"images/Background_1.png" : "images/ui/background/dirtEdge.png",

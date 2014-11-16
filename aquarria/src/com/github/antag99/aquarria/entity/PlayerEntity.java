@@ -29,6 +29,8 @@ public class PlayerEntity extends Entity {
 		hotbar.addItem(new Item(ItemType.pickaxe));
 		hotbar.addItem(new Item(ItemType.dirt, ItemType.dirt.getMaxStack()));
 		hotbar.addItem(new Item(ItemType.stone, ItemType.stone.getMaxStack()));
+		hotbar.addItem(new Item(ItemType.dirtWall, ItemType.dirtWall.getMaxStack()));
+		hotbar.addItem(new Item(ItemType.stoneWall, ItemType.stoneWall.getMaxStack()));
 	}
 	
 	@Override
