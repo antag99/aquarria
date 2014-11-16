@@ -8,6 +8,7 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.xnb.XnbExtractor;
 import com.github.antag99.aquarria.xnb.XnbFontExtractor;
 import com.github.antag99.aquarria.xnb.XnbSoundExtractor;
@@ -16,6 +17,7 @@ import com.github.antag99.aquarria.xnb.XnbTextureExtractor;
 public class ContentExtractor {
 	private JsonValue xnbMap;
 	private JsonValue canvasMap;
+	private JsonValue atlases;
 	
 	private FileHandle contentDirectory;
 	private FileHandle outputAssetDirectory;
@@ -25,6 +27,7 @@ public class ContentExtractor {
 		this.outputAssetDirectory = outputAssetDirectory;
 		xnbMap = new JsonReader().parse(Gdx.files.internal("xnbmap.json"));
 		canvasMap = new JsonReader().parse(Gdx.files.internal("canvasmap.json"));
+		atlases = new JsonReader().parse(Gdx.files.internal("atlases.json"));
 	}
 	
 	public void extract() {
@@ -71,6 +74,24 @@ public class ContentExtractor {
 			FileHandle src = rawDir.child(value.name);
 			FileHandle dest = outputAssetDirectory.child(value.asString());
 			src.moveTo(dest);
+		}
+		
+		// Create texture atlases for tile spritesheets
+		for(JsonValue value : atlases) {
+			String atlasImagePath = value.name;
+			String templatePath = value.getString("template");
+			
+			String template = Gdx.files.internal(templatePath).readString();
+			FileHandle atlasImageFile = outputAssetDirectory.child(atlasImagePath);
+			FileHandle atlasDataFile = atlasImageFile.sibling(atlasImageFile.nameWithoutExtension() + ".atlas");
+			
+			Pixmap pixmap = new Pixmap(atlasImageFile);
+			ObjectMap<String, String> replacements = new ObjectMap<String, String>();
+			replacements.put("imageFile", atlasImageFile.name());
+			replacements.put("imageWidth", Integer.toString(pixmap.getWidth()));
+			replacements.put("imageHeight", Integer.toString(pixmap.getHeight()));
+			
+			atlasDataFile.writeString(Utils.replaceFormat(template, replacements, null), false);
 		}
 		
 		// Create texture atlas for all UI images

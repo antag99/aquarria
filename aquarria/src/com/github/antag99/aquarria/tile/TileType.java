@@ -2,12 +2,13 @@ package com.github.antag99.aquarria.tile;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.AbstractType;
 import com.github.antag99.aquarria.entity.PlayerEntity;
+import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
 
 public class TileType extends AbstractType {
 	public static Array<TileType> getTileTypes() {
@@ -25,22 +26,21 @@ public class TileType extends AbstractType {
 
 	private String displayName;
 	private boolean solid;
-	private String texturePath;
-	
-	private TextureRegion texture;
+	private String skinPath;
+	private FrameSkin skin;
 
 	public TileType(String path) {
 		this(new JsonReader().parse(Gdx.files.internal(path)));
 	}
-	
+
 	public TileType(JsonValue properties) {
 		super(properties.getString("internalName"));
 		
 		displayName = properties.getString("displayName", "");
-		texturePath = properties.getString("texture", null);
+		skinPath = properties.getString("skin", null);
 		solid = properties.getBoolean("solid", true);
 	}
-	
+
 	public void destroyed(PlayerEntity player, int x, int y) {
 	}
 
@@ -52,21 +52,21 @@ public class TileType extends AbstractType {
 		return solid;
 	}
 	
-	public TextureRegion getTexture() {
-		return texture;
+	public FrameSkin getSkin() {
+		return skin;
 	}
 	
 	@Override
 	protected void queueAssets(AssetManager assetManager) {
-		if(texturePath != null) {
-			assetManager.load(texturePath, TextureRegion.class);
+		if(skinPath != null) {
+			assetManager.load(skinPath, TextureAtlas.class);
 		}
 	}
 	
 	@Override
 	protected void getAssets(AssetManager assetManager) {
-		if(texturePath != null) {
-			texture = assetManager.get(texturePath);
+		if(skinPath != null) {
+			skin = new FrameSkin(assetManager.get(skinPath, TextureAtlas.class));
 		}
 	}
 	

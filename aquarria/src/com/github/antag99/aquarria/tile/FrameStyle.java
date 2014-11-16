@@ -1,25 +1,57 @@
 package com.github.antag99.aquarria.tile;
 
-import java.util.Random;
-
-import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.github.antag99.aquarria.AbstractType;
 import com.github.antag99.aquarria.world.World;
 
-public abstract class FrameStyle {
+public abstract class FrameStyle extends AbstractType {
+	/** Defines a frame, without duplicates (For example, the different bottom-left corner textures are not handled in framing logic). */
+	public static class Frame {
+		// Shared frame instances
+		public static final Frame leftEdge = new Frame("leftEdge");
+		public static final Frame topEdge = new Frame("topEdge");
+		public static final Frame rightEdge = new Frame("rightEdge");
+		public static final Frame bottomEdge = new Frame("bottomEdge");
+		
+		public static final Frame full = new Frame("full");
+		public static final Frame empty = new Frame("empty");
+		
+		public static final Frame verticalStrip = new Frame("verticalStrip");
+		public static final Frame horizontalStrip = new Frame("horizontalStrip");
+		public static final Frame bottomStrip = new Frame("bottomStrip");
+		public static final Frame topStrip = new Frame("topStrip");
+		public static final Frame leftStrip = new Frame("leftStrip");
+		public static final Frame rightStrip = new Frame("rightStrip");
+		
+		public static final Frame topLeftCorner = new Frame("topLeftCorner");
+		public static final Frame topRightCorner = new Frame("topRightCorner");
+		public static final Frame bottomLeftCorner = new Frame("bottomLeftCorner");
+		public static final Frame bottomRightCorner = new Frame("bottomRightCorner");
+		
+		private String name;
+		
+		public Frame(String name) {
+			this.name = name;
+		}
+		
+		public String getName() {
+			return name;
+		}
+	}
 	
-	
-	public abstract void findFrame(TileType type, int x, int y, World world, Random random, GridPoint2 frame);
-	
-	public static final FrameStyle defaultFrameStyle = new FrameStyle() {
+	public static final FrameStyle block = new FrameStyle("block") {
 		@Override
-		public void findFrame(TileType type, int x, int y, World world, Random random, GridPoint2 frame) {
+		public Frame findFrame(World world, int x, int y) {
+			TileType type = world.getTileType(x, y);
+			
 			TileType top = y + 1 < world.getHeight() ? world.getTileType(x, y + 1) : type;
 			TileType right = x + 1 < world.getWidth() ? world.getTileType(x + 1, y) : type;
 			TileType bottom = y > 0 ? world.getTileType(x, y - 1) : type;
 			TileType left = x > 0 ? world.getTileType(x - 1, y) : type;
-			
-			frame.x = 1;
-			frame.y = 1;
 
 			// TODO: Implement the different variations
 			
@@ -43,14 +75,12 @@ public abstract class FrameStyle {
 							// -
 							//- -
 							// -
-							frame.x = 9;
-							frame.y = 3;
+							return Frame.empty;
 						} else {
 							// -
 							//X -
 							// -
-							frame.x = 12;
-							frame.y = 0;
+							return Frame.leftStrip;
 						}
 					} else {
 						// -
@@ -60,14 +90,12 @@ public abstract class FrameStyle {
 							// -
 							//- -
 							// X
-							frame.x = 6;
-							frame.y = 0;
+							return Frame.bottomStrip;
 						} else {
 							// -
 							//X -
 							// X
-							frame.x = 1;
-							frame.y = 3;
+							return Frame.topRightCorner;
 						}
 					}
 				} else {
@@ -82,14 +110,12 @@ public abstract class FrameStyle {
 							// -
 							//- X
 							// -
-							frame.x = 9;
-							frame.y = 0;
+							return Frame.rightStrip;
 						} else {
 							// -
 							//X X
 							// -
-							frame.x = 6;
-							frame.y = 4;
+							return Frame.horizontalStrip;
 						}
 					} else {
 						// -
@@ -99,14 +125,12 @@ public abstract class FrameStyle {
 							// -
 							//- X
 							// X
-							frame.x = 0;
-							frame.y = 3;
+							return Frame.topLeftCorner;
 						} else {
 							// -
 							//X X
 							// X
-							frame.x = 1;
-							frame.y = 0;
+							return Frame.topEdge;
 						}
 					}
 				}
@@ -126,14 +150,12 @@ public abstract class FrameStyle {
 							// X
 							//- -
 							// -
-							frame.x = 6;
-							frame.y = 3;
+							return Frame.topStrip;
 						} else {
 							// X
 							//X -
 							// -
-							frame.x = 1;
-							frame.y = 4;
+							return Frame.bottomRightCorner;
 						}
 					} else {
 						// X
@@ -143,14 +165,12 @@ public abstract class FrameStyle {
 							// X
 							//- -
 							// X
-							frame.x = 5;
-							frame.y = 0;
+							return Frame.verticalStrip;
 						} else {
 							// X
 							//X -
 							// X
-							frame.x = 4;
-							frame.y = 0;
+							return Frame.rightEdge;
 						}
 					}
 				} else {
@@ -165,14 +185,12 @@ public abstract class FrameStyle {
 							// X
 							//- X
 							// -
-							frame.x = 0;
-							frame.y = 4;
+							return Frame.bottomLeftCorner;
 						} else {
 							// X
 							//X X
 							// -
-							frame.x = 1;
-							frame.y = 2;
+							return Frame.bottomEdge;
 						}
 					} else {
 						// X
@@ -182,18 +200,48 @@ public abstract class FrameStyle {
 							// X
 							//- X
 							// X
-							frame.x = 0;
-							frame.y = 0;
+							return Frame.leftEdge;
 						} else {
 							// X
 							//X X
 							// X
-							frame.x = 1;
-							frame.y = 1;
+							return Frame.full;
 						}
 					}
 				}
 			}
 		}
 	};
+	
+	/** Provides the textures for a specific set of frames */
+	public static class FrameSkin {
+		private TextureAtlas atlas;
+		private ObjectMap<Frame, TextureRegion[]> cache;
+		
+		public FrameSkin(TextureAtlas atlas) {
+			this.atlas = atlas;
+			cache = new ObjectMap<>();
+		}
+		
+		public TextureRegion getFrameTexture(Frame frame) {
+			return getFrameTextures(frame)[0];
+		}
+		
+		public TextureRegion[] getFrameTextures(Frame frame) {
+			TextureRegion[] result = cache.get(frame);
+			if(result == null) {
+				Array<AtlasRegion> regions = atlas.findRegions(frame.name);
+				result = regions.toArray(TextureRegion.class);
+				cache.put(frame, result);
+			}
+			return result;
+		}
+	}
+	
+	public FrameStyle(String internalName) {
+		super(internalName);
+	}
+	
+	/** Finds the frame for the tile at the specified position */
+	public abstract Frame findFrame(World world, int x, int y);
 }

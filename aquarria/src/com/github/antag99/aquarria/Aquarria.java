@@ -8,6 +8,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
@@ -50,10 +51,14 @@ public class Aquarria extends Game {
 		resolver.addResolver(internalFiles);
 		resolver.addResolver(terrariaFiles);
 		
-		TextureRegionLoader textureRegionLoader = new TextureRegionLoader(resolver, 2048, 2048);
-		
 		assetManager = new AssetManager(resolver);
+		
+		TextureRegionLoader textureRegionLoader = new TextureRegionLoader(resolver, 2048, 2048);
+		// Replace libgdx's default TextureAtlasLoader
+		TextureAtlasLoader textureAtlasLoader = new TextureAtlasLoader(resolver, 2048, 2048);
+		
 		assetManager.setLoader(TextureRegion.class, textureRegionLoader);
+		assetManager.setLoader(TextureAtlas.class, textureAtlasLoader);
 		
 		configFile = Gdx.files.local("aquarria.json");
 		if(configFile.exists()) {

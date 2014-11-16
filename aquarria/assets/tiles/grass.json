@@ -2,6 +2,6 @@
 	"internalName" : "grass",
 	"displayName" : "Grass",
 	"solid" : true,
-	"texture" : "images/tiles/grass.png",
+	"skin" : "images/tiles/grass.atlas",
 	"drop" : "dirt"
 }

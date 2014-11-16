@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.ObjectMap;
 
 public class Utils {
 	public static TextureRegion[] splitVertically(TextureRegion target, int count) {
@@ -83,5 +84,48 @@ public class Utils {
 		} catch(Exception ex) {
 			throw new AssertionError(ex);
 		}
+	}
+	
+	public static String replaceFormat(String formatString, ObjectMap<String, String> replacements, String defaultReplacement) {
+		StringBuilder result = new StringBuilder();
+		StringBuilder replacementName = new StringBuilder();
+		boolean inFormat = false;
+		
+		for(int i = 0; i < formatString.length(); ++i) {
+			char ch = formatString.charAt(i);
+			if(ch == '%') {
+				if(inFormat) {
+					if(replacementName.length() == 0) {
+						result.append('%');
+					} else {
+						String replacementNameAsString = replacementName.toString();
+						String replacement = replacements.get(replacementNameAsString);
+						if(replacement == null) {
+							if(defaultReplacement == null) {
+								throw new RuntimeException("No replacement for " + replacementNameAsString);
+							} else {
+								replacement = defaultReplacement;
+							}
+						}
+						result.append(replacement);
+						replacementName.setLength(0);
+					}
+				}
+				
+				inFormat = !inFormat;
+			} else {
+				if(inFormat) {
+					replacementName.append(ch);
+				} else {
+					result.append(ch);
+				}
+			}
+		}
+		
+		if(inFormat) {
+			throw new RuntimeException("Unended format");
+		}
+		
+		return result.toString();
 	}
 }

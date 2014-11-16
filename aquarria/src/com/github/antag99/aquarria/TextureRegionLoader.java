@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
+/** Loads images from files and packs them into a texture atlas */
 public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion,
 		TextureRegionLoader.TextureRegionLoaderParameters> implements Disposable {
 	
@@ -48,6 +49,7 @@ public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion,
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Array<AssetDescriptor> getDependencies(String path, FileHandle file, TextureRegionLoaderParameters param) {
 		return null;
 	}
@@ -64,6 +66,14 @@ public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion,
 	
 	public PixmapPacker getPacker() {
 		return packer;
+	}
+	
+	public int getPageWidth() {
+		return pageWidth;
+	}
+	
+	public int getPageHeight() {
+		return pageHeight;
 	}
 
 	public static class TextureRegionLoaderParameters extends AssetLoaderParameters<TextureRegion> {

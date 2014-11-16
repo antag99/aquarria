@@ -7,19 +7,18 @@ import static com.badlogic.gdx.math.MathUtils.floor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.tile.FrameStyle;
+import com.github.antag99.aquarria.tile.FrameStyle.Frame;
+import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.world.LightManager;
 import com.github.antag99.aquarria.world.LiquidManager;
@@ -183,20 +182,16 @@ public class WorldRenderer extends Widget {
 	
 	private void drawTiles(Batch batch, World world, int startX, int startY, int endX, int endY) {
 		batch.setColor(Color.WHITE);
-		
-		GridPoint2 frame = new GridPoint2();
 
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
 				TileType type = world.getTileType(i, j);
-				TextureRegion texture = type.getTexture();
+				FrameSkin skin = type.getSkin();
 
-				if (texture != null) {
-					FrameStyle.defaultFrameStyle.findFrame(type, i, j, world, MathUtils.random, frame);
-					int srcX = texture.getRegionX() + frame.x * 18;
-					int srcY = texture.getRegionY() + frame.y * 18;
-					Texture srcTexture = texture.getTexture();
-					batch.draw(srcTexture, i, j, 1f, 1f, srcX, srcY, 16, 16, false, false);
+				if (skin != null) {
+					Frame frame = FrameStyle.block.findFrame(world, i, j);
+					TextureRegion texture = skin.getFrameTexture(frame);
+					batch.draw(texture, i, j, 1f, 1f);
 				}
 			}
 		}
