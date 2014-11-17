@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.math.MathUtils;
 import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.tile.WallType;
 import com.sudoplay.joise.module.Module;
 import com.sudoplay.joise.module.ModuleBasisFunction.BasisType;
 import com.sudoplay.joise.module.ModuleBasisFunction.InterpolationType;
@@ -122,6 +123,15 @@ public class WorldGenerator {
 			}
 		}
 
+		// Place dirt walls close to the surface
+		for(int i = 0; i < world.getWidth(); ++i) {
+			int surfaceLevel = world.getSurfaceLevel(i);
+			// Offset by -2; don't place walls behind grass blocks
+			for(int j = surfaceLevel - 20; j < surfaceLevel - 2; ++j) {
+				world.setWallType(i, j, WallType.dirt);
+			}
+		}
+
 		// Grassify the surface
 		for(int i = 0; i < world.getWidth(); ++i) {
 			int surfaceLevel = world.getSurfaceLevel(i);
@@ -129,7 +139,7 @@ public class WorldGenerator {
 				world.setTileType(i, surfaceLevel - 1, TileType.grass);
 			}
 		}
-
+		
 		// Set the spawnpoint
 		world.setSpawnX(world.getWidth() / 2);
 		world.setSpawnY(Math.max(world.getSurfaceLevel((int) world.getSpawnX()),
