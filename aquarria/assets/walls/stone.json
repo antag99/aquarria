@@ -1,5 +1,6 @@
 {
 	"internalName" : "stone",
 	"displayName" : "Stone",
-	"skin" : "images/walls/stone.atlas"
+	"skin" : "images/walls/stone.atlas",
+	"drop" : "stoneWall"
 }

@@ -20,8 +20,8 @@ public class WallType extends AbstractType {
 	}
 	
 	public static final WallType air = new WallType("walls/air.json");
-	public static final WallType dirt = new WallType("walls/dirt.json");
-	public static final WallType stone = new WallType("walls/stone.json");
+	public static final WallType dirt = new DropWallType("walls/dirt.json");
+	public static final WallType stone = new DropWallType("walls/stone.json");
 	
 	private String displayName;
 	private String skinPath;

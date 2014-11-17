@@ -1,0 +1,11 @@
+{
+	"internalName" : "hammer",
+	"displayName" : "Hammer",
+	"width" : 32,
+	"height" : 32,
+	"maxStack" : 1,
+	"texture" : "images/items/hammer.png",
+	"usageTime" : 0.3,
+	"consumable" : false,
+	"usageRepeat" : true
+}

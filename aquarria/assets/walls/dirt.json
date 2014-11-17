@@ -1,5 +1,6 @@
 {
 	"internalName" : "dirt",
 	"displayName" : "Dirt",
-	"skin" : "images/walls/dirt.atlas"
+	"skin" : "images/walls/dirt.atlas",
+	"drop" : "dirtWall"
 }
