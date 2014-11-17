@@ -224,21 +224,16 @@ public class WorldRenderer extends Widget {
 			for(int j = startY; j < endY; ++j) {
 				float light = lightManager.getLight(i, j);
 
-				if(world.getTileType(i, j) != TileType.air) {
-					float topLeftLight = i > 0 && j + 1 < world.getHeight() ? lightManager.getLight(i - 1, j + 1) : light;
-					float bottomLeftLight = i > 0 && j > 0 ? lightManager.getLight(i - 1, j - 1) : light;
-					float bottomRightLight = j > 0 && i + 1 < world.getWidth() ? lightManager.getLight(i + 1, j - 1) : light;
-					float topRightLight = i + 1 < world.getWidth() && j + 1 < world.getHeight() ? lightManager.getLight(i + 1, j + 1) : light;
-					
-					drawGradient(batch, i, j, 1f, 1f,
-							Color.toFloatBits(0f, 0f, 0f, 1f - topLeftLight * light),
-							Color.toFloatBits(0f, 0f, 0f, 1f - topRightLight * light),
-							Color.toFloatBits(0f, 0f, 0f, 1f - bottomLeftLight * light),
-							Color.toFloatBits(0f, 0f, 0f, 1f - bottomRightLight * light));
-				} else {
-					batch.setColor(0f, 0f, 0f, 1f - light);
-					batch.draw(lightTexture, i, j, 1f, 1f);
-				}
+				float topLeftLight = i > 0 && j + 1 < world.getHeight() ? lightManager.getLight(i - 1, j + 1) : light;
+				float bottomLeftLight = i > 0 && j > 0 ? lightManager.getLight(i - 1, j - 1) : light;
+				float bottomRightLight = j > 0 && i + 1 < world.getWidth() ? lightManager.getLight(i + 1, j - 1) : light;
+				float topRightLight = i + 1 < world.getWidth() && j + 1 < world.getHeight() ? lightManager.getLight(i + 1, j + 1) : light;
+
+				drawGradient(batch, i, j, 1f, 1f,
+						Color.toFloatBits(0f, 0f, 0f, (1f - topLeftLight) * (1f - light)),
+						Color.toFloatBits(0f, 0f, 0f, (1f - topRightLight) * (1f - light)),
+						Color.toFloatBits(0f, 0f, 0f, (1f - bottomLeftLight) * (1f - light)),
+						Color.toFloatBits(0f, 0f, 0f, (1f - bottomRightLight) * (1f - light)));
 			}
 		}
 	}
