@@ -1,6 +1,7 @@
 package com.github.antag99.aquarria.world;
 
 import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.tile.WallType;
 
 public class LightManager {
 	private World world;
@@ -22,7 +23,7 @@ public class LightManager {
 	public void computeLight(int x, int y, int width, int height) {
 		for(int i = 0; i < width; ++i) {
 			for(int j = 0; j < height; ++j) {
-				if(world.getTileType(x + i, y + j) == TileType.air) {
+				if(world.getTileType(x + i, y + j) == TileType.air && world.getWallType(x + i, y + j) == WallType.air) {
 					setLight(x + i, y + j, 1f);
 				} else {
 					setLight(x + i, y + j, 0f);
