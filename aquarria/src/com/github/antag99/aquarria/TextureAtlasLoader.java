@@ -44,6 +44,11 @@ public class TextureAtlasLoader extends AsynchronousAssetLoader<TextureAtlas, Te
 
 	@Override
 	public void loadAsync(AssetManager manager, String fileName, FileHandle file, TextureAtlasParameters parameter) {
+	}
+
+	@Override
+	public TextureAtlas loadSync(AssetManager manager, String fileName, FileHandle file, TextureAtlasParameters parameter) {
+		// Asynchronous
 		TextureAtlasData loadingTextureAtlasData = new TextureAtlasData(file, file.parent(), false);
 		
 		ObjectMap<Page, Pixmap> pages = new ObjectMap<>();
@@ -71,10 +76,8 @@ public class TextureAtlasLoader extends AsynchronousAssetLoader<TextureAtlas, Te
 			packer.pack(loadingAtlasId + "_" + region.key.name, region.value);
 			region.value.dispose();
 		}
-	}
-
-	@Override
-	public TextureAtlas loadSync(AssetManager manager, String fileName, FileHandle file, TextureAtlasParameters parameter) {
+		
+		// Synchronous
 		packer.updateTextureAtlas(atlas, TextureFilter.Nearest, TextureFilter.Nearest, false);
 		
 		TextureAtlas textureAtlas = new TextureAtlas();
