@@ -74,7 +74,7 @@ public class Aquarria extends Game {
 		
 		terrariaDirectory = properties.getTerrariaDirectory();
 		
-		if(!terrariaAssets.exists() || properties.getForceExtractAssets()) {
+		if(!terrariaAssets.exists()) {
 			if(terrariaDirectory == null) {
 				terrariaDirectory = Steam.findTerrariaDirectory();
 				if(terrariaDirectory == null) {
@@ -105,8 +105,6 @@ public class Aquarria extends Game {
 					return;
 				}
 			}
-			
-			properties.setForceExtractAssets(false);
 		}
 
 		Gdx.input.setInputProcessor(stage);
