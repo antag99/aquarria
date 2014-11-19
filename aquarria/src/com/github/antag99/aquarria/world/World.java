@@ -1,12 +1,12 @@
 package com.github.antag99.aquarria.world;
 
 import com.badlogic.gdx.utils.Array;
-import com.github.antag99.aquarria.DynamicIDMapping;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.ItemEntity;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
+import com.github.antag99.aquarria.util.DynamicIDMapping;
 
 public class World {
 	private int width;

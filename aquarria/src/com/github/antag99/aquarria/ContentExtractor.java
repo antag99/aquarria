@@ -9,6 +9,7 @@ import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.github.antag99.aquarria.util.Utils;
 import com.github.antag99.aquarria.xnb.XnbExtractor;
 import com.github.antag99.aquarria.xnb.XnbFontExtractor;
 import com.github.antag99.aquarria.xnb.XnbSoundExtractor;

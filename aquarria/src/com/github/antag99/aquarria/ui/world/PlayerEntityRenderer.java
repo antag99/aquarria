@@ -4,11 +4,11 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.antag99.aquarria.Utils;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.entity.PlayerView;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.ui.IngameScreen;
+import com.github.antag99.aquarria.util.Utils;
 
 public class PlayerEntityRenderer extends EntityRenderer<PlayerEntity, PlayerView> {
 	private TextureRegion[] hairFrames;

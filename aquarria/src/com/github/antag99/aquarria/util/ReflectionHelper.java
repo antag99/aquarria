@@ -1,4 +1,4 @@
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.util;
 
 public class ReflectionHelper {
 	

@@ -18,6 +18,11 @@ import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.ui.IngameScreen;
+import com.github.antag99.aquarria.util.DirectoryFileHandleResolver;
+import com.github.antag99.aquarria.util.FileHandleResolverMultiplexer;
+import com.github.antag99.aquarria.util.TextureAtlasLoader;
+import com.github.antag99.aquarria.util.TextureRegionLoader;
+import com.github.antag99.aquarria.util.Utils;
 import com.github.antag99.aquarria.xnb.Steam;
 
 public class Aquarria extends Game {
