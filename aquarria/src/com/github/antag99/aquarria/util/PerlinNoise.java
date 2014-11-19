@@ -4,10 +4,11 @@ import java.util.Random;
 
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.MathUtils;
+
 import static com.badlogic.gdx.math.MathUtils.lerp;
 
 /** Perlin noise implementation */
-public class PerlinNoise {
+public class PerlinNoise extends Noise {
 	// Based on http://mrl.nyu.edu/~perlin/noise/
 	private int[] permutation;
 	private Interpolation fade = Interpolation.fade;
@@ -20,17 +21,7 @@ public class PerlinNoise {
 		}
 	}
 
-	/** @return Perlin noise in the range [0, 1] */
-	public float get(float x) {
-		return get(x, 0f, 0f);
-	}
-
-	/** @return Perlin noise in the range [0, 1] */
-	public float get(float x, float y) {
-		return get(x, y, 0f);
-	}
-
-	/** @return Perlin noise in the range [0, 1] */
+	@Override
 	public float get(float x, float y, float z) {
 		// Find unit cube that contains point
 		int unitX = MathUtils.floor(x) & 255;

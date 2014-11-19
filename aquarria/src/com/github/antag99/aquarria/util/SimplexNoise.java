@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 /** Simplex noise implementation */
-public class SimplexNoise {
+public class SimplexNoise extends Noise {
 	// Based on http://webstaff.itn.liu.se/~stegu/simplexnoise/SimplexNoise.java
 	private static Vector3 grad[] = {
 			new Vector3(1, 1, 0), new Vector3(-1, 1, 0), new Vector3(1, -1, 0),
@@ -33,17 +33,7 @@ public class SimplexNoise {
 		return g.x * x + g.y * y + g.z * z;
 	}
 
-	/** @return Simplex noise in the range [0, 1] */
-	public float get(float x) {
-		return get(x, 0f, 0f);
-	}
-
-	/** @return Simplex noise in the range [0, 1] */
-	public float get(float x, float y) {
-		return get(x, y, 0f);
-	}
-
-	/** @return Simplex noise in the range [0, 1] */
+	@Override
 	public float get(float xin, float yin, float zin) {
 		float n0, n1, n2, n3; // Noise contributions from the four corners
 		// Skew the input space to determine which simplex cell we're in
