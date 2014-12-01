@@ -22,36 +22,37 @@ public class IngameScreen extends AquarriaScreen {
 	public static final float PIXELS_PER_METER = 16;
 
 	private World world;
+	private WorldGenerator worldGenerator;
 	private WorldView worldView;
 	private WorldRenderer worldRenderer;
-	
+
 	private PlayerEntity player;
 	private Skin skin;
 	private IngameInterface ingameInterface;
-	
+
 	private Vector2 tmpVector2 = new Vector2();
 	private Vector3 tmpVector3 = new Vector3();
-	
+
 	private float debugGameSpeed = 1f;
 	private GraphicsDelegate debugGraphics;
-	
+
 	private boolean debugStage;
 
 	public IngameScreen(Aquarria aquarria) {
 		super(aquarria);
 	}
-	
+
 	@Override
 	public void load() {
 		super.load();
-		
+
 		SkinParameter skinParameter = new SkinParameter("images/ui/atlas/ui.atlas");
 		AssetManager assetManager = aquarria.getAssetManager();
 		assetManager.load("skins/ingame.json", Skin.class, skinParameter);
-		
+
 		worldRenderer = new WorldRenderer();
 		worldRenderer.queueAssets(assetManager);
-		
+
 		debugGraphics = new GraphicsDelegate(Gdx.graphics) {
 			@Override
 			public float getDeltaTime() {
@@ -60,59 +61,60 @@ public class IngameScreen extends AquarriaScreen {
 		};
 		Gdx.graphics = debugGraphics;
 	}
-	
+
 	@Override
 	public void initialize() {
 		super.initialize();
-		
+
 		AssetManager assetManager = aquarria.getAssetManager();
 		skin = assetManager.get("skins/ingame.json");
 		worldRenderer.getAssets(assetManager);
-		
+
 		world = new World(1024, 512);
-		new WorldGenerator().generate(world, MathUtils.random.nextLong());
-		
+		worldGenerator = new WorldGenerator(world, MathUtils.random.nextLong());
+		worldGenerator.generate();
+
 		player = new PlayerEntity();
 		player.setX(world.getSpawnX());
 		player.setY(world.getSpawnY());
 		world.addEntity(player);
-		
+
 		worldView = new WorldView();
 		worldView.setWorld(world);
-		
+
 		worldRenderer.setView(worldView);
-		
+
 		ingameInterface = new IngameInterface(skin);
 		ingameInterface.setPlayer(player);
-		
+
 		root.stack(worldRenderer, ingameInterface).expand().fill();
 	}
 
 	@Override
 	public void render(float delta) {
-		if(Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.F1)) {
 			worldRenderer.setDrawTileGrid(!worldRenderer.getDrawTileGrid());
 		}
-		
-		if(Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.F2)) {
 			worldRenderer.setDrawEntityBoxes(!worldRenderer.getDrawEntityBoxes());
 		}
-		
-		if(Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.F3)) {
 			debugStage = !debugStage;
 			root.getStage().setDebugAll(debugStage);
 		}
-		
-		if(Gdx.input.isKeyJustPressed(Input.Keys.F7)) {
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.F7)) {
 			debugGameSpeed *= 0.5f;
-			if(debugGameSpeed < 0.125f) {
+			if (debugGameSpeed < 0.125f) {
 				debugGameSpeed = 4f;
 			}
-			System.out.println("Game speed: " + (int)(debugGameSpeed * 100) + "%");
+			System.out.println("Game speed: " + (int) (debugGameSpeed * 100) + "%");
 		}
-		
+
 		delta = Gdx.graphics.getDeltaTime();
-		
+
 		world.update(delta);
 
 		OrthographicCamera cam = worldView.getCamera();
@@ -122,14 +124,14 @@ public class IngameScreen extends AquarriaScreen {
 		cam.zoom = 1f;
 
 		cam.update();
-		
+
 		Vector2 mousePosition = tmpVector2.set(Gdx.input.getX(), Gdx.input.getY());
 		mousePosition = aquarria.getStage().screenToStageCoordinates(mousePosition);
-		if(aquarria.getStage().hit(mousePosition.x, mousePosition.y, true) == null) {
+		if (aquarria.getStage().hit(mousePosition.x, mousePosition.y, true) == null) {
 			// The camera handles the different coordinate systems too, reset to input coordinates
 			mousePosition = tmpVector2.set(Gdx.input.getX(), Gdx.input.getY());
 			Vector3 worldFocus = cam.unproject(tmpVector3.set(mousePosition, 0f));
-			if(worldFocus.x >= 0f && worldFocus.y >= 0f &&
+			if (worldFocus.x >= 0f && worldFocus.y >= 0f &&
 					worldFocus.x < world.getWidth() &&
 					worldFocus.y < world.getHeight()) {
 				player.setWorldFocus(worldFocus.x, worldFocus.y);
@@ -137,39 +139,39 @@ public class IngameScreen extends AquarriaScreen {
 		} else {
 			player.setWorldFocus(null);
 		}
-		
-		if(!Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
-		if(player.getWorldFocus() != null) {
-			if(Gdx.input.justTouched()) {
-				if(!player.getRepeatUsingItem()) {
-					player.setRepeatUsingItem(true);
+
+		if (!Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+			if (player.getWorldFocus() != null) {
+				if (Gdx.input.justTouched()) {
+					if (!player.getRepeatUsingItem()) {
+						player.setRepeatUsingItem(true);
+					}
+					player.setUsedItem(ingameInterface.getFocusItem());
 				}
-				player.setUsedItem(ingameInterface.getFocusItem());
-			}
-			
-			if(!Gdx.input.isTouched()) {
-				if(player.getRepeatUsingItem()) {
-					player.setRepeatUsingItem(false);
+
+				if (!Gdx.input.isTouched()) {
+					if (player.getRepeatUsingItem()) {
+						player.setRepeatUsingItem(false);
+					}
 				}
+			} else {
+				player.setRepeatUsingItem(false);
+				player.setUsingItem(false);
+				player.setUseTime(0f);
+				player.setUsedItem(null);
 			}
-		} else {
-			player.setRepeatUsingItem(false);
-			player.setUsingItem(false);
-			player.setUseTime(0f);
-			player.setUsedItem(null);
-		}
-		} else if(player.getWorldFocus() != null){
-			int liquidX = (int)player.getWorldFocus().x;
-			int liquidY = (int)player.getWorldFocus().y;
-			
-			if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+		} else if (player.getWorldFocus() != null) {
+			int liquidX = (int) player.getWorldFocus().x;
+			int liquidY = (int) player.getWorldFocus().y;
+
+			if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
 				world.getLiquidManager().setLiquid(liquidX, liquidY, 255);
-			} else if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+			} else if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
 				world.getLiquidManager().setLiquid(liquidX, liquidY, 0);
 			}
 		}
 	}
-	
+
 	@Override
 	public void resize(int width, int height) {
 		OrthographicCamera cam = worldView.getCamera();
@@ -178,7 +180,7 @@ public class IngameScreen extends AquarriaScreen {
 		cam.update();
 		super.resize(width, height);
 	}
-	
+
 	@Override
 	public void show() {
 		super.show();

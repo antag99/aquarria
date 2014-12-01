@@ -19,11 +19,11 @@ public class PlayerEntityRenderer extends EntityRenderer<PlayerEntity, PlayerVie
 	private TextureRegion[] undershirtFrames;
 	private TextureRegion[] pantsFrames;
 	private TextureRegion[] shoesFrames;
-	
+
 	public PlayerEntityRenderer() {
 		super(PlayerEntity.class);
 	}
-	
+
 	@Override
 	public void queueAssets(AssetManager assetManager) {
 		assetManager.load("images/player/hair.png", TextureRegion.class);
@@ -35,7 +35,7 @@ public class PlayerEntityRenderer extends EntityRenderer<PlayerEntity, PlayerVie
 		assetManager.load("images/player/pants.png", TextureRegion.class);
 		assetManager.load("images/player/shoes.png", TextureRegion.class);
 	}
-	
+
 	@Override
 	public void getAssets(AssetManager assetManager) {
 		hairFrames = Utils.splitVertically(assetManager.get("images/player/hair.png", TextureRegion.class), 14);
@@ -51,21 +51,21 @@ public class PlayerEntityRenderer extends EntityRenderer<PlayerEntity, PlayerVie
 	@Override
 	public void renderEntity(Batch batch, PlayerView view) {
 		PlayerEntity player = view.getEntity();
-		
+
 		float centerX = player.getX() + player.getWidth() / 2f;
 		float centerY = player.getY() + player.getHeight() / 2f;
-		
+
 		float scaleX = 40f / (player.getWidth() * IngameScreen.PIXELS_PER_METER);
 		float scaleY = 56f / (player.getHeight() * IngameScreen.PIXELS_PER_METER);
-		
+
 		float x = centerX - player.getWidth() * 0.5f * scaleX;
 		float y = centerY - player.getHeight() * 0.5f * scaleY;
-		
+
 		float width = player.getWidth() * scaleX;
 		float height = player.getHeight() * scaleY;
-		
+
 		boolean flip = player.getDirection() == -1;
-		
+
 		batch.setColor(255 / 255f, 125 / 255f, 90 / 255f, 1f);
 		batch.draw(setFlip(headFrames[view.getBodyFrame()], flip), x, y, width, height);
 		batch.setColor(105 / 255f, 90 / 255f, 75 / 255f, 1f);
@@ -82,14 +82,14 @@ public class PlayerEntityRenderer extends EntityRenderer<PlayerEntity, PlayerVie
 		batch.draw(setFlip(shirtFrames[view.getBodyFrame()], flip), x, y, width, height);
 		batch.setColor(160 / 255f, 105 / 255f, 60 / 255f, 1f);
 		batch.draw(setFlip(shoesFrames[view.getLegFrame()], flip), x, y, width, height);
-		
-		if(player.isUsingItem()) {
+
+		if (player.isUsingItem()) {
 			Item item = player.getUsedItem();
 			TextureRegion itemTexture = item.getType().getTexture();
 			float itemOffsetX = view.getUseOffsetX();
 			float itemOffsetY = view.getUseOffsetY();
 			float itemRotation = view.getUseRotation();
-			
+
 			batch.setColor(Color.WHITE);
 			batch.draw(itemTexture, player.getX() + itemOffsetX, player.getY() + itemOffsetY, 0f, 0f,
 					item.getType().getWidth() / IngameScreen.PIXELS_PER_METER,
@@ -97,9 +97,10 @@ public class PlayerEntityRenderer extends EntityRenderer<PlayerEntity, PlayerVie
 					1f, 1f, itemRotation);
 		}
 	}
-	
+
 	private TextureRegion setFlip(TextureRegion texture, boolean flip) {
-		if(texture.isFlipX() != flip) texture.flip(true, false);
+		if (texture.isFlipX() != flip)
+			texture.flip(true, false);
 		return texture;
 	}
 }

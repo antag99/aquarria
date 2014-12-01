@@ -31,10 +31,10 @@ public class TextureAtlasLoader extends AsynchronousAssetLoader<TextureAtlas, Te
 
 	public TextureAtlasLoader(FileHandleResolver resolver, int pageWidth, int pageHeight) {
 		super(resolver);
-		
+
 		this.pageWidth = pageWidth;
 		this.pageHeight = pageHeight;
-		
+
 		this.packer = new PixmapPacker(pageWidth, pageHeight, Format.RGBA8888, 0, false);
 		this.atlas = new TextureAtlas();
 	}
@@ -50,60 +50,60 @@ public class TextureAtlasLoader extends AsynchronousAssetLoader<TextureAtlas, Te
 	public TextureAtlas loadSync(AssetManager manager, String fileName, FileHandle file, TextureAtlasParameters parameter) {
 		// Asynchronous
 		TextureAtlasData loadingTextureAtlasData = new TextureAtlasData(file, file.parent(), false);
-		
+
 		ObjectMap<Page, Pixmap> pages = new ObjectMap<>();
-		
-		for(Page page : loadingTextureAtlasData.getPages()) {
+
+		for (Page page : loadingTextureAtlasData.getPages()) {
 			Pixmap pixmap = new Pixmap(page.textureFile);
 			pages.put(page, pixmap);
 		}
-		
+
 		ObjectMap<Region, Pixmap> regions = new ObjectMap<>();
-		
-		for(Region region : loadingTextureAtlasData.getRegions()) {
+
+		for (Region region : loadingTextureAtlasData.getRegions()) {
 			Pixmap pixmap = new Pixmap(region.width, region.height, Format.RGBA8888);
 			Pixmap pagePixmap = pages.get(region.page);
 			pixmap.drawPixmap(pagePixmap, 0, 0, region.left, region.top, region.width, region.height);
 			regions.put(region, pixmap);
 			loadingAtlasNames.add(region.name);
 		}
-		
-		for(Pixmap page : pages.values()) {
+
+		for (Pixmap page : pages.values()) {
 			page.dispose();
 		}
-		
-		for(Entry<Region, Pixmap> region : regions) {
+
+		for (Entry<Region, Pixmap> region : regions) {
 			packer.pack(loadingAtlasId + "_" + region.key.name, region.value);
 			region.value.dispose();
 		}
-		
+
 		// Synchronous
 		packer.updateTextureAtlas(atlas, TextureFilter.Nearest, TextureFilter.Nearest, false);
-		
+
 		TextureAtlas textureAtlas = new TextureAtlas();
-		
-		for(String regionName : loadingAtlasNames) {
+
+		for (String regionName : loadingAtlasNames) {
 			textureAtlas.addRegion(regionName, atlas.findRegion(loadingAtlasId + "_" + regionName));
 		}
-		
+
 		loadingAtlasNames.clear();
 		loadingAtlasId++;
-		
+
 		return textureAtlas;
 	}
-	
+
 	public PixmapPacker getPacker() {
 		return packer;
 	}
-	
+
 	public TextureAtlas getAtlas() {
 		return atlas;
 	}
-	
+
 	public int getPageWidth() {
 		return pageWidth;
 	}
-	
+
 	public int getPageHeight() {
 		return pageHeight;
 	}

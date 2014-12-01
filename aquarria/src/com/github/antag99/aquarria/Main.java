@@ -10,7 +10,7 @@ public class Main {
 		cfg.title = "Aquarria";
 		cfg.width = 800;
 		cfg.height = 600;
-		
+
 		new LwjglApplication(new Aquarria(), cfg);
 	}
 

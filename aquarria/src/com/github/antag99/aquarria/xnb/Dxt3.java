@@ -1,10 +1,8 @@
 package com.github.antag99.aquarria.xnb;
 
-
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
 
 /*
  * This file was taken from https://code.google.com/p/jwow-kit/,
@@ -29,7 +27,7 @@ class Dxt3 {
 	/*
 	 * TODO: Get rid of BufferedImage and use a custom image data
 	 */
-	
+
 	private static class Color {
 		public int r, g, b;
 
@@ -75,7 +73,7 @@ class Dxt3 {
 
 	public static BufferedImage getBufferedImage(int width, int height, ByteBuffer bb) {
 		bb.order(ByteOrder.LITTLE_ENDIAN);
-		
+
 		int[] pixels = new int[16];
 		int[] alphas = new int[16];
 

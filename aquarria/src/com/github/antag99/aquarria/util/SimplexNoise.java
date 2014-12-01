@@ -156,7 +156,7 @@ public class SimplexNoise extends Noise {
 		// Add contributions from each corner to get the final noise value.
 		// The result is scaled to stay just inside [-1,1]
 		float result = 32.0f * (n0 + n1 + n2 + n3);
-		
+
 		// Convert from the [-1, 1] range to [0, 1]
 		return (result + 1f) / 2f;
 	}

@@ -2,6 +2,10 @@
 	"images/Tiles_0.png" : "images/tiles/dirt.png",
 	"images/Tiles_1.png" : "images/tiles/stone.png",
 	"images/Tiles_2.png" : "images/tiles/grass.png",
+	"images/Tiles_5.png" : "images/tiles/tree.png",
+	
+	"images/Tree_Branches_0.png" : "images/tiles/treeBranch.png",
+	"images/Tree_Tops_0.png" : "images/tiles/treeTop.png",
 	
 	"images/Wall_2.png" : "images/walls/dirt.png",
 	"images/Wall_1.png" : "images/walls/stone.png",

@@ -19,73 +19,73 @@ public class XnbFontExtractor extends XnbExtractor {
 	@Override
 	public void extract(FileHandle source, FileHandle dest) {
 		super.extract(source, dest);
-		
-		if(!primaryType.equals("SpriteFont")) {
+
+		if (!primaryType.equals("SpriteFont")) {
 			throw new RuntimeException("Expected primary type to be SpriteFont, was " + primaryType);
 		}
-		
-		if(get7BitEncodedInt(buffer) == 0) {
+
+		if (get7BitEncodedInt(buffer) == 0) {
 			throw new RuntimeException("Sprite font texture is null");
 		} else {
 			int surfaceFormat = buffer.getInt();
-			
+
 			int width = buffer.getInt();
 			int height = buffer.getInt();
-			
+
 			int mipCount = buffer.getInt();
 			buffer.getInt();
-			
-			if(mipCount != 1) {
+
+			if (mipCount != 1) {
 				throw new RuntimeException("Invalid mipmap count: " + mipCount);
 			}
-			
+
 			FileHandle textureFile = dest.sibling(dest.nameWithoutExtension() + ".png");
 
-			if(surfaceFormat != SURFACEFORMAT_DXT3) {
+			if (surfaceFormat != SURFACEFORMAT_DXT3) {
 				throw new RuntimeException("Unexpected surface format: " + surfaceFormat);
 			}
-			
+
 			try {
 				BufferedImage image = Dxt3.getBufferedImage(width, height, buffer);
 				OutputStream textureFileStream = textureFile.write(false);
 				ImageIO.write(image, "png", textureFileStream);
 				textureFileStream.close();
-			} catch(IOException ex) {
+			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
 		}
-		
+
 		FileHandle jsonFile = dest.sibling(dest.nameWithoutExtension() + ".json");
-		
+
 		List<Rectangle> glyphs = new ArrayList<Rectangle>();
 		getList(buffer, glyphs, Rectangle.class);
-		
+
 		List<Rectangle> cropping = new ArrayList<Rectangle>();
 		getList(buffer, cropping, Rectangle.class);
-		
+
 		get7BitEncodedInt(buffer);
 		int mapSize = buffer.getInt();
 		List<Character> characterMap = new ArrayList<Character>(mapSize);
-		for(int k = 0; k < mapSize; ++k) {
+		for (int k = 0; k < mapSize; ++k) {
 			characterMap.add(getCSharpChar(buffer));
 		}
-		
+
 		int verticalLineSpacing = buffer.getInt();
 		float horozontalSpacing = buffer.getFloat();
-		
+
 		List<Vector3> kerning = new ArrayList<Vector3>();
 		getList(buffer, kerning, Vector3.class);
-		
+
 		char defaultCharacter = ' ';
-		
-		if(buffer.get() != 0) { // Boolean
+
+		if (buffer.get() != 0) { // Boolean
 			defaultCharacter = getCSharpChar(buffer);
 		}
-		
-		if(glyphs.size() != cropping.size() || cropping.size() != characterMap.size()) {
+
+		if (glyphs.size() != cropping.size() || cropping.size() != characterMap.size()) {
 			throw new RuntimeException("Character information size mismatch");
 		}
-		
+
 		try {
 			// Store the properties in a JSON file. Might need some tweaking before being usable.
 			JsonWriter jsonWriter = new JsonWriter(jsonFile.writer(false));
@@ -94,33 +94,33 @@ public class XnbFontExtractor extends XnbExtractor {
 			jsonWriter.set("verticalLineSpacing", verticalLineSpacing);
 			jsonWriter.set("horozontalLineSpacing", horozontalSpacing);
 			jsonWriter.object("characters");
-			for(int i = 0; i < characterMap.size(); ++i) {
+			for (int i = 0; i < characterMap.size(); ++i) {
 				jsonWriter.object(characterMap.get(i).toString());
 				Rectangle glyph = glyphs.get(i);
 				Rectangle crop = cropping.get(i);
-				jsonWriter.set("x", (int)glyph.x);
-				jsonWriter.set("y", (int)glyph.y);
-				jsonWriter.set("width", (int)glyph.width);
-				jsonWriter.set("height", (int)glyph.height);
-				jsonWriter.set("padLeft", (int)crop.x);
-				jsonWriter.set("padTop", (int)crop.y);
-				jsonWriter.set("padRight", (int)crop.width);
-				jsonWriter.set("padBottom", (int)crop.height);
+				jsonWriter.set("x", (int) glyph.x);
+				jsonWriter.set("y", (int) glyph.y);
+				jsonWriter.set("width", (int) glyph.width);
+				jsonWriter.set("height", (int) glyph.height);
+				jsonWriter.set("padLeft", (int) crop.x);
+				jsonWriter.set("padTop", (int) crop.y);
+				jsonWriter.set("padRight", (int) crop.width);
+				jsonWriter.set("padBottom", (int) crop.height);
 			}
 			jsonWriter.pop();
 			jsonWriter.array("kerning");
-			for(int i = 0; i < kerning.size(); ++i) {
+			for (int i = 0; i < kerning.size(); ++i) {
 				jsonWriter.object();
 				Vector3 kern = kerning.get(i);
-				jsonWriter.set("a", (int)kern.x);
-				jsonWriter.set("b", (int)kern.y);
-				jsonWriter.set("c", (int)kern.z);
+				jsonWriter.set("a", (int) kern.x);
+				jsonWriter.set("b", (int) kern.y);
+				jsonWriter.set("c", (int) kern.z);
 				jsonWriter.pop();
 			}
 			jsonWriter.pop();
 			jsonWriter.pop();
 			jsonWriter.close();
-		} catch(IOException ex) {
+		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}

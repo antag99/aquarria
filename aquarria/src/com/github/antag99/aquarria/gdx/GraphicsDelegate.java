@@ -6,11 +6,11 @@ import com.badlogic.gdx.graphics.GL30;
 
 public abstract class GraphicsDelegate implements Graphics {
 	private Graphics target;
-	
+
 	public GraphicsDelegate(Graphics target) {
 		this.target = target;
 	}
-	
+
 	public Graphics getTarget() {
 		return target;
 	}

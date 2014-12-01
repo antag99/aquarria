@@ -18,19 +18,19 @@ import com.badlogic.gdx.utils.Disposable;
 /** Loads images from files and packs them into a texture atlas */
 public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion,
 		TextureRegionLoader.TextureRegionLoaderParameters> implements Disposable {
-	
+
 	private PixmapPacker packer;
 	private TextureAtlas atlas;
-	
+
 	private int pageWidth;
 	private int pageHeight;
-	
+
 	public TextureRegionLoader(FileHandleResolver resolver, int pageWidth, int pageHeight) {
 		super(resolver);
-		
+
 		this.pageWidth = pageWidth;
 		this.pageHeight = pageHeight;
-		
+
 		this.packer = new PixmapPacker(pageWidth, pageHeight, Format.RGBA8888, 0, false);
 		this.atlas = new TextureAtlas();
 	}
@@ -53,25 +53,25 @@ public class TextureRegionLoader extends AsynchronousAssetLoader<TextureRegion,
 	public Array<AssetDescriptor> getDependencies(String path, FileHandle file, TextureRegionLoaderParameters param) {
 		return null;
 	}
-	
+
 	@Override
 	public void dispose() {
 		// The packer's resources are disposed when the atlas is disposed
 		atlas.dispose();
 	}
-	
+
 	public TextureAtlas getAtlas() {
 		return atlas;
 	}
-	
+
 	public PixmapPacker getPacker() {
 		return packer;
 	}
-	
+
 	public int getPageWidth() {
 		return pageWidth;
 	}
-	
+
 	public int getPageHeight() {
 		return pageHeight;
 	}

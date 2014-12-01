@@ -19,7 +19,7 @@ public class WallItemType extends ItemType {
 
 	public WallItemType(JsonValue properties) {
 		super(properties);
-		
+
 		createdWallName = properties.getString("createdWall");
 	}
 
@@ -35,7 +35,7 @@ public class WallItemType extends ItemType {
 		int tileY = MathUtils.floor(worldFocus.y);
 
 		World world = player.getWorld();
-		if(world.getWallType(tileX, tileY) == WallType.air) {
+		if (world.getWallType(tileX, tileY) == WallType.air) {
 			world.setWallType(tileX, tileY, createdWall);
 
 			return true;
@@ -43,7 +43,7 @@ public class WallItemType extends ItemType {
 
 		return false;
 	}
-	
+
 	@Override
 	public boolean canUseItem(PlayerEntity player, Item item) {
 		return true;

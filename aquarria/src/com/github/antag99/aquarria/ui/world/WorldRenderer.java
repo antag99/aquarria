@@ -19,7 +19,6 @@ import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.FrameStyle.Frame;
 import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
-import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.world.LightManager;
 import com.github.antag99.aquarria.world.LiquidManager;
@@ -40,30 +39,30 @@ public class WorldRenderer extends Widget {
 
 	public WorldRenderer() {
 		setTouchable(Touchable.disabled);
-		
+
 		addEntityRenderer(new PlayerEntityRenderer());
 		addEntityRenderer(new ItemEntityRenderer());
 	}
-	
+
 	public void queueAssets(AssetManager assetManager) {
-		for(EntityRenderer<?, ?> entityRenderer : entityRenderers.values()) {
+		for (EntityRenderer<?, ?> entityRenderer : entityRenderers.values()) {
 			entityRenderer.queueAssets(assetManager);
 		}
 		assetManager.load("images/white.png", TextureRegion.class);
 		assetManager.load("images/tiles/water.png", TextureRegion.class);
 	}
-	
+
 	public void getAssets(AssetManager assetManager) {
-		for(EntityRenderer<?, ?> entityRenderer : entityRenderers.values()) {
+		for (EntityRenderer<?, ?> entityRenderer : entityRenderers.values()) {
 			entityRenderer.getAssets(assetManager);
 		}
 		lightTexture = assetManager.get("images/white.png");
-		
+
 		TextureRegion waterTexture = assetManager.get("images/tiles/water.png");
 		waterTopTexture = new TextureRegion(waterTexture, 0, 0, waterTexture.getRegionWidth(), 4);
 		waterFullTexture = new TextureRegion(waterTexture, 0, 4, waterTexture.getRegionWidth(), waterTexture.getRegionHeight() - 4);
 	}
-	
+
 	public void addEntityRenderer(EntityRenderer<?, ?> entityRenderer) {
 		entityRenderers.put(entityRenderer.getEntityClass(), entityRenderer);
 	}
@@ -109,7 +108,7 @@ public class WorldRenderer extends Widget {
 		drawEntities(batch, world, startX, startY, endX, endY);
 		drawLiquid(batch, world, startX, startY, endX, endY);
 		drawLight(batch, world, startX, startY, endX, endY);
-		
+
 		boolean useShapeRenderer = drawEntityBoxes || drawTileGrid;
 		if (useShapeRenderer) {
 			if (shapeRenderer == null) {
@@ -142,23 +141,23 @@ public class WorldRenderer extends Widget {
 			shapeRenderer.end();
 			batch.begin();
 		}
-		
+
 		batch.setProjectionMatrix(stageProjection);
 	}
-	
+
 	private void drawLiquid(Batch batch, World world, int startX, int startY, int endX, int endY) {
 		LiquidManager liquidManager = world.getLiquidManager();
 
 		batch.setColor(1f, 1f, 1f, 0.8f);
-		for(int i = startX; i < endX; ++i) {
-			for(int j = startY; j < endY; ++j) {
+		for (int i = startX; i < endX; ++i) {
+			for (int j = startY; j < endY; ++j) {
 				int liquid = liquidManager.getLiquid(i, j);
-				if(liquid != 0) {
+				if (liquid != 0) {
 					float liquidPercentage = liquid / 255f;
-					
+
 					boolean hasTopLiquid = j < world.getHeight() && (liquidManager.getLiquid(i, j + 1) != 0 || (liquid == 255 && world.getTileType(i, j + 1).isSolid()));
-					
-					if(hasTopLiquid) {
+
+					if (hasTopLiquid) {
 						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage);
 					} else {
 						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage - 0.25f);
@@ -172,33 +171,26 @@ public class WorldRenderer extends Widget {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void drawEntities(Batch batch, World world, int startX, int startY, int endX, int endY) {
 		for (Entity entity : world.getEntities()) {
-			if(entity.isActive()) {
+			if (entity.isActive()) {
 				batch.setColor(Color.WHITE);
-				
+
 				EntityRenderer entityRenderer = entityRenderers.get(entity.getClass());
-				
+
 				entityRenderer.renderEntity(batch, entity.getView());
 			}
 		}
 	}
-	
+
 	private void drawTiles(Batch batch, World world, int startX, int startY, int endX, int endY) {
 		batch.setColor(Color.WHITE);
 
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
-				TileType type = world.getTileType(i, j);
-				FrameSkin skin = type.getSkin();
-
-				if (skin != null) {
-					Frame frame = FrameStyle.block.findFrame(world, i, j);
-					TextureRegion texture = skin.getFrameTexture(frame);
-					batch.draw(texture, i, j, 1f, 1f);
-				}
+				world.getTileType(i, j).getRenderer().drawTile(batch, world, i, j);
 			}
 		}
 	}
-	
+
 	private void drawWalls(Batch batch, World world, int startX, int startY, int endX, int endY) {
 		batch.setColor(Color.WHITE);
 
@@ -215,13 +207,13 @@ public class WorldRenderer extends Widget {
 			}
 		}
 	}
-	
+
 	private void drawLight(Batch batch, World world, int startX, int startY, int endX, int endY) {
 		LightManager lightManager = world.getLightManager();
 		lightManager.computeLight(startX, startY, endX - startX, endY - startY);
-		
-		for(int i = startX; i < endX; ++i) {
-			for(int j = startY; j < endY; ++j) {
+
+		for (int i = startX; i < endX; ++i) {
+			for (int j = startY; j < endY; ++j) {
 				float light = lightManager.getLight(i, j);
 
 				float topLeftLight = i > 0 && j + 1 < world.getHeight() ? lightManager.getLight(i - 1, j + 1) : light;
@@ -237,7 +229,7 @@ public class WorldRenderer extends Widget {
 			}
 		}
 	}
-	
+
 	final float[] vertices = new float[20];
 
 	// http://www.badlogicgames.com/forum/viewtopic.php?f=11&t=9361#p42550
@@ -245,41 +237,41 @@ public class WorldRenderer extends Widget {
 			float x, float y, float width, float height,
 			float topLeftColor, float topRightColor,
 			float bottomLeftColor, float bottomRightColor) {
-	   int idx = 0;
-	   float u = lightTexture.getU();
-	   float v = lightTexture.getV2();
-	   float u2 = lightTexture.getU2();
-	   float v2 = lightTexture.getV();
-	   
-	   //bottom left
-	   vertices[idx++] = x;
-	   vertices[idx++] = y;
-	   vertices[idx++] = bottomLeftColor;
-	   vertices[idx++] = u;
-	   vertices[idx++] = v;
+		int idx = 0;
+		float u = lightTexture.getU();
+		float v = lightTexture.getV2();
+		float u2 = lightTexture.getU2();
+		float v2 = lightTexture.getV();
 
-	   //top left
-	   vertices[idx++] = x;
-	   vertices[idx++] = y + height;
-	   vertices[idx++] = topLeftColor;
-	   vertices[idx++] = u;
-	   vertices[idx++] = v2;
+		// bottom left
+		vertices[idx++] = x;
+		vertices[idx++] = y;
+		vertices[idx++] = bottomLeftColor;
+		vertices[idx++] = u;
+		vertices[idx++] = v;
 
-	   //top right
-	   vertices[idx++] = x + width;
-	   vertices[idx++] = y + height;
-	   vertices[idx++] = topRightColor;
-	   vertices[idx++] = u2;
-	   vertices[idx++] = v2;
+		// top left
+		vertices[idx++] = x;
+		vertices[idx++] = y + height;
+		vertices[idx++] = topLeftColor;
+		vertices[idx++] = u;
+		vertices[idx++] = v2;
 
-	   //bottom right
-	   vertices[idx++] = x + width;
-	   vertices[idx++] = y;
-	   vertices[idx++] = bottomRightColor;
-	   vertices[idx++] = u2;
-	   vertices[idx++] = v;
-	   
-	   batch.draw(lightTexture.getTexture(), vertices, 0, vertices.length);
+		// top right
+		vertices[idx++] = x + width;
+		vertices[idx++] = y + height;
+		vertices[idx++] = topRightColor;
+		vertices[idx++] = u2;
+		vertices[idx++] = v2;
+
+		// bottom right
+		vertices[idx++] = x + width;
+		vertices[idx++] = y;
+		vertices[idx++] = bottomRightColor;
+		vertices[idx++] = u2;
+		vertices[idx++] = v;
+
+		batch.draw(lightTexture.getTexture(), vertices, 0, vertices.length);
 	}
 
 	public WorldView getView() {

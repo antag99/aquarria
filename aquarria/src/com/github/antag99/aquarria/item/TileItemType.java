@@ -35,7 +35,7 @@ public class TileItemType extends ItemType {
 		int tileY = MathUtils.floor(worldFocus.y);
 
 		World world = player.getWorld();
-		if(world.getTileType(tileX, tileY) == TileType.air) {
+		if (world.getTileType(tileX, tileY) == TileType.air) {
 			world.setTileType(tileX, tileY, createdTile);
 
 			return true;
@@ -43,7 +43,7 @@ public class TileItemType extends ItemType {
 
 		return false;
 	}
-	
+
 	@Override
 	public boolean canUseItem(PlayerEntity player, Item item) {
 		return true;

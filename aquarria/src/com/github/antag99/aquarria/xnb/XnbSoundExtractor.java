@@ -8,28 +8,28 @@ import java.nio.ByteOrder;
 import com.badlogic.gdx.files.FileHandle;
 
 public class XnbSoundExtractor extends XnbExtractor {
-	
-//	// WAV Encoding
-//	private static final byte[] RIFF = "RIFF".getBytes(Charset.forName("UTF-8"));
-//	private static final byte[] WAVE = "WAVE".getBytes(Charset.forName("UTF-8"));
-//	// Note the space after fmt.
-//	private static final byte[] fmt = "fmt ".getBytes(Charset.forName("UTF-8"));
-//	private static final byte[] data = "data".getBytes(Charset.forName("UTF-8"));
-//	private static final int wavHeaderSize = RIFF.length + 4 + WAVE.length + fmt.length + 4 + 2 + 2 + 4 + 4 + 2 + 2 + data.length + 4;
+
+	// // WAV Encoding
+	// private static final byte[] RIFF = "RIFF".getBytes(Charset.forName("UTF-8"));
+	// private static final byte[] WAVE = "WAVE".getBytes(Charset.forName("UTF-8"));
+	// // Note the space after fmt.
+	// private static final byte[] fmt = "fmt ".getBytes(Charset.forName("UTF-8"));
+	// private static final byte[] data = "data".getBytes(Charset.forName("UTF-8"));
+	// private static final int wavHeaderSize = RIFF.length + 4 + WAVE.length + fmt.length + 4 + 2 + 2 + 4 + 4 + 2 + 2 + data.length + 4;
 
 	@Override
 	public void extract(FileHandle source, FileHandle dest) {
 		super.extract(source, dest);
-		
-		if(!primaryType.equals("SoundEffect")) {
+
+		if (!primaryType.equals("SoundEffect")) {
 			throw new RuntimeException("Expected primary type to be SoundEffect, was " + primaryType);
 		}
 
-		if(buffer.getInt() != 18) {
+		if (buffer.getInt() != 18) {
 			throw new RuntimeException("Unimplemented audio format");
 		}
 
-		if(buffer.getShort() != 1) {
+		if (buffer.getShort() != 1) {
 			throw new RuntimeException("Unimplemented wav codec");
 		}
 
@@ -75,7 +75,7 @@ public class XnbSoundExtractor extends XnbExtractor {
 			outputStream.write(headerBuffer.array(), headerBuffer.arrayOffset(), headerBuffer.position());
 			outputStream.write(buffer.array(), buffer.arrayOffset() + buffer.position(), dataChunkSize);
 			outputStream.close();
-		} catch(IOException ex) {
+		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}

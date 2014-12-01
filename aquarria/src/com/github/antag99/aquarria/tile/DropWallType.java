@@ -11,26 +11,26 @@ import com.github.antag99.aquarria.world.World;
 public class DropWallType extends WallType {
 	private String dropName;
 	private ItemType drop;
-	
+
 	public DropWallType(String path) {
 		this(new JsonReader().parse(Gdx.files.internal(path)));
 	}
 
 	public DropWallType(JsonValue properties) {
 		super(properties);
-		
+
 		dropName = properties.getString("drop");
 	}
-	
+
 	@Override
 	public void destroyed(PlayerEntity player, int x, int y) {
-		if(drop == null) {
+		if (drop == null) {
 			drop = ItemType.forName(dropName);
-			if(drop == null) {
+			if (drop == null) {
 				throw new RuntimeException("The item " + dropName + " wasn't found");
 			}
 		}
-		
+
 		World world = player.getWorld();
 		world.dropItem(new Item(drop), x, y);
 	}
