@@ -20,9 +20,7 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
 
 /** Texture atlas loader that merges TextureAtlases, and removes unused spacing */
 public class TextureAtlasLoader extends AsynchronousAssetLoader<TextureAtlas, TextureAtlasLoader.TextureAtlasParameters> {
-	private Array<String> loadingAtlasNames = new Array<String>();
 	private int loadingAtlasId = 0;
-
 	private PixmapPacker packer;
 	private TextureAtlas atlas;
 
@@ -61,15 +59,10 @@ public class TextureAtlasLoader extends AsynchronousAssetLoader<TextureAtlas, Te
 		ObjectMap<Region, Pixmap> regions = new ObjectMap<>();
 
 		for (Region region : loadingTextureAtlasData.getRegions()) {
-			Pixmap pixmap = new Pixmap(region.width, region.height, Format.RGBA8888);
+			Pixmap regionPixmap = new Pixmap(region.width, region.height, Format.RGBA8888);
 			Pixmap pagePixmap = pages.get(region.page);
-			pixmap.drawPixmap(pagePixmap, 0, 0, region.left, region.top, region.width, region.height);
-			regions.put(region, pixmap);
-			loadingAtlasNames.add(region.name);
-		}
-
-		for (Pixmap page : pages.values()) {
-			page.dispose();
+			regionPixmap.drawPixmap(pagePixmap, 0, 0, region.left, region.top, region.width, region.height);
+			regions.put(region, regionPixmap);
 		}
 
 		for (Entry<Region, Pixmap> region : regions) {
@@ -82,12 +75,15 @@ public class TextureAtlasLoader extends AsynchronousAssetLoader<TextureAtlas, Te
 
 		TextureAtlas textureAtlas = new TextureAtlas();
 
-		for (String regionName : loadingAtlasNames) {
-			textureAtlas.addRegion(regionName, atlas.findRegion(loadingAtlasId + "_" + regionName));
+		for (Region region : regions.keys()) {
+			textureAtlas.addRegion(region.name, atlas.findRegion(loadingAtlasId + "_" + region.name));
 		}
 
-		loadingAtlasNames.clear();
 		loadingAtlasId++;
+
+		for (Pixmap page : pages.values()) {
+			page.dispose();
+		}
 
 		return textureAtlas;
 	}

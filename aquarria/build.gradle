@@ -6,6 +6,7 @@ sourceCompatibility = 1.8
 version = '1.0'
 
 sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.test.java.srcDirs = [ "tests/" ]
 
 project.ext.mainClassName = "com.github.antag99.aquarria.Main"
 project.ext.assetsDir = new File("../assets");
@@ -23,10 +24,15 @@ repositories {
 }
 
 dependencies {
+    compile "junit:junit:4.+"
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+}
+
+task eclipsePrep {
+    delete '.classpath', '.project'
 }
 
 tasks.eclipse.doLast {
@@ -37,3 +43,5 @@ tasks.eclipse.doLast {
     printer.setPreserveWhitespace(true)
     printer.print(classpath)
 }
+
+tasks.eclipse.dependsOn eclipsePrep
