@@ -4,6 +4,8 @@
 */bin
 .metadata
 .recommenders
+.project
+.classpath
 
 ## Aquarria
 aquarria/assets-terraria
