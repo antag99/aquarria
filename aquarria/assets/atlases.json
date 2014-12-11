@@ -8,9 +8,6 @@
 	"images/tiles/stone.png" : {
 		"template" : "tiletemplate.atlas"
 	},
-	"images/tiles/tree.png" : {
-		"template" : "treetemplate.atlas"
-	},
 	
 	"images/walls/dirt.png" : {
 		"template" : "walltemplate.atlas"
