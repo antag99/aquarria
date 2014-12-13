@@ -49,8 +49,6 @@ import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.FrameStyle.Frame;
 import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
 import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.world.LightManager;
-import com.github.antag99.aquarria.world.LiquidManager;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldView;
 
@@ -175,16 +173,15 @@ public class WorldRenderer extends Widget {
 	}
 
 	private void drawLiquid(Batch batch, World world, int startX, int startY, int endX, int endY) {
-		LiquidManager liquidManager = world.getLiquidManager();
-
 		batch.setColor(1f, 1f, 1f, 0.8f);
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
-				int liquid = liquidManager.getLiquid(i, j);
+				int liquid = world.getLiquid(i, j);
 				if (liquid != 0) {
 					float liquidPercentage = liquid / 255f;
 
-					boolean hasTopLiquid = j < world.getHeight() && (liquidManager.getLiquid(i, j + 1) != 0 || (liquid == 255 && world.getTileType(i, j + 1).isSolid()));
+					boolean hasTopLiquid = j < world.getHeight() && (world.getLiquid(i, j + 1) != 0 ||
+							(liquid == 255 && world.getTileType(i, j + 1).isSolid()));
 
 					if (hasTopLiquid) {
 						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage);
@@ -238,17 +235,16 @@ public class WorldRenderer extends Widget {
 	}
 
 	private void drawLight(Batch batch, World world, int startX, int startY, int endX, int endY) {
-		LightManager lightManager = world.getLightManager();
-		lightManager.computeLight(startX, startY, endX - startX, endY - startY);
+		world.computeLight(startX, startY, endX - startX, endY - startY);
 
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
-				float light = lightManager.getLight(i, j);
+				float light = world.getLight(i, j);
 
-				float topLeftLight = i > 0 && j + 1 < world.getHeight() ? lightManager.getLight(i - 1, j + 1) : light;
-				float bottomLeftLight = i > 0 && j > 0 ? lightManager.getLight(i - 1, j - 1) : light;
-				float bottomRightLight = j > 0 && i + 1 < world.getWidth() ? lightManager.getLight(i + 1, j - 1) : light;
-				float topRightLight = i + 1 < world.getWidth() && j + 1 < world.getHeight() ? lightManager.getLight(i + 1, j + 1) : light;
+				float topLeftLight = i > 0 && j + 1 < world.getHeight() ? world.getLight(i - 1, j + 1) : light;
+				float bottomLeftLight = i > 0 && j > 0 ? world.getLight(i - 1, j - 1) : light;
+				float bottomRightLight = j > 0 && i + 1 < world.getWidth() ? world.getLight(i + 1, j - 1) : light;
+				float topRightLight = i + 1 < world.getWidth() && j + 1 < world.getHeight() ? world.getLight(i + 1, j + 1) : light;
 
 				drawGradient(batch, i, j, 1f, 1f,
 						Color.toFloatBits(0f, 0f, 0f, (1f - topLeftLight) * (1f - light)),

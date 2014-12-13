@@ -194,9 +194,9 @@ public class IngameScreen extends AquarriaScreen {
 			int liquidY = (int) player.getWorldFocus().y;
 
 			if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-				world.getLiquidManager().setLiquid(liquidX, liquidY, 255);
+				world.setLiquid(liquidX, liquidY, 255);
 			} else if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-				world.getLiquidManager().setLiquid(liquidX, liquidY, 0);
+				world.setLiquid(liquidX, liquidY, 0);
 			}
 		}
 	}

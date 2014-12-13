@@ -137,7 +137,7 @@ public class Entity {
 
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
-				if (world.getLiquidManager().getLiquid(i, j) >= 64) {
+				if (world.getLiquid(i, j) >= 64) {
 					return true;
 				}
 			}

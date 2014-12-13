@@ -29,7 +29,9 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.world;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.IntArray;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.ItemEntity;
 import com.github.antag99.aquarria.item.Item;
@@ -50,17 +52,23 @@ public class World {
 	private DynamicIDMapping<WallType> wallMapping;
 
 	private short[] surfaceLevel;
+	private byte[] light;
 
 	private Array<Entity> entities;
 
-	private LightManager lightManager;
-	private LiquidManager liquidManager;
+	private byte[] liquidMatrix;
+	private float tickCounter;
+	private IntArray activeLiquids;
+
+	// Liquid simulation uses a fixed time step,
+	// as it is quite hard to interpolate liquid movement
+	// based on the time since the last frame.
+	private static final float TICK = (1f / 255);
+	private static final int MAX_LIQUID = 255;
 
 	public World(int width, int height) {
 		this.width = width;
 		this.height = height;
-		lightManager = new LightManager(this);
-		liquidManager = new LiquidManager(this);
 		spawnX = width / 2f;
 		spawnY = height / 2f;
 		tileMatrix = new short[width * height];
@@ -72,6 +80,9 @@ public class World {
 		wallMapping.getID(WallType.air);
 		entities = new Array<Entity>();
 		surfaceLevel = new short[width];
+		light = new byte[width * height];
+		liquidMatrix = new byte[width * height];
+		activeLiquids = new IntArray();
 	}
 
 	public float getSpawnX() {
@@ -166,16 +177,131 @@ public class World {
 		return entities;
 	}
 
-	public LightManager getLightManager() {
-		return lightManager;
+	private void tick() {
+		for (int i = 0; i < activeLiquids.size; ++i) {
+			int position = activeLiquids.items[i];
+			int x = position % width;
+			int y = position / width;
+
+			flow(x, y);
+		}
 	}
 
-	public LiquidManager getLiquidManager() {
-		return liquidManager;
+	private void flow(int x, int y) {
+		if (getTileType(x, y).isSolid())
+			return;
+
+		if (!flow(x, y, x, y - 1, 16, false) || getLiquid(x, y - 1) == MAX_LIQUID) {
+			// Randomizing the order prevents issues related to
+			// water not flowing in some fixed direction when just one unit is left.
+			int dir = MathUtils.random(0, 1) * 2 - 1;
+			flow(x, y, x + dir, y, 16, true);
+			flow(x, y, x - dir, y, 16, true);
+		}
+	}
+
+	/**
+	 * @param smooth Whether the liquids between the two tiles should be smoothed to the same amount.
+	 * @return Whether any liquid was moved.
+	 */
+	private boolean flow(int srcX, int srcY, int dstX, int dstY, int speed, boolean smooth) {
+		if (inBounds(dstX, dstY) && !getTileType(dstX, dstY).isSolid()) {
+			int srcLiquid = getLiquid(srcX, srcY);
+			int dstLiquid = getLiquid(dstX, dstY);
+
+			int amount = speed;
+
+			if (smooth) {
+				int targetLiquid = (srcLiquid + dstLiquid) / 2;
+				int remainder = (srcLiquid + dstLiquid) % 2;
+				amount = Math.min(targetLiquid - dstLiquid, amount) + remainder;
+			} else {
+				amount = Math.min(MAX_LIQUID - dstLiquid, amount);
+			}
+
+			amount = Math.min(srcLiquid, amount);
+
+			setLiquid(srcX, srcY, srcLiquid - amount);
+			setLiquid(dstX, dstY, dstLiquid + amount);
+
+			return amount != 0;
+		}
+
+		return false;
+	}
+
+	public float getLight(int x, int y) {
+		return (light[width * y + x] & 0xff) / 255f;
+	}
+
+	public void setLight(int x, int y, float light) {
+		this.light[y * width + x] = (byte) (light * 255);
+	}
+
+	public void computeLight(int x, int y, int width, int height) {
+		for (int i = 0; i < width; ++i) {
+			for (int j = 0; j < height; ++j) {
+				if (getTileType(x + i, y + j) == TileType.air &&
+						getWallType(x + i, y + j) == WallType.air) {
+					setLight(x + i, y + j, 1f);
+				} else {
+					setLight(x + i, y + j, 0f);
+				}
+			}
+		}
+
+		for (int i = 0; i < width; ++i) {
+			for (int j = 0; j < height; ++j) {
+				updateLight(x + i, y + j, x, y, x + width, y + height, getLight(x + i, y + j));
+			}
+		}
+	}
+
+	private void updateLight(int x, int y, int minX, int minY, int maxX, int maxY, float light) {
+		if (x > minX)
+			updateAdjacentLight(x - 1, y, minX, minY, maxX, maxY, light - 0.15f);
+		if (y > minY)
+			updateAdjacentLight(x, y - 1, minX, minY, maxX, maxY, light - 0.15f);
+		if (x + 1 < maxX)
+			updateAdjacentLight(x + 1, y, minX, minY, maxX, maxY, light - 0.15f);
+		if (y + 1 < maxY)
+			updateAdjacentLight(x, y + 1, minX, minY, maxX, maxY, light - 0.15f);
+	}
+
+	private void updateAdjacentLight(int x, int y, int minX, int minY, int maxX, int maxY, float light) {
+		if (light > getLight(x, y)) {
+			setLight(x, y, light);
+			updateLight(x, y, minX, minY, maxX, maxY, light);
+		}
+	}
+
+	public int getLiquid(int x, int y) {
+		checkBounds(x, y);
+
+		return liquidMatrix[x + y * width] & 0xff;
+	}
+
+	public void setLiquid(int x, int y, int liquid) {
+		checkBounds(x, y);
+
+		int position = x + y * width;
+		liquidMatrix[position] = (byte) liquid;
+
+		boolean liquidActive = activeLiquids.contains(position);
+		if (liquid != 0 && !liquidActive)
+			activeLiquids.add(position);
+		if (liquid == 0 && liquidActive)
+			activeLiquids.removeValue(position);
 	}
 
 	public void update(float delta) {
-		liquidManager.update(delta);
+		tickCounter += delta;
+
+		while (tickCounter > TICK) {
+			tick();
+
+			tickCounter -= TICK;
+		}
 
 		for (int i = 0; i < entities.size; ++i) {
 			Entity entity = entities.get(i);
