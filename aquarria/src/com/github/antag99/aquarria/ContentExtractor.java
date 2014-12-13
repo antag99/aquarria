@@ -29,35 +29,27 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.ObjectMap;
-import com.github.antag99.aquarria.util.Utils;
+import com.github.antag99.aquarria.util.FrameSplitter;
+import com.github.antag99.aquarria.util.FrameSplitter.SplitType;
+import com.github.antag99.aquarria.util.ImageCanvasResizer;
 import com.github.antag99.aquarria.xnb.XnbExtractor;
 import com.github.antag99.aquarria.xnb.XnbFontExtractor;
 import com.github.antag99.aquarria.xnb.XnbSoundExtractor;
 import com.github.antag99.aquarria.xnb.XnbTextureExtractor;
 
 public class ContentExtractor {
-	private JsonValue xnbMap;
-	private JsonValue canvasMap;
-	private JsonValue atlases;
-
 	private FileHandle contentDirectory;
 	private FileHandle outputAssetDirectory;
+
+	private FrameSplitter tileSplitter = new FrameSplitter(SplitType.BLOCK);
+	private FrameSplitter wallSplitter = new FrameSplitter(SplitType.WALL);
 
 	public ContentExtractor(FileHandle contentDirectory, FileHandle outputAssetDirectory) {
 		this.contentDirectory = contentDirectory;
 		this.outputAssetDirectory = outputAssetDirectory;
-		xnbMap = new JsonReader().parse(Gdx.files.internal("xnbmap.json"));
-		canvasMap = new JsonReader().parse(Gdx.files.internal("canvasmap.json"));
-		atlases = new JsonReader().parse(Gdx.files.internal("atlases.json"));
 	}
 
 	public void extract() {
@@ -85,46 +77,103 @@ public class ContentExtractor {
 			soundExtractor.extract(sound, rawSoundDir.child(sound.nameWithoutExtension() + ".wav"));
 		}
 
-		// Some animations are 40x1120, and some 40x1118; fix that.
-		for (JsonValue value : canvasMap) {
-			FileHandle file = rawDir.child(value.name);
-			int width = value.asIntArray()[0];
-			int height = value.asIntArray()[1];
+		// Split tile & wall images into directories
+		convertTileImage("Tiles_0.png", "dirt");
+		convertTileImage("Tiles_1.png", "stone");
+		convertTileImage("Tiles_2.png", "grass");
 
-			Pixmap pixmap = new Pixmap(file);
-			Pixmap newPixmap = Utils.resizeCanvas(pixmap, width, height);
-			pixmap.dispose();
-			PixmapIO.writePNG(file, newPixmap);
-			newPixmap.dispose();
-		}
+		convertWallImage("Wall_2.png", "dirt");
+		convertWallImage("Wall_1.png", "stone");
 
-		// Move image files from the raw/ directory to the target directory,
-		// according to the configuration.
-		for (JsonValue value : xnbMap) {
-			FileHandle src = rawDir.child(value.name);
-			FileHandle dest = outputAssetDirectory.child(value.asString());
-			src.moveTo(dest);
-		}
+		// Move around images, for easier maintenance
+		rawImagesDir.child("Item_1.png").copyTo(outputAssetDirectory.child("images/items/pickaxe.png"));
+		rawImagesDir.child("Item_2.png").copyTo(outputAssetDirectory.child("images/items/dirt.png"));
+		rawImagesDir.child("Item_3.png").copyTo(outputAssetDirectory.child("images/items/stone.png"));
 
-		// Create texture atlases for tile spritesheets
-		for (JsonValue value : atlases) {
-			String atlasImagePath = value.name;
-			String templatePath = value.getString("template");
+		rawImagesDir.child("Item_7.png").copyTo(outputAssetDirectory.child("images/items/hammer.png"));
+		rawImagesDir.child("Item_30.png").copyTo(outputAssetDirectory.child("images/items/dirtWall.png"));
+		rawImagesDir.child("Item_26.png").copyTo(outputAssetDirectory.child("images/items/stoneWall.png"));
 
-			String template = Gdx.files.internal(templatePath).readString();
-			FileHandle atlasImageFile = outputAssetDirectory.child(atlasImagePath);
-			FileHandle atlasDataFile = atlasImageFile.sibling(atlasImageFile.nameWithoutExtension() + ".atlas");
+		rawImagesDir.child("Background_0.png").copyTo(outputAssetDirectory.child("images/background/sky.png"));
+		rawImagesDir.child("Background_1.png").copyTo(outputAssetDirectory.child("images/background/dirtEdge.png"));
+		rawImagesDir.child("Background_2.png").copyTo(outputAssetDirectory.child("images/background/dirtLayer.png"));
+		rawImagesDir.child("Background_4.png").copyTo(outputAssetDirectory.child("images/background/caveEdge.png"));
+		rawImagesDir.child("Background_3.png").copyTo(outputAssetDirectory.child("images/background/cave.png"));
+		rawImagesDir.child("Background_5.png").copyTo(outputAssetDirectory.child("images/background/hell.png"));
+		rawImagesDir.child("Background_6.png").copyTo(outputAssetDirectory.child("images/background/hellEdge.png"));
+		rawImagesDir.child("Background_7.png").copyTo(outputAssetDirectory.child("images/background/surface.png"));
+		rawImagesDir.child("Background_9.png").copyTo(outputAssetDirectory.child("images/background/forest.png"));
 
-			Pixmap pixmap = new Pixmap(atlasImageFile);
-			ObjectMap<String, String> replacements = new ObjectMap<String, String>();
-			replacements.put("imageFile", atlasImageFile.name());
-			replacements.put("imageWidth", Integer.toString(pixmap.getWidth()));
-			replacements.put("imageHeight", Integer.toString(pixmap.getHeight()));
+		rawImagesDir.child("Bubble.png").copyTo(outputAssetDirectory.child("images/ui/bubble.png"));
+		rawImagesDir.child("CoolDown.png").copyTo(outputAssetDirectory.child("images/ui/block.png"));
+		rawImagesDir.child("CraftButton.png").copyTo(outputAssetDirectory.child("images/ui/craft.png"));
+		rawImagesDir.child("Cursor.png").copyTo(outputAssetDirectory.child("images/ui/cursor.png"));
+		rawImagesDir.child("Cursor2.png").copyTo(outputAssetDirectory.child("images/ui/cursor2.png"));
+		rawImagesDir.child("HealthBar1.png").copyTo(outputAssetDirectory.child("images/ui/healthBarFill.png"));
+		rawImagesDir.child("HealthBar2.png").copyTo(outputAssetDirectory.child("images/ui/healthBarEmpty.png"));
+		rawImagesDir.child("Heart.png").copyTo(outputAssetDirectory.child("images/ui/heart.png"));
+		rawImagesDir.child("Heart2.png").copyTo(outputAssetDirectory.child("images/ui/goldHeart.png"));
+		rawImagesDir.child("House_1.png").copyTo(outputAssetDirectory.child("images/ui/house.png"));
+		rawImagesDir.child("House_2.png").copyTo(outputAssetDirectory.child("images/ui/disabledHouse.png"));
+		rawImagesDir.child("House_Banner_1.png").copyTo(outputAssetDirectory.child("images/ui/npcBanner.png"));
+		rawImagesDir.child("Inventory_Back.png").copyTo(outputAssetDirectory.child("images/ui/slot/blue.png"));
+		rawImagesDir.child("Inventory_Back14.png").copyTo(outputAssetDirectory.child("images/ui/slot/focus.png"));
+		rawImagesDir.child("Inventory_Tick_Off.png").copyTo(outputAssetDirectory.child("images/ui/accessoryDisabled.png"));
+		rawImagesDir.child("Inventory_Tick_On.png").copyTo(outputAssetDirectory.child("images/ui/accessoryEnabled.png"));
+		rawImagesDir.child("Sun.png").copyTo(outputAssetDirectory.child("images/ui/sun.png"));
+		rawImagesDir.child("Team.png").copyTo(outputAssetDirectory.child("images/ui/team.png"));
+		rawImagesDir.child("Lock_0.png").copyTo(outputAssetDirectory.child("images/ui/hotbarLocked.png"));
+		rawImagesDir.child("Lock_1.png").copyTo(outputAssetDirectory.child("images/ui/hotbarUnlocked.png"));
+		rawImagesDir.child("Mana.png").copyTo(outputAssetDirectory.child("images/ui/mana.png"));
 
-			atlasDataFile.writeString(Utils.replaceFormat(template, replacements, null), false);
-		}
+		rawImagesDir.child("Player_Hair_1.png").copyTo(outputAssetDirectory.child("images/player/hair.png"));
+		rawImagesDir.child("Player_Head.png").copyTo(outputAssetDirectory.child("images/player/head.png"));
+		rawImagesDir.child("Player_Eyes.png").copyTo(outputAssetDirectory.child("images/player/eyes.png"));
+		rawImagesDir.child("Player_Eye_Whites.png").copyTo(outputAssetDirectory.child("images/player/eyeWhites.png"));
+		rawImagesDir.child("Player_Shirt.png").copyTo(outputAssetDirectory.child("images/player/shirt.png"));
+		rawImagesDir.child("Player_Undershirt.png").copyTo(outputAssetDirectory.child("images/player/undershirt.png"));
+		rawImagesDir.child("Player_Hands.png").copyTo(outputAssetDirectory.child("images/player/hands.png"));
+		rawImagesDir.child("Player_Pants.png").copyTo(outputAssetDirectory.child("images/player/pants.png"));
+		rawImagesDir.child("Player_Shoes.png").copyTo(outputAssetDirectory.child("images/player/shoes.png"));
+
+		rawImagesDir.child("Liquid_0.png").copyTo(outputAssetDirectory.child("images/tiles/water.png"));
+		rawImagesDir.child("Liquid_1.png").copyTo(outputAssetDirectory.child("images/tiles/lava.png"));
+
+		// Some images need to be padded/cropped, either because their sizes are
+		// not consequent or only a portion of the image is used by the game.
+		ImageCanvasResizer playerAnimationPadder = new ImageCanvasResizer(40, 1120);
+		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/head.png"));
+		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/eyes.png"));
+		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/eyeWhites.png"));
+		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/shirt.png"));
+		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/undershirt.png"));
+		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/hands.png"));
+		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/pants.png"));
+		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/shoes.png"));
+
+		ImageCanvasResizer liquidImageCropper = new ImageCanvasResizer(16, 16);
+		liquidImageCropper.resize(outputAssetDirectory.child("images/tiles/water.png"));
+		liquidImageCropper.resize(outputAssetDirectory.child("images/tiles/lava.png"));
 
 		// Create texture atlas for all UI images
+		createAtlas(outputAssetDirectory.child("images/ui/"), "ui");
+	}
+
+	private void convertTileImage(String imageName, String tileName) {
+		FileHandle imageFile = outputAssetDirectory.child("raw/images/" + imageName);
+		FileHandle imageDirectory = outputAssetDirectory.child("images/tiles/" + tileName + "/");
+		tileSplitter.split(imageFile, imageDirectory);
+		createAtlas(imageDirectory, tileName);
+	}
+
+	private void convertWallImage(String imageName, String wallName) {
+		FileHandle imageFile = outputAssetDirectory.child("raw/images/" + imageName);
+		FileHandle imageDirectory = outputAssetDirectory.child("images/walls/" + wallName + "/");
+		wallSplitter.split(imageFile, imageDirectory);
+		createAtlas(imageDirectory, wallName);
+	}
+
+	private void createAtlas(FileHandle directory, String atlasName) {
 		Settings settings = new Settings();
 		settings.minWidth = 32;
 		settings.minHeight = 32;
@@ -134,9 +183,9 @@ public class ContentExtractor {
 		settings.paddingX = 0;
 		settings.paddingY = 0;
 
-		String inputDirectory = outputAssetDirectory.child("images/ui").path();
-		String outputDirectory = outputAssetDirectory.child("images/ui/atlas").path();
-		String packFileName = "ui";
+		String inputDirectory = directory.path();
+		String outputDirectory = directory.path();
+		String packFileName = atlasName;
 
 		TexturePacker.process(settings, inputDirectory, outputDirectory, packFileName);
 	}

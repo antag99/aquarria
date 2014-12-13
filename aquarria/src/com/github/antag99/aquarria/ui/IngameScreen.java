@@ -75,7 +75,7 @@ public class IngameScreen extends AquarriaScreen {
 	public void load() {
 		super.load();
 
-		SkinParameter skinParameter = new SkinParameter("images/ui/atlas/ui.atlas");
+		SkinParameter skinParameter = new SkinParameter("images/ui/ui.atlas");
 		AssetManager assetManager = aquarria.getAssetManager();
 		assetManager.load("skins/ingame.json", Skin.class, skinParameter);
 

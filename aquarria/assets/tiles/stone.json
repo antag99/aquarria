@@ -2,6 +2,6 @@
 	"internalName" : "stone",
 	"displayName" : "Stone",
 	"solid" : true,
-	"skin" : "images/tiles/stone.atlas",
+	"skin" : "images/tiles/stone/stone.atlas",
 	"drop" : "stone"
 }
