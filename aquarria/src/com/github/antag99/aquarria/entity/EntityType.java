@@ -30,23 +30,14 @@
 package com.github.antag99.aquarria.entity;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.AbstractType;
 
-public class EntityType extends AbstractType {
-	public static Array<EntityType> getEntityTypes() {
-		return AbstractType.getTypes(EntityType.class);
-	}
-
-	public static EntityType forName(String internalName) {
-		return AbstractType.forName(EntityType.class, internalName);
-	}
-
+public final class EntityType {
 	public static final EntityType player = new EntityType("entities/player.json");
 	public static final EntityType item = new EntityType("entities/item.json");
 
+	private String internalName;
 	private String displayName;
 	private boolean solid;
 	private float weight;
@@ -56,8 +47,7 @@ public class EntityType extends AbstractType {
 	private float defaultHeight;
 
 	public EntityType(JsonValue properties) {
-		super(properties.getString("internalName"));
-
+		internalName = properties.getString("internalName");
 		displayName = properties.getString("displayName", "");
 		solid = properties.getBoolean("solid", true);
 		weight = properties.getFloat("weight", 1f);
@@ -69,6 +59,10 @@ public class EntityType extends AbstractType {
 
 	public EntityType(String path) {
 		this(new JsonReader().parse(Gdx.files.internal(path)));
+	}
+
+	public String getInternalName() {
+		return internalName;
 	}
 
 	public String getDisplayName() {
@@ -93,10 +87,5 @@ public class EntityType extends AbstractType {
 
 	public float getDefaultHeight() {
 		return defaultHeight;
-	}
-
-	@Override
-	protected Class<? extends AbstractType> getTypeClass() {
-		return EntityType.class;
 	}
 }

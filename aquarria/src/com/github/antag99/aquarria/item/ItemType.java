@@ -30,31 +30,26 @@
 package com.github.antag99.aquarria.item;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.AbstractType;
+import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.entity.PlayerEntity;
+import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.tile.WallType;
+import com.github.antag99.aquarria.world.World;
 
-public class ItemType extends AbstractType {
-	public static Array<ItemType> getItemTypes() {
-		return AbstractType.getTypes(ItemType.class);
-	}
-
-	public static ItemType forName(String internalName) {
-		return AbstractType.forName(ItemType.class, internalName);
-	}
-
+public final class ItemType {
 	public static final ItemType air = new ItemType("items/air.json");
-	public static final ItemType dirt = new TileItemType("items/dirt.json");
-	public static final ItemType stone = new TileItemType("items/stone.json");
-	public static final ItemType pickaxe = new PickaxeItemType("items/pickaxe.json");
-	public static final ItemType hammer = new HammerItemType("items/hammer.json");
+	public static final ItemType dirt = new ItemType("items/dirt.json");
+	public static final ItemType stone = new ItemType("items/stone.json");
+	public static final ItemType pickaxe = new ItemType("items/pickaxe.json");
+	public static final ItemType hammer = new ItemType("items/hammer.json");
 
-	public static final ItemType dirtWall = new WallItemType("items/dirtWall.json");
-	public static final ItemType stoneWall = new WallItemType("items/stoneWall.json");
+	public static final ItemType dirtWall = new ItemType("items/dirtWall.json");
+	public static final ItemType stoneWall = new ItemType("items/stoneWall.json");
 
 	private String internalName;
 	private String displayName;
@@ -67,6 +62,10 @@ public class ItemType extends AbstractType {
 	private boolean usageRepeat;
 	private boolean consumable;
 	private ItemUsageStyle usageStyle;
+	private boolean breakWall;
+	private boolean breakTile;
+	private String createdTileName;
+	private String createdWallName;
 
 	private TextureRegion texture;
 
@@ -75,8 +74,7 @@ public class ItemType extends AbstractType {
 	}
 
 	public ItemType(JsonValue properties) {
-		super(properties.getString("internalName"));
-
+		internalName = properties.getString("internalName");
 		displayName = properties.getString("displayName");
 		maxStack = properties.getInt("maxStack", 1);
 		width = properties.getFloat("width", 0f);
@@ -87,6 +85,10 @@ public class ItemType extends AbstractType {
 		usageRepeat = properties.getBoolean("usageRepeat", false);
 		consumable = properties.getBoolean("consumable", false);
 		usageStyle = ItemUsageStyle.forName(properties.getString("usageStyle", "swing"));
+		createdWallName = properties.getString("createdWall", null);
+		createdTileName = properties.getString("createdTile", null);
+		breakTile = properties.getBoolean("breakTile", false);
+		breakWall = properties.getBoolean("breakWall", false);
 	}
 
 	public String getInternalName() {
@@ -109,27 +111,16 @@ public class ItemType extends AbstractType {
 		return maxStack;
 	}
 
-	@Override
-	protected void queueAssets(AssetManager assetManager) {
-		if (texturePath != null) {
-			assetManager.load(texturePath, TextureRegion.class);
-		}
-	}
-
-	@Override
-	protected void getAssets(AssetManager assetManager) {
-		if (texturePath != null) {
-			texture = assetManager.get(texturePath);
-		}
-	}
-
-	@Override
-	protected Class<? extends AbstractType> getTypeClass() {
-		return ItemType.class;
+	public String getTexturePath() {
+		return texturePath;
 	}
 
 	public TextureRegion getTexture() {
 		return texture;
+	}
+
+	public void setTexture(TextureRegion texture) {
+		this.texture = texture;
 	}
 
 	public float getUsageTime() {
@@ -153,7 +144,7 @@ public class ItemType extends AbstractType {
 	}
 
 	public boolean canUseItem(PlayerEntity player, Item item) {
-		return false;
+		return breakTile || breakWall || createdTileName != null || createdWallName != null;
 	}
 
 	public void beginUseItem(PlayerEntity player, Item item) {
@@ -163,6 +154,56 @@ public class ItemType extends AbstractType {
 	}
 
 	public boolean useItem(PlayerEntity player, Item item) {
+		if (breakTile) {
+			Vector2 worldFocus = player.getWorldFocus();
+
+			int tileX = MathUtils.floor(worldFocus.x);
+			int tileY = MathUtils.floor(worldFocus.y);
+
+			return player.destroyTile(tileX, tileY);
+		}
+
+		if (breakWall) {
+			Vector2 worldFocus = player.getWorldFocus();
+
+			int tileX = MathUtils.floor(worldFocus.x);
+			int tileY = MathUtils.floor(worldFocus.y);
+
+			return player.destroyWall(tileX, tileY);
+		}
+
+		if (createdTileName != null) {
+			Vector2 worldFocus = player.getWorldFocus();
+
+			int tileX = MathUtils.floor(worldFocus.x);
+			int tileY = MathUtils.floor(worldFocus.y);
+
+			World world = player.getWorld();
+			if (world.getTileType(tileX, tileY) == TileType.air) {
+				world.setTileType(tileX, tileY, GameRegistry.getTileType(createdTileName));
+
+				return true;
+			}
+
+			return false;
+		}
+
+		if (createdWallName != null) {
+			Vector2 worldFocus = player.getWorldFocus();
+
+			int tileX = MathUtils.floor(worldFocus.x);
+			int tileY = MathUtils.floor(worldFocus.y);
+
+			World world = player.getWorld();
+			if (world.getWallType(tileX, tileY) == WallType.air) {
+				world.setWallType(tileX, tileY, GameRegistry.getWallType(createdWallName));
+
+				return true;
+			}
+
+			return false;
+		}
+
 		return false;
 	}
 }

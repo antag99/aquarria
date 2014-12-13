@@ -30,33 +30,25 @@
 package com.github.antag99.aquarria.tile;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.AbstractType;
+import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.entity.PlayerEntity;
+import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
+import com.github.antag99.aquarria.world.World;
 
-public class TileType extends AbstractType {
-	public static Array<TileType> getTileTypes() {
-		return AbstractType.getTypes(TileType.class);
-	}
-
-	public static TileType forName(String internalName) {
-		return AbstractType.forName(TileType.class, internalName);
-	}
-
+public final class TileType {
 	public static final TileType air = new TileType("tiles/air.json");
-	public static final TileType dirt = new DropTileType("tiles/dirt.json");
-	public static final TileType stone = new DropTileType("tiles/stone.json");
-	public static final TileType grass = new DropTileType("tiles/grass.json");
+	public static final TileType dirt = new TileType("tiles/dirt.json");
+	public static final TileType stone = new TileType("tiles/stone.json");
+	public static final TileType grass = new TileType("tiles/grass.json");
 
+	private String internalName;
 	private String displayName;
 	private boolean solid;
 	private String skinPath;
-	private FrameStyle style;
+	private String dropName;
 	private FrameSkin skin;
 
 	public TileType(String path) {
@@ -64,15 +56,15 @@ public class TileType extends AbstractType {
 	}
 
 	public TileType(JsonValue properties) {
-		super(properties.getString("internalName"));
-
+		internalName = properties.getString("internalName");
 		displayName = properties.getString("displayName", "");
 		skinPath = properties.getString("skin", null);
 		solid = properties.getBoolean("solid", true);
-		style = FrameStyle.forName(properties.getString("style", "block"));
+		dropName = properties.getString("drop", null);
 	}
 
-	public void destroyed(PlayerEntity player, int x, int y) {
+	public String getInternalName() {
+		return internalName;
 	}
 
 	public String getDisplayName() {
@@ -83,30 +75,28 @@ public class TileType extends AbstractType {
 		return solid;
 	}
 
+	public String getSkinPath() {
+		return skinPath;
+	}
+
+	public String getDropName() {
+		return dropName;
+	}
+
 	public FrameSkin getSkin() {
 		return skin;
 	}
 
-	public FrameStyle getStyle() {
-		return style;
+	public void setSkin(FrameSkin skin) {
+		this.skin = skin;
 	}
 
-	@Override
-	protected void queueAssets(AssetManager assetManager) {
-		if (skinPath != null) {
-			assetManager.load(skinPath, TextureAtlas.class);
+	public void destroyed(PlayerEntity player, int x, int y) {
+		if (dropName == null) {
+			return;
 		}
-	}
 
-	@Override
-	protected void getAssets(AssetManager assetManager) {
-		if (skinPath != null) {
-			skin = new FrameSkin(assetManager.get(skinPath, TextureAtlas.class));
-		}
-	}
-
-	@Override
-	protected Class<? extends AbstractType> getTypeClass() {
-		return TileType.class;
+		World world = player.getWorld();
+		world.dropItem(new Item(GameRegistry.getItemType(dropName)), x, y);
 	}
 }

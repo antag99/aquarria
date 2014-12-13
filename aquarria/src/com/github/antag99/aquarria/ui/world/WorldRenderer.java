@@ -217,7 +217,7 @@ public class WorldRenderer extends Widget {
 				FrameSkin skin = type.getSkin();
 
 				if (skin != null) {
-					Frame frame = type.getStyle().findFrame(world, i, j);
+					Frame frame = FrameStyle.block.findFrame(world, i, j);
 					TextureRegion texture = skin.getFrameTexture(frame);
 					batch.draw(texture, i, j, 1f, 1f);
 				}

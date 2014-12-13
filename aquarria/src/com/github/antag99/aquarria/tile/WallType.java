@@ -30,31 +30,23 @@
 package com.github.antag99.aquarria.tile;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.AbstractType;
+import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.entity.PlayerEntity;
+import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
+import com.github.antag99.aquarria.world.World;
 
-public class WallType extends AbstractType {
-	public static Array<WallType> getWallTypes() {
-		return AbstractType.getTypes(WallType.class);
-	}
-
-	public static WallType forName(String internalName) {
-		return AbstractType.forName(WallType.class, internalName);
-	}
-
+public final class WallType {
 	public static final WallType air = new WallType("walls/air.json");
-	public static final WallType dirt = new DropWallType("walls/dirt.json");
-	public static final WallType stone = new DropWallType("walls/stone.json");
+	public static final WallType dirt = new WallType("walls/dirt.json");
+	public static final WallType stone = new WallType("walls/stone.json");
 
+	private String internalName;
 	private String displayName;
 	private String skinPath;
-
+	private String dropName;
 	private FrameSkin skin;
 
 	public WallType(String path) {
@@ -62,39 +54,42 @@ public class WallType extends AbstractType {
 	}
 
 	public WallType(JsonValue properties) {
-		super(properties.getString("internalName"));
-
+		internalName = properties.getString("internalName");
 		displayName = properties.getString("displayName", "");
 		skinPath = properties.getString("skin", null);
+		dropName = properties.getString("drop", null);
+	}
+
+	public String getInternalName() {
+		return internalName;
 	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
 
+	public String getSkinPath() {
+		return skinPath;
+	}
+
+	public String getDropName() {
+		return dropName;
+	}
+
 	public FrameSkin getSkin() {
 		return skin;
 	}
 
+	public void setSkin(FrameSkin skin) {
+		this.skin = skin;
+	}
+
 	public void destroyed(PlayerEntity player, int x, int y) {
-	}
-
-	@Override
-	protected void queueAssets(AssetManager assetManager) {
-		if (skinPath != null) {
-			assetManager.load(skinPath, TextureAtlas.class);
+		if (dropName == null) {
+			return;
 		}
-	}
 
-	@Override
-	protected void getAssets(AssetManager assetManager) {
-		if (skinPath != null) {
-			skin = new FrameSkin(assetManager.get(skinPath, TextureAtlas.class));
-		}
-	}
-
-	@Override
-	protected Class<? extends AbstractType> getTypeClass() {
-		return WallType.class;
+		World world = player.getWorld();
+		world.dropItem(new Item(GameRegistry.getItemType(dropName)), x, y);
 	}
 }

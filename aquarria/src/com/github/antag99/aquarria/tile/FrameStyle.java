@@ -34,18 +34,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.github.antag99.aquarria.AbstractType;
 import com.github.antag99.aquarria.world.World;
 
-public abstract class FrameStyle extends AbstractType {
-	public static Array<FrameStyle> getFrameStyles() {
-		return AbstractType.getTypes(FrameStyle.class);
-	}
-
-	public static FrameStyle forName(String internalName) {
-		return AbstractType.forName(FrameStyle.class, internalName);
-	}
-
+public abstract class FrameStyle {
 	/** Defines a frame, without duplicates (For example, the different bottom-left corner textures are not handled in framing logic). */
 	public static class Frame {
 		// Shared frame instances
@@ -80,8 +71,347 @@ public abstract class FrameStyle extends AbstractType {
 		}
 	}
 
-	public static final FrameStyle block = new BlockFrameStyle("block");
-	public static final FrameStyle wall = new WallFrameStyle("wall");
+	public static final FrameStyle block = new FrameStyle() {
+		@Override
+		public Frame findFrame(World world, int x, int y) {
+			TileType type = world.getTileType(x, y);
+
+			TileType top = y + 1 < world.getHeight() ? world.getTileType(x, y + 1) : type;
+			TileType right = x + 1 < world.getWidth() ? world.getTileType(x + 1, y) : type;
+			TileType bottom = y > 0 ? world.getTileType(x, y - 1) : type;
+			TileType left = x > 0 ? world.getTileType(x - 1, y) : type;
+
+			// TODO: Implement the different variations
+
+			// X = merges with the current tile
+			// - = does not merge with the current tile
+			// ? = unknown
+
+			// FORMATTER_OFF
+			if (top == TileType.air) {
+				//  -
+				// ? ?
+				//  ?
+				if (right == TileType.air) {
+					//  -
+					// ? -
+					//  ?
+					if (bottom == TileType.air) {
+						//  -
+						// ? -
+						//  -
+						if (left == TileType.air) {
+							//  -
+							// - -
+							//  -
+							return Frame.empty;
+						} else {
+							//  -
+							// X -
+							//  -
+							return Frame.leftStrip;
+						}
+					} else {
+						//  -
+						// ? -
+						//  X
+						if (left == TileType.air) {
+							//  -
+							// - -
+							//  X
+							return Frame.bottomStrip;
+						} else {
+							//  -
+							// X -
+							//  X
+							return Frame.topRightCorner;
+						}
+					}
+				} else {
+					//  -
+					// ? X
+					//  ?
+					if (bottom == TileType.air) {
+						//  -
+						// ? X
+						//  -
+						if (left == TileType.air) {
+							//  -
+							// - X
+							//  -
+							return Frame.rightStrip;
+						} else {
+							//  -
+							// X X
+							//  -
+							return Frame.horizontalStrip;
+						}
+					} else {
+						//  -
+						// ? X
+						//  X
+						if (left == TileType.air) {
+							//  -
+							// - X
+							//  X
+							return Frame.topLeftCorner;
+						} else {
+							//  -
+							// X X
+							//  X
+							return Frame.topEdge;
+						}
+					}
+				}
+			} else {
+				//  X
+				// ? ?
+				//  ?
+				if (right == TileType.air) {
+					//  X
+					// ? -
+					//  ?
+					if (bottom == TileType.air) {
+						//  X
+						// ? -
+						//  -
+						if (left == TileType.air) {
+							//  X
+							// - -
+							//  -
+							return Frame.topStrip;
+						} else {
+							//  X
+							// X -
+							//  -
+							return Frame.bottomRightCorner;
+						}
+					} else {
+						//  X
+						// ? -
+						//  X
+						if (left == TileType.air) {
+							//  X
+							// - -
+							//  X
+							return Frame.verticalStrip;
+						} else {
+							//  X
+							// X -
+							//  X
+							return Frame.rightEdge;
+						}
+					}
+				} else {
+					//  X
+					// ? X
+					//  ?
+					if (bottom == TileType.air) {
+						//  X
+						// ? X
+						//  -
+						if (left == TileType.air) {
+							//  X
+							// - X
+							//  -
+							return Frame.bottomLeftCorner;
+						} else {
+							//  X
+							// X X
+							//  -
+							return Frame.bottomEdge;
+						}
+					} else {
+						//  X
+						// ? X
+						//  X
+						if (left == TileType.air) {
+							//  X
+							// - X
+							//  X
+							return Frame.leftEdge;
+						} else {
+							//  X
+							// X X
+							//  X
+							return Frame.full;
+						}
+					}
+				}
+			}
+			// FORMATTER_ON
+		}
+	};
+
+	public static final FrameStyle wall = new FrameStyle() {
+		@Override
+		public Frame findFrame(World world, int x, int y) {
+			WallType type = world.getWallType(x, y);
+
+			WallType top = y + 1 < world.getHeight() ? world.getWallType(x, y + 1) : type;
+			WallType right = x + 1 < world.getWidth() ? world.getWallType(x + 1, y) : type;
+			WallType bottom = y > 0 ? world.getWallType(x, y - 1) : type;
+			WallType left = x > 0 ? world.getWallType(x - 1, y) : type;
+
+			// X = merges with the current wall
+			// - = does not merge with the current wall
+			// ? = unknown
+
+			// FORMATTER_OFF
+			if (top == WallType.air) {
+				//  -
+				// ? ?
+				//  ?
+				if (right == WallType.air) {
+					//  -
+					// ? -
+					//  ?
+					if (bottom == WallType.air) {
+						//  -
+						// ? -
+						//  -
+						if (left == WallType.air) {
+							//  -
+							// - -
+							//  -
+							return Frame.empty;
+						} else {
+							//  -
+							// X -
+							//  -
+							return Frame.leftStrip;
+						}
+					} else {
+						//  -
+						// ? -
+						//  X
+						if (left == WallType.air) {
+							//  -
+							// - -
+							//  X
+							return Frame.bottomStrip;
+						} else {
+							//  -
+							// X -
+							//  X
+							return Frame.topRightCorner;
+						}
+					}
+				} else {
+					//  -
+					// ? X
+					//  ?
+					if (bottom == WallType.air) {
+						//  -
+						// ? X
+						//  -
+						if (left == WallType.air) {
+							//  -
+							// - X
+							//  -
+							return Frame.rightStrip;
+						} else {
+							//  -
+							// X X
+							//  -
+							return Frame.horizontalStrip;
+						}
+					} else {
+						//  -
+						// ? X
+						//  X
+						if (left == WallType.air) {
+							//  -
+							// - X
+							//  X
+							return Frame.topLeftCorner;
+						} else {
+							//  -
+							// X X
+							//  X
+							return Frame.topEdge;
+						}
+					}
+				}
+			} else {
+				//  X
+				// ? ?
+				//  ?
+				if (right == WallType.air) {
+					//  X
+					// ? -
+					//  ?
+					if (bottom == WallType.air) {
+						//  X
+						// ? -
+						//  -
+						if (left == WallType.air) {
+							//  X
+							// - -
+							//  -
+							return Frame.topStrip;
+						} else {
+							//  X
+							// X -
+							//  -
+							return Frame.bottomRightCorner;
+						}
+					} else {
+						//  X
+						// ? -
+						//  X
+						if (left == WallType.air) {
+							//  X
+							// - -
+							//  X
+							return Frame.verticalStrip;
+						} else {
+							//  X
+							// X -
+							//  X
+							return Frame.rightEdge;
+						}
+					}
+				} else {
+					//  X
+					// ? X
+					//  ?
+					if (bottom == WallType.air) {
+						//  X
+						// ? X
+						//  -
+						if (left == WallType.air) {
+							//  X
+							// - X
+							//  -
+							return Frame.bottomLeftCorner;
+						} else {
+							//  X
+							// X X
+							//  -
+							return Frame.bottomEdge;
+						}
+					} else {
+						//  X
+						// ? X
+						//  X
+						if (left == WallType.air) {
+							//  X
+							// - X
+							//  X
+							return Frame.leftEdge;
+						} else {
+							//  X
+							// X X
+							//  X
+							return Frame.full;
+						}
+					}
+				}
+			}
+			// FORMATTER_ON
+		}
+	};
 
 	/** Provides the textures for a specific set of frames */
 	public static class FrameSkin {
@@ -108,15 +438,9 @@ public abstract class FrameStyle extends AbstractType {
 		}
 	}
 
-	public FrameStyle(String internalName) {
-		super(internalName);
+	public FrameStyle() {
 	}
 
 	/** Finds the frame for the tile at the specified position */
 	public abstract Frame findFrame(World world, int x, int y);
-
-	@Override
-	protected Class<? extends AbstractType> getTypeClass() {
-		return FrameStyle.class;
-	}
 }

@@ -42,16 +42,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.github.antag99.aquarria.entity.EntityType;
-import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.ui.IngameScreen;
 import com.github.antag99.aquarria.util.DirectoryFileHandleResolver;
 import com.github.antag99.aquarria.util.FileHandleResolverMultiplexer;
 import com.github.antag99.aquarria.util.TextureAtlasLoader;
 import com.github.antag99.aquarria.util.TextureRegionLoader;
-import com.github.antag99.aquarria.util.Utils;
 import com.github.antag99.aquarria.xnb.Steam;
 
 public class Aquarria extends Game {
@@ -75,13 +70,10 @@ public class Aquarria extends Game {
 		stage = new Stage(viewport, batch);
 		terrariaAssets = Gdx.files.local("assets-terraria");
 
-		// To workaround forgetting to refresh eclipse asset folder on first launch
-		DirectoryFileHandleResolver assetFiles = new DirectoryFileHandleResolver(Gdx.files.local("assets"));
 		DirectoryFileHandleResolver terrariaFiles = new DirectoryFileHandleResolver(terrariaAssets);
 		InternalFileHandleResolver internalFiles = new InternalFileHandleResolver();
 
 		resolver = new FileHandleResolverMultiplexer(internalFiles);
-		resolver.addResolver(assetFiles);
 		resolver.addResolver(internalFiles);
 		resolver.addResolver(terrariaFiles);
 
@@ -140,22 +132,16 @@ public class Aquarria extends Game {
 
 		ingameScreen = new IngameScreen(this);
 
+		GameRegistry.initialize();
+
 		System.out.print("Loading assets... ");
 
-		/* HACK HACK */
-		Utils.forceLoad(ItemType.class);
-		Utils.forceLoad(TileType.class);
-		Utils.forceLoad(WallType.class);
-		Utils.forceLoad(EntityType.class);
-
-		AbstractType.queueAll(assetManager);
-
+		GameRegistry.queueAssets(assetManager);
 		ingameScreen.load();
 
 		assetManager.finishLoading();
 
-		AbstractType.getAll(assetManager);
-
+		GameRegistry.getAssets(assetManager);
 		ingameScreen.initialize();
 
 		System.out.println("Done!");
