@@ -38,7 +38,6 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.AbstractType;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
-import com.github.antag99.aquarria.ui.world.TileRenderer;
 
 public class TileType extends AbstractType {
 	public static Array<TileType> getTileTypes() {
@@ -59,7 +58,6 @@ public class TileType extends AbstractType {
 	private String skinPath;
 	private FrameStyle style;
 	private FrameSkin skin;
-	private TileRenderer renderer;
 
 	public TileType(String path) {
 		this(new JsonReader().parse(Gdx.files.internal(path)));
@@ -72,7 +70,6 @@ public class TileType extends AbstractType {
 		skinPath = properties.getString("skin", null);
 		solid = properties.getBoolean("solid", true);
 		style = FrameStyle.forName(properties.getString("style", "block"));
-		renderer = TileRenderer.forName(properties.getString("renderer", "normal"));
 	}
 
 	public void destroyed(PlayerEntity player, int x, int y) {
@@ -92,10 +89,6 @@ public class TileType extends AbstractType {
 
 	public FrameStyle getStyle() {
 		return style;
-	}
-
-	public TileRenderer getRenderer() {
-		return renderer;
 	}
 
 	@Override

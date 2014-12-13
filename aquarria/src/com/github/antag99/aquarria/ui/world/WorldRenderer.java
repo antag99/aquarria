@@ -48,6 +48,7 @@ import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.FrameStyle.Frame;
 import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
+import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldView;
@@ -212,7 +213,14 @@ public class WorldRenderer extends Widget {
 
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
-				world.getTileType(i, j).getRenderer().drawTile(batch, world, i, j);
+				TileType type = world.getTileType(i, j);
+				FrameSkin skin = type.getSkin();
+
+				if (skin != null) {
+					Frame frame = type.getStyle().findFrame(world, i, j);
+					TextureRegion texture = skin.getFrameTexture(frame);
+					batch.draw(texture, i, j, 1f, 1f);
+				}
 			}
 		}
 	}
