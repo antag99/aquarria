@@ -27,16 +27,61 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.tile;
+package com.github.antag99.aquarria.tests;
 
-import com.github.antag99.aquarria.world.World;
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
 
 /**
- * {@link DefaultFrameStyle} implementation for tiles
+ * Test that ensures that all .java files start with the proper license header.
  */
-public class BlockFrameStyle extends DefaultFrameStyle {
-	@Override
-	protected boolean merge(World world, int x, int y, int x2, int y2) {
-		return !world.inBounds(x2, y2) || world.getTileType(x2, y2) != TileType.air;
+public class LicenseHeaderTests {
+	private static Array<String> exceptions = Array.with(
+			"LzxDecoder.java",
+			"Dxt3.java",
+			"WinRegistry.java",
+			"sudoplay",
+
+			"bin",
+			"build",
+			"debug",
+			"gradle",
+			".gradle",
+			".git",
+			"assets",
+			"assets-terraria"
+			);
+
+	private static byte[] headerBytes;
+	private static byte[] fileBytes;
+
+	static {
+		headerBytes = new FileHandle("../HEADER").readBytes();
+		fileBytes = new byte[headerBytes.length];
+	}
+
+	@Test
+	public void testLicenseHeaders() {
+		scan(new FileHandle("."));
+	}
+
+	private void scan(FileHandle file) {
+		if (exceptions.contains(file.name(), false)) {
+			return;
+		}
+
+		if (file.isDirectory()) {
+			for (FileHandle child : file.list()) {
+				scan(child);
+			}
+		} else {
+			if (file.extension().equals("java")) {
+				file.readBytes(fileBytes, 0, fileBytes.length);
+				Assert.assertArrayEquals(file.path() + " is missing the license header.", headerBytes, fileBytes);
+			}
+		}
 	}
 }
