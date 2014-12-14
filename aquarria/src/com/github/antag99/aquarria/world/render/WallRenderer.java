@@ -31,11 +31,10 @@ package com.github.antag99.aquarria.world.render;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.tile.FrameStyle.Frame;
-import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
 import com.github.antag99.aquarria.world.World;
 
 public class WallRenderer extends WorldRendererCallback {
@@ -49,11 +48,11 @@ public class WallRenderer extends WorldRendererCallback {
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
 				WallType type = world.getWallType(i, j);
-				FrameSkin skin = type.getSkin();
+				TextureAtlas atlas = type.getAtlas();
 
-				if (skin != null) {
-					Frame frame = FrameStyle.wall.findFrame(world, i, j);
-					TextureRegion texture = skin.getFrameTexture(frame);
+				if (atlas != null) {
+					FrameStyle style = type.getStyle();
+					TextureRegion texture = atlas.findRegion(style.findFrame(world, i, j));
 					batch.draw(texture, i - 0.5f, j - 0.5f, 2f, 2f);
 				}
 			}

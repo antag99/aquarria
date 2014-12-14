@@ -45,8 +45,10 @@ import com.github.antag99.aquarria.item.ItemUsageCallbackFactory;
 import com.github.antag99.aquarria.item.ItemUsageStyle;
 import com.github.antag99.aquarria.item.TilePlaceCallbackFactory;
 import com.github.antag99.aquarria.item.WallPlaceCallbackFactory;
-import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
+import com.github.antag99.aquarria.tile.BlockFrameStyleFactory;
+import com.github.antag99.aquarria.tile.FrameStyleFactory;
 import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.tile.WallFrameStyleFactory;
 import com.github.antag99.aquarria.tile.WallType;
 
 public final class GameRegistry {
@@ -71,6 +73,7 @@ public final class GameRegistry {
 
 	// Mapping of name to ItemUsageCallback factories, name is specified when registered
 	private static ObjectMap<String, ItemUsageCallbackFactory> itemUsageCallbackFactories = new ObjectMap<>();
+	private static ObjectMap<String, FrameStyleFactory> frameStyleFactories = new ObjectMap<>();
 
 	public static void registerItem(ItemType itemType) {
 		internalNameToItemType.put(itemType.getInternalName(), itemType);
@@ -208,11 +211,15 @@ public final class GameRegistry {
 	}
 
 	public static void initialize() {
-		// Register item usage callback factories, used by items
+		// Register item usage callback factories
 		registerItemUsageCallbackFactory("placeTile", new TilePlaceCallbackFactory());
 		registerItemUsageCallbackFactory("placeWall", new WallPlaceCallbackFactory());
 		registerItemUsageCallbackFactory("destroyTile", new DestroyTileCallbackFactory());
 		registerItemUsageCallbackFactory("destroyWall", new DestroyWallCallbackFactory());
+
+		// Register frame style factories
+		registerFrameStyleFactory("block", new BlockFrameStyleFactory());
+		registerFrameStyleFactory("wall", new WallFrameStyleFactory());
 
 		// Initialize and register all types, leave out references to other types
 		for (JsonValue itemConfiguration : fileNameToItemConfiguration.values()) {
@@ -242,7 +249,7 @@ public final class GameRegistry {
 
 			if (assetManager != null && tileConfiguration.has("skin")) {
 				TextureAtlas atlas = assetManager.get(tileConfiguration.getString("skin"), TextureAtlas.class);
-				tileType.setSkin(new FrameSkin(atlas));
+				tileType.setAtlas(atlas);
 			}
 
 			registerTile(tileType);
@@ -255,7 +262,7 @@ public final class GameRegistry {
 
 			if (assetManager != null && wallConfiguration.has("skin")) {
 				TextureAtlas atlas = assetManager.get(wallConfiguration.getString("skin"), TextureAtlas.class);
-				wallType.setSkin(new FrameSkin(atlas));
+				wallType.setAtlas(atlas);
 			}
 
 			registerWall(wallType);
@@ -318,6 +325,11 @@ public final class GameRegistry {
 
 		for (JsonValue tileConfiguration : fileNameToTileConfiguration.values()) {
 			TileType tileType = getTileType(tileConfiguration.getString("internalName"));
+
+			String tileFrameStyle = tileConfiguration.getString("style", "block");
+			FrameStyleFactory styleFactory = getFrameStyleFactory(tileFrameStyle);
+			tileType.setStyle(styleFactory.create(tileConfiguration));
+
 			if (tileConfiguration.has("drop")) {
 				tileType.setDrop(getItemType(tileConfiguration.getString("drop")));
 			}
@@ -325,6 +337,11 @@ public final class GameRegistry {
 
 		for (JsonValue wallConfiguration : fileNameToWallConfiguration.values()) {
 			WallType wallType = getWallType(wallConfiguration.getString("internalName"));
+
+			String wallFrameStyle = wallConfiguration.getString("style", "wall");
+			FrameStyleFactory styleFactory = getFrameStyleFactory(wallFrameStyle);
+			wallType.setStyle(styleFactory.create(wallConfiguration));
+
 			if (wallConfiguration.has("drop")) {
 				wallType.setDrop(getItemType(wallConfiguration.getString("drop")));
 			}
@@ -336,6 +353,7 @@ public final class GameRegistry {
 		internalNameToTileType.clear();
 		internalNameToEntityType.clear();
 		itemUsageCallbackFactories.clear();
+		frameStyleFactories.clear();
 	}
 
 	public static void registerItemUsageCallbackFactory(String name, ItemUsageCallbackFactory factory) {
@@ -346,6 +364,18 @@ public final class GameRegistry {
 		ItemUsageCallbackFactory factory = itemUsageCallbackFactories.get(name);
 		if (factory == null) {
 			throw new IllegalArgumentException("ItemUsageCallbackFactory not found: " + name);
+		}
+		return factory;
+	}
+
+	public static void registerFrameStyleFactory(String name, FrameStyleFactory factory) {
+		frameStyleFactories.put(name, factory);
+	}
+
+	public static FrameStyleFactory getFrameStyleFactory(String name) {
+		FrameStyleFactory factory = frameStyleFactories.get(name);
+		if (factory == null) {
+			throw new IllegalArgumentException("FrameStyleFactory not found: " + name);
 		}
 		return factory;
 	}

@@ -29,10 +29,10 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
 import com.github.antag99.aquarria.world.World;
 
 public final class TileType {
@@ -45,7 +45,8 @@ public final class TileType {
 	private String displayName;
 	private boolean solid;
 	private ItemType drop;
-	private FrameSkin skin;
+	private TextureAtlas atlas;
+	private FrameStyle style;
 
 	public TileType() {
 	}
@@ -74,12 +75,20 @@ public final class TileType {
 		this.solid = solid;
 	}
 
-	public FrameSkin getSkin() {
-		return skin;
+	public TextureAtlas getAtlas() {
+		return atlas;
 	}
 
-	public void setSkin(FrameSkin skin) {
-		this.skin = skin;
+	public void setAtlas(TextureAtlas atlas) {
+		this.atlas = atlas;
+	}
+
+	public FrameStyle getStyle() {
+		return style;
+	}
+
+	public void setStyle(FrameStyle style) {
+		this.style = style;
 	}
 
 	public ItemType getDrop() {
