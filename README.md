@@ -1,4 +1,12 @@
-Aquarria
-=======================================
-An attempt to recreate terraria in java. <br>
-Uses libgdx (http://libgdx.badlogicgames.com) and Java 8.
+#Aquarria
+An attempt to recreate [Terraria](http://terraria.org/) in Java, using [libgdx](http://libgdx.badlogicgames.com/) as the
+game development framework. It is a work-in-progress, but some features are already implemented. It works by extracting
+Terraria's assets on first launch, and the processing them to a more suitable format. Java 8 is required, as it has many
+new cool features, and the game wouldn't suit a phone in the near future. The goal is to provide an alternate version of
+Terraria that is both more maintainable and open sourcier than the original version.
+
+##Screenshot
+![Aquarria Screenshot](https://dl-web.dropbox.com/get/Aquarria/Aquarria%20Screenshot.png?_subject_uid=255531829&w=AAB9eUU3PkaGfr-pFS85jTN8BFIblM1nMUuhNmoTIEA2CQ&dl=1)
+
+##License
+Aquarria is licensed under the [New BSD License](http://choosealicense.com/licenses/bsd-3-clause/).
