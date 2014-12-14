@@ -41,6 +41,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.antag99.aquarria.ui.IngameScreen;
 import com.github.antag99.aquarria.util.DirectoryFileHandleResolver;
@@ -163,7 +164,7 @@ public class Aquarria extends Game {
 	public void dispose() {
 		super.dispose();
 		batch.dispose();
-		new Json().toJson(properties, AquarriaProperties.class, configFile);
+		new Json(OutputType.json).toJson(properties, AquarriaProperties.class, configFile);
 	}
 
 	public Stage getStage() {
