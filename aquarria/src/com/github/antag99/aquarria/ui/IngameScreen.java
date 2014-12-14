@@ -48,8 +48,6 @@ import com.github.antag99.aquarria.world.WorldView;
 import com.github.antag99.aquarria.world.render.WorldRenderer;
 
 public class IngameScreen extends AquarriaScreen {
-	public static final float PIXELS_PER_METER = 16;
-
 	private World world;
 	private WorldGenerator worldGenerator;
 	private WorldView worldView;
@@ -204,8 +202,8 @@ public class IngameScreen extends AquarriaScreen {
 	@Override
 	public void resize(int width, int height) {
 		OrthographicCamera cam = worldView.getCamera();
-		cam.viewportWidth = width / PIXELS_PER_METER;
-		cam.viewportHeight = height / PIXELS_PER_METER;
+		cam.viewportWidth = width / World.PIXELS_PER_METER;
+		cam.viewportHeight = height / World.PIXELS_PER_METER;
 		cam.update();
 		super.resize(width, height);
 	}

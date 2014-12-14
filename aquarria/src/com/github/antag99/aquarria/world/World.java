@@ -40,6 +40,8 @@ import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.util.DynamicIDMapping;
 
 public class World {
+	public static final float PIXELS_PER_METER = 16;
+
 	private int width;
 	private int height;
 

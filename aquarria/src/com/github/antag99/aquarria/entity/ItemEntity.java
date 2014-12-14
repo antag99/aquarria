@@ -30,7 +30,7 @@
 package com.github.antag99.aquarria.entity;
 
 import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.ui.IngameScreen;
+import com.github.antag99.aquarria.world.World;
 
 public class ItemEntity extends Entity {
 	private Item item;
@@ -51,11 +51,11 @@ public class ItemEntity extends Entity {
 
 	@Override
 	public float getWidth() {
-		return item.getType().getWidth() / IngameScreen.PIXELS_PER_METER;
+		return item.getType().getWidth() / World.PIXELS_PER_METER;
 	}
 
 	@Override
 	public float getHeight() {
-		return item.getType().getHeight() / IngameScreen.PIXELS_PER_METER;
+		return item.getType().getHeight() / World.PIXELS_PER_METER;
 	}
 }

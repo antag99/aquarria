@@ -36,8 +36,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.entity.PlayerView;
 import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.ui.IngameScreen;
 import com.github.antag99.aquarria.util.Utils;
+import com.github.antag99.aquarria.world.World;
 
 public class PlayerEntityRenderer extends EntityTypeRenderer<PlayerEntity, PlayerView> {
 	private TextureRegion[] hairFrames;
@@ -84,8 +84,8 @@ public class PlayerEntityRenderer extends EntityTypeRenderer<PlayerEntity, Playe
 		float centerX = player.getX() + player.getWidth() / 2f;
 		float centerY = player.getY() + player.getHeight() / 2f;
 
-		float scaleX = 40f / (player.getWidth() * IngameScreen.PIXELS_PER_METER);
-		float scaleY = 56f / (player.getHeight() * IngameScreen.PIXELS_PER_METER);
+		float scaleX = 40f / (player.getWidth() * World.PIXELS_PER_METER);
+		float scaleY = 56f / (player.getHeight() * World.PIXELS_PER_METER);
 
 		float x = centerX - player.getWidth() * 0.5f * scaleX;
 		float y = centerY - player.getHeight() * 0.5f * scaleY;
@@ -121,8 +121,8 @@ public class PlayerEntityRenderer extends EntityTypeRenderer<PlayerEntity, Playe
 
 			batch.setColor(Color.WHITE);
 			batch.draw(itemTexture, player.getX() + itemOffsetX, player.getY() + itemOffsetY, 0f, 0f,
-					item.getType().getWidth() / IngameScreen.PIXELS_PER_METER,
-					item.getType().getHeight() / IngameScreen.PIXELS_PER_METER,
+					item.getType().getWidth() / World.PIXELS_PER_METER,
+					item.getType().getHeight() / World.PIXELS_PER_METER,
 					1f, 1f, itemRotation);
 		}
 	}
