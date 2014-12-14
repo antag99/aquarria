@@ -29,6 +29,8 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tests;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -58,6 +60,8 @@ public class LicenseHeaderTests {
 	private static byte[] headerBytes;
 	private static byte[] fileBytes;
 
+	boolean fail = false;
+
 	static {
 		headerBytes = new FileHandle("../HEADER").readBytes();
 		fileBytes = new byte[headerBytes.length];
@@ -66,6 +70,8 @@ public class LicenseHeaderTests {
 	@Test
 	public void testLicenseHeaders() {
 		scan(new FileHandle("."));
+
+		Assert.assertTrue("License headers, or exceptions, are missing.", !fail);
 	}
 
 	private void scan(FileHandle file) {
@@ -80,7 +86,10 @@ public class LicenseHeaderTests {
 		} else {
 			if (file.extension().equals("java")) {
 				file.readBytes(fileBytes, 0, fileBytes.length);
-				Assert.assertArrayEquals(file.path() + " is missing the license header.", headerBytes, fileBytes);
+				if (!Arrays.equals(headerBytes, fileBytes)) {
+					System.err.println(file.path() + " is missing the license header.");
+					fail = true;
+				}
 			}
 		}
 	}
