@@ -33,6 +33,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 
 public class Utils {
@@ -115,6 +117,21 @@ public class Utils {
 		} catch (Exception ex) {
 			throw new AssertionError(ex);
 		}
+	}
+
+	public static Rectangle asRectangle(JsonValue value) {
+		if (!value.isArray()) {
+			throw new IllegalArgumentException("array expected");
+		}
+
+		float[] bounds = value.asFloatArray();
+
+		if (bounds.length != 4) {
+			throw new IllegalArgumentException("Improper array length, expected 4 elements: "
+					+ "x, y, width, height; got " + bounds.length + " elements.");
+		}
+
+		return new Rectangle(bounds[0], bounds[1], bounds[2], bounds[3]);
 	}
 
 	public static String replaceFormat(String formatString, ObjectMap<String, String> replacements, String defaultReplacement) {

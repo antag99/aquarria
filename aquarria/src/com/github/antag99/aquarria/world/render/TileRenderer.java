@@ -33,6 +33,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.world.World;
@@ -52,8 +53,9 @@ public class TileRenderer extends WorldRendererCallback {
 
 				if (atlas != null) {
 					FrameStyle style = type.getStyle();
+					Rectangle frame = type.getFrame();
 					TextureRegion texture = atlas.findRegion(style.findFrame(world, i, j));
-					batch.draw(texture, i, j, 1f, 1f);
+					batch.draw(texture, i + frame.x, j + frame.y, frame.width, frame.height);
 				}
 			}
 		}

@@ -50,6 +50,7 @@ import com.github.antag99.aquarria.tile.FrameStyleFactory;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallFrameStyleFactory;
 import com.github.antag99.aquarria.tile.WallType;
+import com.github.antag99.aquarria.util.Utils;
 
 public final class GameRegistry {
 	private GameRegistry() {
@@ -247,6 +248,10 @@ public final class GameRegistry {
 			tileType.setDisplayName(tileConfiguration.getString("displayName", ""));
 			tileType.setSolid(tileConfiguration.getBoolean("solid", true));
 
+			if (tileConfiguration.has("frame")) {
+				tileType.setFrame(Utils.asRectangle(tileConfiguration.get("frame")));
+			}
+
 			if (assetManager != null && tileConfiguration.has("skin")) {
 				TextureAtlas atlas = assetManager.get(tileConfiguration.getString("skin"), TextureAtlas.class);
 				tileType.setAtlas(atlas);
@@ -259,6 +264,10 @@ public final class GameRegistry {
 			WallType wallType = new WallType();
 			wallType.setInternalName(wallConfiguration.getString("internalName"));
 			wallType.setDisplayName(wallConfiguration.getString("displayName", ""));
+
+			if (wallConfiguration.has("frame")) {
+				wallType.setFrame(Utils.asRectangle(wallConfiguration.get("frame")));
+			}
 
 			if (assetManager != null && wallConfiguration.has("skin")) {
 				TextureAtlas atlas = assetManager.get(wallConfiguration.getString("skin"), TextureAtlas.class);

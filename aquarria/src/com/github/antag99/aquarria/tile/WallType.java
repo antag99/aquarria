@@ -30,6 +30,7 @@
 package com.github.antag99.aquarria.tile;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Rectangle;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.item.ItemType;
@@ -45,6 +46,7 @@ public final class WallType {
 	private ItemType drop;
 	private TextureAtlas atlas;
 	private FrameStyle style;
+	private Rectangle frame = new Rectangle(-0.5f, -0.5f, 2f, 2f);
 
 	public WallType() {
 	}
@@ -87,6 +89,19 @@ public final class WallType {
 
 	public void setStyle(FrameStyle style) {
 		this.style = style;
+	}
+
+	/**
+	 * Gets the frame of this wall type. This specifies the
+	 * rendering bounds of a wall, relative to the wall's
+	 * position.
+	 */
+	public Rectangle getFrame() {
+		return frame;
+	}
+
+	public void setFrame(Rectangle frame) {
+		this.frame.set(frame);
 	}
 
 	public void destroyed(PlayerEntity player, int x, int y) {
