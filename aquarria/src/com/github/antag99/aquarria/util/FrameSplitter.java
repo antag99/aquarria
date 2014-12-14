@@ -42,6 +42,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 public class FrameSplitter {
 	private static ObjectMap<String, Rectangle> blockFrames = new ObjectMap<String, Rectangle>();
 	private static ObjectMap<String, Rectangle> wallFrames = new ObjectMap<String, Rectangle>();
+	private static ObjectMap<String, Rectangle> treeFrames = new ObjectMap<String, Rectangle>();
 
 	static {
 		blockFrames.put("empty", new Rectangle(162, 54, 16, 16));
@@ -77,11 +78,23 @@ public class FrameSplitter {
 		wallFrames.put("rightEdge", new Rectangle(144, 0, 32, 32));
 		wallFrames.put("topEdge", new Rectangle(36, 0, 32, 32));
 		wallFrames.put("leftEdge", new Rectangle(0, 0, 32, 32));
+
+		treeFrames.put("trunk", new Rectangle(22, 0, 20, 20));
+		treeFrames.put("top", new Rectangle(0, 198, 20, 20));
+		treeFrames.put("leftBranch", new Rectangle(66, 44, 20, 20));
+		treeFrames.put("rightBranch", new Rectangle(88, 66, 20, 20));
+		treeFrames.put("stub", new Rectangle(0, 0, 20, 20));
+		treeFrames.put("fullStub", new Rectangle(88, 132, 20, 20));
+		treeFrames.put("leftStub", new Rectangle(66, 132, 20, 20));
+		treeFrames.put("rightStub", new Rectangle(0, 132, 20, 20));
+		treeFrames.put("leftFoot", new Rectangle(0, 132, 20, 20));
+		treeFrames.put("rightFoot", new Rectangle(22, 132, 20, 20));
 	}
 
 	public enum SplitType {
 		BLOCK,
-		WALL;
+		WALL,
+		TREE;
 	}
 
 	private ObjectMap<String, Rectangle> frames;
@@ -97,6 +110,9 @@ public class FrameSplitter {
 			break;
 		case WALL:
 			frames = wallFrames;
+			break;
+		case TREE:
+			frames = treeFrames;
 			break;
 		}
 	}
