@@ -43,6 +43,8 @@ public class FrameSplitter {
 	private static ObjectMap<String, Rectangle> blockFrames = new ObjectMap<String, Rectangle>();
 	private static ObjectMap<String, Rectangle> wallFrames = new ObjectMap<String, Rectangle>();
 	private static ObjectMap<String, Rectangle> treeFrames = new ObjectMap<String, Rectangle>();
+	private static ObjectMap<String, Rectangle> treeBranchFrames = new ObjectMap<String, Rectangle>();
+	private static ObjectMap<String, Rectangle> treeTopFrames = new ObjectMap<String, Rectangle>();
 
 	static {
 		blockFrames.put("empty", new Rectangle(162, 54, 16, 16));
@@ -89,12 +91,19 @@ public class FrameSplitter {
 		treeFrames.put("rightStub", new Rectangle(0, 132, 20, 20));
 		treeFrames.put("leftFoot", new Rectangle(0, 132, 20, 20));
 		treeFrames.put("rightFoot", new Rectangle(22, 132, 20, 20));
+
+		treeBranchFrames.put("leftLeaves", new Rectangle(0, 0, 40, 40));
+		treeBranchFrames.put("rightLeaves", new Rectangle(42, 0, 40, 40));
+
+		treeTopFrames.put("topLeaves", new Rectangle(0, 0, 80, 80));
 	}
 
 	public enum SplitType {
 		BLOCK,
 		WALL,
-		TREE;
+		TREE,
+		TREE_BRANCH,
+		TREE_TOP;
 	}
 
 	private ObjectMap<String, Rectangle> frames;
@@ -113,6 +122,12 @@ public class FrameSplitter {
 			break;
 		case TREE:
 			frames = treeFrames;
+			break;
+		case TREE_BRANCH:
+			frames = treeBranchFrames;
+			break;
+		case TREE_TOP:
+			frames = treeTopFrames;
 			break;
 		}
 	}

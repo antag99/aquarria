@@ -46,6 +46,9 @@ public class ContentExtractor {
 
 	private FrameSplitter tileSplitter = new FrameSplitter(SplitType.BLOCK);
 	private FrameSplitter wallSplitter = new FrameSplitter(SplitType.WALL);
+	private FrameSplitter treeSplitter = new FrameSplitter(SplitType.TREE);
+	private FrameSplitter treeBranchSplitter = new FrameSplitter(SplitType.TREE_BRANCH);
+	private FrameSplitter treeTopSplitter = new FrameSplitter(SplitType.TREE_TOP);
 
 	public ContentExtractor(FileHandle contentDirectory, FileHandle outputAssetDirectory) {
 		this.contentDirectory = contentDirectory;
@@ -84,6 +87,11 @@ public class ContentExtractor {
 
 		convertWallImage("Wall_2.png", "dirt");
 		convertWallImage("Wall_1.png", "stone");
+
+		treeSplitter.split(rawImagesDir.child("Tiles_5.png"), outputAssetDirectory.child("images/tiles/tree/"));
+		treeBranchSplitter.split(rawImagesDir.child("Tree_Branches_0.png"), outputAssetDirectory.child("images/tiles/tree/"));
+		treeTopSplitter.split(rawImagesDir.child("Tree_Tops_0.png"), outputAssetDirectory.child("images/tiles/tree/"));
+		createAtlas(outputAssetDirectory.child("images/tiles/tree/"), "tree");
 
 		// Move around images, for easier maintenance
 		rawImagesDir.child("Item_1.png").copyTo(outputAssetDirectory.child("images/items/pickaxe.png"));
