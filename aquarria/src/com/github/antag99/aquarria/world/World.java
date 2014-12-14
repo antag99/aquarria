@@ -37,6 +37,7 @@ import com.github.antag99.aquarria.entity.ItemEntity;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
+import com.github.antag99.aquarria.util.Direction;
 import com.github.antag99.aquarria.util.DynamicIDMapping;
 
 public class World {
@@ -54,7 +55,9 @@ public class World {
 	private DynamicIDMapping<WallType> wallMapping;
 
 	private short[] surfaceLevel;
-	private byte[] light;
+	private byte[] lightMatrix;
+
+	private byte[] attachMatrix;
 
 	private Array<Entity> entities;
 
@@ -82,8 +85,9 @@ public class World {
 		wallMapping.getID(WallType.air);
 		entities = new Array<Entity>();
 		surfaceLevel = new short[width];
-		light = new byte[width * height];
+		lightMatrix = new byte[width * height];
 		liquidMatrix = new byte[width * height];
+		attachMatrix = new byte[width * height];
 		activeLiquids = new IntArray();
 	}
 
@@ -233,11 +237,11 @@ public class World {
 	}
 
 	public float getLight(int x, int y) {
-		return (light[width * y + x] & 0xff) / 255f;
+		return (lightMatrix[width * y + x] & 0xff) / 255f;
 	}
 
 	public void setLight(int x, int y, float light) {
-		this.light[y * width + x] = (byte) (light * 255);
+		this.lightMatrix[y * width + x] = (byte) (light * 255);
 	}
 
 	public void computeLight(int x, int y, int width, int height) {
@@ -294,6 +298,17 @@ public class World {
 			activeLiquids.add(position);
 		if (liquid == 0 && liquidActive)
 			activeLiquids.removeValue(position);
+	}
+
+	public boolean isAttached(int x, int y, Direction direction) {
+		return (attachMatrix[x + y * width] & (1 << direction.ordinal())) != 0;
+	}
+
+	public void setAttached(int x, int y, Direction direction, boolean attached) {
+		if (attached)
+			attachMatrix[x + y * width] &= ~(1 << direction.ordinal());
+		else
+			attachMatrix[x + y * width] |= 1 << direction.ordinal();
 	}
 
 	public void update(float delta) {
