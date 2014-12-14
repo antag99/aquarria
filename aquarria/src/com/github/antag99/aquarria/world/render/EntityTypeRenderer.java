@@ -29,23 +29,27 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.world.render;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.EntityView;
-import com.github.antag99.aquarria.entity.ItemEntity;
 
-public class ItemEntityRenderer extends EntityTypeRenderer<ItemEntity, EntityView<ItemEntity>> {
-	public ItemEntityRenderer() {
-		super(ItemEntity.class);
+public abstract class EntityTypeRenderer<T extends Entity, V extends EntityView<T>> {
+	protected Class<T> entityClass;
+
+	public EntityTypeRenderer(Class<T> entityClass) {
+		this.entityClass = entityClass;
 	}
 
-	@Override
-	public void renderEntity(Batch batch, EntityView<ItemEntity> view) {
-		ItemEntity item = view.getEntity();
-		TextureRegion texture = item.getItem().getType().getTexture();
-
-		batch.setColor(Color.WHITE);
-		batch.draw(texture, item.getX(), item.getY(), item.getWidth(), item.getHeight());
+	public Class<T> getEntityClass() {
+		return entityClass;
 	}
+
+	public void queueAssets(AssetManager assetManager) {
+	}
+
+	public void getAssets(AssetManager assetManager) {
+	}
+
+	public abstract void renderEntity(Batch batch, V view);
 }

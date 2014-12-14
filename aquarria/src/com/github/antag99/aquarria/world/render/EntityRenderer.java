@@ -30,26 +30,48 @@
 package com.github.antag99.aquarria.world.render;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.Entity;
-import com.github.antag99.aquarria.entity.EntityView;
+import com.github.antag99.aquarria.world.World;
 
-public abstract class EntityRenderer<T extends Entity, V extends EntityView<T>> {
-	protected Class<T> entityClass;
+public class EntityRenderer extends WorldRendererCallback {
+	@SuppressWarnings("rawtypes")
+	private ObjectMap<Class, EntityTypeRenderer> entityTypeRenderers = new ObjectMap<Class, EntityTypeRenderer>();
 
-	public EntityRenderer(Class<T> entityClass) {
-		this.entityClass = entityClass;
-	}
-
-	public Class<T> getEntityClass() {
-		return entityClass;
+	public EntityRenderer() {
+		addEntityTypeRenderer(new PlayerEntityRenderer());
+		addEntityTypeRenderer(new ItemEntityRenderer());
 	}
 
 	public void queueAssets(AssetManager assetManager) {
+		for (EntityTypeRenderer<?, ?> entityRenderer : entityTypeRenderers.values()) {
+			entityRenderer.queueAssets(assetManager);
+		}
 	}
 
 	public void getAssets(AssetManager assetManager) {
+		for (EntityTypeRenderer<?, ?> entityRenderer : entityTypeRenderers.values()) {
+			entityRenderer.getAssets(assetManager);
+		}
 	}
 
-	public abstract void renderEntity(Batch batch, V view);
+	public void addEntityTypeRenderer(EntityTypeRenderer<?, ?> entityTypeRenderer) {
+		entityTypeRenderers.put(entityTypeRenderer.getEntityClass(), entityTypeRenderer);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void render(Batch batch, World world, int startX, int startY, int endX, int endY) {
+		for (Entity entity : world.getEntities()) {
+			if (entity.isActive()) {
+				batch.setColor(Color.WHITE);
+
+				EntityTypeRenderer entityTypeRenderer = entityTypeRenderers.get(entity.getClass());
+				entityTypeRenderer.renderEntity(batch, entity.getView());
+			}
+		}
+	}
+
 }

@@ -32,20 +32,31 @@ package com.github.antag99.aquarria.world.render;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.antag99.aquarria.entity.EntityView;
-import com.github.antag99.aquarria.entity.ItemEntity;
+import com.github.antag99.aquarria.tile.FrameStyle;
+import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.tile.FrameStyle.Frame;
+import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
+import com.github.antag99.aquarria.world.World;
 
-public class ItemEntityRenderer extends EntityTypeRenderer<ItemEntity, EntityView<ItemEntity>> {
-	public ItemEntityRenderer() {
-		super(ItemEntity.class);
+public class TileRenderer extends WorldRendererCallback {
+	public TileRenderer() {
 	}
 
 	@Override
-	public void renderEntity(Batch batch, EntityView<ItemEntity> view) {
-		ItemEntity item = view.getEntity();
-		TextureRegion texture = item.getItem().getType().getTexture();
-
+	public void render(Batch batch, World world, int startX, int startY, int endX, int endY) {
 		batch.setColor(Color.WHITE);
-		batch.draw(texture, item.getX(), item.getY(), item.getWidth(), item.getHeight());
+
+		for (int i = startX; i < endX; ++i) {
+			for (int j = startY; j < endY; ++j) {
+				TileType type = world.getTileType(i, j);
+				FrameSkin skin = type.getSkin();
+
+				if (skin != null) {
+					Frame frame = FrameStyle.block.findFrame(world, i, j);
+					TextureRegion texture = skin.getFrameTexture(frame);
+					batch.draw(texture, i, j, 1f, 1f);
+				}
+			}
+		}
 	}
 }

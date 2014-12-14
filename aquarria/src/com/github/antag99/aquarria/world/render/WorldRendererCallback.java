@@ -29,23 +29,16 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.world.render;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.antag99.aquarria.entity.EntityView;
-import com.github.antag99.aquarria.entity.ItemEntity;
+import com.github.antag99.aquarria.world.World;
 
-public class ItemEntityRenderer extends EntityTypeRenderer<ItemEntity, EntityView<ItemEntity>> {
-	public ItemEntityRenderer() {
-		super(ItemEntity.class);
+public abstract class WorldRendererCallback {
+	public void queueAssets(AssetManager assetManager) {
 	}
 
-	@Override
-	public void renderEntity(Batch batch, EntityView<ItemEntity> view) {
-		ItemEntity item = view.getEntity();
-		TextureRegion texture = item.getItem().getType().getTexture();
-
-		batch.setColor(Color.WHITE);
-		batch.draw(texture, item.getX(), item.getY(), item.getWidth(), item.getHeight());
+	public void getAssets(AssetManager assetManager) {
 	}
+
+	public abstract void render(Batch batch, World world, int startX, int startY, int endX, int endY);
 }

@@ -29,23 +29,50 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.world.render;
 
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.github.antag99.aquarria.entity.EntityView;
-import com.github.antag99.aquarria.entity.ItemEntity;
+import com.github.antag99.aquarria.world.World;
 
-public class ItemEntityRenderer extends EntityTypeRenderer<ItemEntity, EntityView<ItemEntity>> {
-	public ItemEntityRenderer() {
-		super(ItemEntity.class);
+public class LiquidRenderer extends WorldRendererCallback {
+	private TextureRegion waterTopTexture;
+	private TextureRegion waterFullTexture;
+
+	public LiquidRenderer() {
 	}
 
 	@Override
-	public void renderEntity(Batch batch, EntityView<ItemEntity> view) {
-		ItemEntity item = view.getEntity();
-		TextureRegion texture = item.getItem().getType().getTexture();
+	public void queueAssets(AssetManager assetManager) {
+		assetManager.load("images/tiles/water.png", TextureRegion.class);
+	}
 
-		batch.setColor(Color.WHITE);
-		batch.draw(texture, item.getX(), item.getY(), item.getWidth(), item.getHeight());
+	@Override
+	public void getAssets(AssetManager assetManager) {
+		TextureRegion waterTexture = assetManager.get("images/tiles/water.png");
+		waterTopTexture = new TextureRegion(waterTexture, 0, 0, waterTexture.getRegionWidth(), 4);
+		waterFullTexture = new TextureRegion(waterTexture, 0, 4, waterTexture.getRegionWidth(), waterTexture.getRegionHeight() - 4);
+	}
+
+	@Override
+	public void render(Batch batch, World world, int startX, int startY, int endX, int endY) {
+		batch.setColor(1f, 1f, 1f, 0.8f);
+		for (int i = startX; i < endX; ++i) {
+			for (int j = startY; j < endY; ++j) {
+				int liquid = world.getLiquid(i, j);
+				if (liquid != 0) {
+					float liquidPercentage = liquid / 255f;
+
+					boolean hasTopLiquid = j < world.getHeight() && (world.getLiquid(i, j + 1) != 0 ||
+							(liquid == 255 && world.getTileType(i, j + 1).isSolid()));
+
+					if (hasTopLiquid) {
+						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage);
+					} else {
+						batch.draw(waterFullTexture, i, j, 1f, liquidPercentage - 0.25f);
+						batch.draw(waterTopTexture, i, j + liquidPercentage - 0.25f, 1f, 0.25f);
+					}
+				}
+			}
+		}
 	}
 }

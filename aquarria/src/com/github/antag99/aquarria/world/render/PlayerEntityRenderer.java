@@ -39,7 +39,7 @@ import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.ui.IngameScreen;
 import com.github.antag99.aquarria.util.Utils;
 
-public class PlayerEntityRenderer extends EntityRenderer<PlayerEntity, PlayerView> {
+public class PlayerEntityRenderer extends EntityTypeRenderer<PlayerEntity, PlayerView> {
 	private TextureRegion[] hairFrames;
 	private TextureRegion[] headFrames;
 	private TextureRegion[] eyesFrames;
