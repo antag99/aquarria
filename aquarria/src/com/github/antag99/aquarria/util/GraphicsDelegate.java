@@ -27,7 +27,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.gdx;
+package com.github.antag99.aquarria.util;
 
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.GL20;
