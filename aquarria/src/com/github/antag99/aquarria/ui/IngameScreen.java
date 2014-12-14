@@ -41,11 +41,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.github.antag99.aquarria.Aquarria;
 import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.ui.world.WorldRenderer;
 import com.github.antag99.aquarria.util.GraphicsDelegate;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
 import com.github.antag99.aquarria.world.WorldView;
+import com.github.antag99.aquarria.world.render.WorldRenderer;
 
 public class IngameScreen extends AquarriaScreen {
 	public static final float PIXELS_PER_METER = 16;

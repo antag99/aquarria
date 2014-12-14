@@ -27,7 +27,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.ui.world;
+package com.github.antag99.aquarria.world.render;
 
 import static com.badlogic.gdx.math.MathUtils.ceil;
 import static com.badlogic.gdx.math.MathUtils.clamp;
