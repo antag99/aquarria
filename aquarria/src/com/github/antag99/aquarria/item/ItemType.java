@@ -29,90 +29,73 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.item;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.GameRegistry;
-import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.world.World;
 
 public final class ItemType {
-	public static final ItemType air = new ItemType("items/air.json");
-	public static final ItemType dirt = new ItemType("items/dirt.json");
-	public static final ItemType stone = new ItemType("items/stone.json");
-	public static final ItemType pickaxe = new ItemType("items/pickaxe.json");
-	public static final ItemType hammer = new ItemType("items/hammer.json");
+	// Static fields that are automatically set by GameRegistry via reflection.
+	public static ItemType air;
+	public static ItemType dirt;
+	public static ItemType stone;
+	public static ItemType pickaxe;
+	public static ItemType hammer;
+	public static ItemType dirtWall;
+	public static ItemType stoneWall;
 
-	public static final ItemType dirtWall = new ItemType("items/dirtWall.json");
-	public static final ItemType stoneWall = new ItemType("items/stoneWall.json");
-
+	// Item properties
 	private String internalName;
 	private String displayName;
 	private int maxStack;
 	private float width;
 	private float height;
-	private String texturePath;
 	private float usageTime;
 	private float usageAnimationTime;
 	private boolean usageRepeat;
 	private boolean consumable;
 	private ItemUsageStyle usageStyle;
-	private boolean breakWall;
-	private boolean breakTile;
-	private String createdTileName;
-	private String createdWallName;
-
+	private ItemUsageCallback usageCallback;
 	private TextureRegion texture;
 
-	public ItemType(String path) {
-		this(new JsonReader().parse(Gdx.files.internal(path)));
-	}
-
-	public ItemType(JsonValue properties) {
-		internalName = properties.getString("internalName");
-		displayName = properties.getString("displayName");
-		maxStack = properties.getInt("maxStack", 1);
-		width = properties.getFloat("width", 0f);
-		height = properties.getFloat("height", 0f);
-		texturePath = properties.getString("texture", null);
-		usageTime = properties.getFloat("usageTime", 0f);
-		usageAnimationTime = properties.getFloat("usageAnimationTime", usageTime);
-		usageRepeat = properties.getBoolean("usageRepeat", false);
-		consumable = properties.getBoolean("consumable", false);
-		usageStyle = ItemUsageStyle.forName(properties.getString("usageStyle", "swing"));
-		createdWallName = properties.getString("createdWall", null);
-		createdTileName = properties.getString("createdTile", null);
-		breakTile = properties.getBoolean("breakTile", false);
-		breakWall = properties.getBoolean("breakWall", false);
+	public ItemType() {
 	}
 
 	public String getInternalName() {
 		return internalName;
 	}
 
+	public void setInternalName(String internalName) {
+		this.internalName = internalName;
+	}
+
 	public String getDisplayName() {
 		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	public float getWidth() {
 		return width;
 	}
 
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
 	public float getHeight() {
 		return height;
+	}
+
+	public void setHeight(float height) {
+		this.height = height;
 	}
 
 	public int getMaxStack() {
 		return maxStack;
 	}
 
-	public String getTexturePath() {
-		return texturePath;
+	public void setMaxStack(int maxStack) {
+		this.maxStack = maxStack;
 	}
 
 	public TextureRegion getTexture() {
@@ -127,83 +110,47 @@ public final class ItemType {
 		return usageTime;
 	}
 
+	public void setUsageTime(float usageTime) {
+		this.usageTime = usageTime;
+	}
+
 	public float getUsageAnimationTime() {
 		return usageAnimationTime;
+	}
+
+	public void setUsageAnimationTime(float usageAnimationTime) {
+		this.usageAnimationTime = usageAnimationTime;
 	}
 
 	public boolean getUsageRepeat() {
 		return usageRepeat;
 	}
 
+	public void setUsageRepeat(boolean usageRepeat) {
+		this.usageRepeat = usageRepeat;
+	}
+
 	public boolean isConsumable() {
 		return consumable;
+	}
+
+	public void setConsumable(boolean consumable) {
+		this.consumable = consumable;
 	}
 
 	public ItemUsageStyle getUsageStyle() {
 		return usageStyle;
 	}
 
-	public boolean canUseItem(PlayerEntity player, Item item) {
-		return breakTile || breakWall || createdTileName != null || createdWallName != null;
+	public void setUsageStyle(ItemUsageStyle usageStyle) {
+		this.usageStyle = usageStyle;
 	}
 
-	public void beginUseItem(PlayerEntity player, Item item) {
+	public ItemUsageCallback getUsageCallback() {
+		return usageCallback;
 	}
 
-	public void updateUseItem(PlayerEntity player, Item item, float delta) {
-	}
-
-	public boolean useItem(PlayerEntity player, Item item) {
-		if (breakTile) {
-			Vector2 worldFocus = player.getWorldFocus();
-
-			int tileX = MathUtils.floor(worldFocus.x);
-			int tileY = MathUtils.floor(worldFocus.y);
-
-			return player.destroyTile(tileX, tileY);
-		}
-
-		if (breakWall) {
-			Vector2 worldFocus = player.getWorldFocus();
-
-			int tileX = MathUtils.floor(worldFocus.x);
-			int tileY = MathUtils.floor(worldFocus.y);
-
-			return player.destroyWall(tileX, tileY);
-		}
-
-		if (createdTileName != null) {
-			Vector2 worldFocus = player.getWorldFocus();
-
-			int tileX = MathUtils.floor(worldFocus.x);
-			int tileY = MathUtils.floor(worldFocus.y);
-
-			World world = player.getWorld();
-			if (world.getTileType(tileX, tileY) == TileType.air) {
-				world.setTileType(tileX, tileY, GameRegistry.getTileType(createdTileName));
-
-				return true;
-			}
-
-			return false;
-		}
-
-		if (createdWallName != null) {
-			Vector2 worldFocus = player.getWorldFocus();
-
-			int tileX = MathUtils.floor(worldFocus.x);
-			int tileY = MathUtils.floor(worldFocus.y);
-
-			World world = player.getWorld();
-			if (world.getWallType(tileX, tileY) == WallType.air) {
-				world.setWallType(tileX, tileY, GameRegistry.getWallType(createdWallName));
-
-				return true;
-			}
-
-			return false;
-		}
-
-		return false;
+	public void setUsageCallback(ItemUsageCallback usageCallback) {
+		this.usageCallback = usageCallback;
 	}
 }

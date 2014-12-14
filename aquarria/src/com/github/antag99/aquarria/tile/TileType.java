@@ -29,58 +29,49 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.item.Item;
+import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
 import com.github.antag99.aquarria.world.World;
 
 public final class TileType {
-	public static final TileType air = new TileType("tiles/air.json");
-	public static final TileType dirt = new TileType("tiles/dirt.json");
-	public static final TileType stone = new TileType("tiles/stone.json");
-	public static final TileType grass = new TileType("tiles/grass.json");
+	public static TileType air;
+	public static TileType dirt;
+	public static TileType stone;
+	public static TileType grass;
 
 	private String internalName;
 	private String displayName;
 	private boolean solid;
-	private String skinPath;
-	private String dropName;
+	private ItemType drop;
 	private FrameSkin skin;
 
-	public TileType(String path) {
-		this(new JsonReader().parse(Gdx.files.internal(path)));
-	}
-
-	public TileType(JsonValue properties) {
-		internalName = properties.getString("internalName");
-		displayName = properties.getString("displayName", "");
-		skinPath = properties.getString("skin", null);
-		solid = properties.getBoolean("solid", true);
-		dropName = properties.getString("drop", null);
+	public TileType() {
 	}
 
 	public String getInternalName() {
 		return internalName;
 	}
 
+	public void setInternalName(String internalName) {
+		this.internalName = internalName;
+	}
+
 	public String getDisplayName() {
 		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	public boolean isSolid() {
 		return solid;
 	}
 
-	public String getSkinPath() {
-		return skinPath;
-	}
-
-	public String getDropName() {
-		return dropName;
+	public void setSolid(boolean solid) {
+		this.solid = solid;
 	}
 
 	public FrameSkin getSkin() {
@@ -91,12 +82,20 @@ public final class TileType {
 		this.skin = skin;
 	}
 
+	public ItemType getDrop() {
+		return drop;
+	}
+
+	public void setDrop(ItemType drop) {
+		this.drop = drop;
+	}
+
 	public void destroyed(PlayerEntity player, int x, int y) {
-		if (dropName == null) {
+		if (drop == null) {
 			return;
 		}
 
 		World world = player.getWorld();
-		world.dropItem(new Item(GameRegistry.getItemType(dropName)), x, y);
+		world.dropItem(new Item(drop), x, y);
 	}
 }

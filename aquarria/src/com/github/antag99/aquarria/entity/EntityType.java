@@ -29,13 +29,9 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.entity;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-
 public final class EntityType {
-	public static final EntityType player = new EntityType("entities/player.json");
-	public static final EntityType item = new EntityType("entities/item.json");
+	public static EntityType player;
+	public static EntityType item;
 
 	private String internalName;
 	private String displayName;
@@ -46,46 +42,62 @@ public final class EntityType {
 	private float defaultWidth;
 	private float defaultHeight;
 
-	public EntityType(JsonValue properties) {
-		internalName = properties.getString("internalName");
-		displayName = properties.getString("displayName", "");
-		solid = properties.getBoolean("solid", true);
-		weight = properties.getFloat("weight", 1f);
-		maxHealth = properties.getInt("maxHealth", 0);
-
-		defaultWidth = properties.getFloat("width");
-		defaultHeight = properties.getFloat("height");
-	}
-
-	public EntityType(String path) {
-		this(new JsonReader().parse(Gdx.files.internal(path)));
+	public EntityType() {
 	}
 
 	public String getInternalName() {
 		return internalName;
 	}
 
+	public void setInternalName(String internalName) {
+		this.internalName = internalName;
+	}
+
 	public String getDisplayName() {
 		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	public boolean isSolid() {
 		return solid;
 	}
 
+	public void setSolid(boolean solid) {
+		this.solid = solid;
+	}
+
 	public float getWeight() {
 		return weight;
+	}
+
+	public void setWeight(float weight) {
+		this.weight = weight;
 	}
 
 	public int getMaxHealth() {
 		return maxHealth;
 	}
 
+	public void setMaxHealth(int maxHealth) {
+		this.maxHealth = maxHealth;
+	}
+
 	public float getDefaultWidth() {
 		return defaultWidth;
 	}
 
+	public void setDefaultWidth(float defaultWidth) {
+		this.defaultWidth = defaultWidth;
+	}
+
 	public float getDefaultHeight() {
 		return defaultHeight;
+	}
+
+	public void setDefaultHeight(float defaultHeight) {
+		this.defaultHeight = defaultHeight;
 	}
 }

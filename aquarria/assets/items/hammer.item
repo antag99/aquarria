@@ -5,7 +5,7 @@
 	"height" : 32,
 	"maxStack" : 1,
 	"texture" : "images/items/hammer.png",
-	"breakWall" : true,
+	"usage" : "destroyWall",
 	"usageTime" : 0.3,
 	"consumable" : false,
 	"usageRepeat" : true

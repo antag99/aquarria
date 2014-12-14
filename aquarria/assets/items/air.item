@@ -3,6 +3,5 @@
 	"displayName" : "",
 	"width" : 0,
 	"height" : 0,
-	"maxStack" : 0,
-	"texture" : null,
+	"maxStack" : 0
 }

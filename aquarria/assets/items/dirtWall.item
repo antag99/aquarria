@@ -5,6 +5,7 @@
 	"height" : 16,
 	"maxStack" : 99,
 	"texture" : "images/items/dirtWall.png",
+	"usage" : "placeWall",
 	"createdWall" : "dirt",
 	"consumable" : true,
 	"usageTime" : 0.3,

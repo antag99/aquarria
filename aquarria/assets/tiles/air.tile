@@ -1,5 +1,5 @@
 {
 	"internalName" : "air",
 	"displayName" : "",
-	"skin" : null
+	"solid" : false
 }

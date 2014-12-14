@@ -27,65 +27,50 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.tile;
+package com.github.antag99.aquarria.item;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.tile.FrameStyle.FrameSkin;
+import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.world.World;
 
-public final class WallType {
-	public static WallType air;
-	public static WallType dirt;
-	public static WallType stone;
+public class TilePlaceCallback implements ItemUsageCallback {
+	private String createdTileName;
 
-	private String internalName;
-	private String displayName;
-	private ItemType drop;
-	private FrameSkin skin;
-
-	public WallType() {
+	public TilePlaceCallback(String createdTileName) {
+		this.createdTileName = createdTileName;
 	}
 
-	public String getInternalName() {
-		return internalName;
+	@Override
+	public boolean canUseItem(PlayerEntity player, Item item) {
+		return true;
 	}
 
-	public void setInternalName(String internalName) {
-		this.internalName = internalName;
+	@Override
+	public void beginUseItem(PlayerEntity player, Item item) {
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	@Override
+	public void updateUseItem(PlayerEntity player, Item item, float delta) {
 	}
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
+	@Override
+	public boolean useItem(PlayerEntity player, Item item) {
+		Vector2 worldFocus = player.getWorldFocus();
 
-	public ItemType getDrop() {
-		return drop;
-	}
-
-	public void setDrop(ItemType drop) {
-		this.drop = drop;
-	}
-
-	public FrameSkin getSkin() {
-		return skin;
-	}
-
-	public void setSkin(FrameSkin skin) {
-		this.skin = skin;
-	}
-
-	public void destroyed(PlayerEntity player, int x, int y) {
-		if (drop == null) {
-			return;
-		}
+		int tileX = MathUtils.floor(worldFocus.x);
+		int tileY = MathUtils.floor(worldFocus.y);
 
 		World world = player.getWorld();
-		world.dropItem(new Item(drop), x, y);
+		if (world.getTileType(tileX, tileY) == TileType.air) {
+			world.setTileType(tileX, tileY, GameRegistry.getTileType(createdTileName));
+
+			return true;
+		}
+
+		return false;
 	}
+
 }

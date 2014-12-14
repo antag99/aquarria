@@ -132,16 +132,14 @@ public class Aquarria extends Game {
 
 		ingameScreen = new IngameScreen(this);
 
-		GameRegistry.initialize();
-
 		System.out.print("Loading assets... ");
 
-		GameRegistry.queueAssets(assetManager);
+		GameRegistry.loadAssets(assetManager);
 		ingameScreen.load();
 
 		assetManager.finishLoading();
 
-		GameRegistry.getAssets(assetManager);
+		GameRegistry.initialize();
 		ingameScreen.initialize();
 
 		System.out.println("Done!");

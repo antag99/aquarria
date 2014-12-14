@@ -35,6 +35,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.github.antag99.aquarria.item.Inventory;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.item.ItemType;
+import com.github.antag99.aquarria.item.ItemUsageCallback;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.world.World;
@@ -114,32 +115,36 @@ public class PlayerEntity extends Entity {
 			}
 		}
 
-		if (repeatUsingItem && !usingItem) {
-			if (!usedItem.isEmpty() && usedItem.getType().canUseItem(this, usedItem)) {
-				usingItem = true;
-				usedItem.getType().beginUseItem(this, usedItem);
-			} else {
-				usingItem = false;
-				repeatUsingItem = false;
-			}
-		}
+		if (usingItem || repeatUsingItem) {
+			ItemUsageCallback itemUsageCallback = usedItem.getType().getUsageCallback();
 
-		if (usingItem) {
-			useTime += delta;
-			usedItem.getType().updateUseItem(this, usedItem, delta);
-			if (useTime % usedItem.getType().getUsageTime() < delta) {
-				if (usedItem.getType().useItem(this, usedItem) && usedItem.getType().isConsumable()) {
-					usedItem.setStack(usedItem.getStack() - 1);
-				}
-
-				if (usedItem.isEmpty() || !usedItem.getType().getUsageRepeat() || !repeatUsingItem) {
+			if (repeatUsingItem && !usingItem) {
+				if (itemUsageCallback != null && !usedItem.isEmpty() && itemUsageCallback.canUseItem(this, usedItem)) {
+					usingItem = true;
+					itemUsageCallback.beginUseItem(this, usedItem);
+				} else {
 					usingItem = false;
 					repeatUsingItem = false;
-					useTime = 0f;
 				}
 			}
-		} else {
-			useTime = 0f;
+
+			if (usingItem) {
+				useTime += delta;
+				itemUsageCallback.updateUseItem(this, usedItem, delta);
+				if (useTime % usedItem.getType().getUsageTime() < delta) {
+					if (itemUsageCallback.useItem(this, usedItem) && usedItem.getType().isConsumable()) {
+						usedItem.setStack(usedItem.getStack() - 1);
+					}
+
+					if (usedItem.isEmpty() || !usedItem.getType().getUsageRepeat() || !repeatUsingItem) {
+						usingItem = false;
+						repeatUsingItem = false;
+						useTime = 0f;
+					}
+				}
+			} else {
+				useTime = 0f;
+			}
 		}
 	}
 
