@@ -30,6 +30,7 @@
 package com.github.antag99.aquarria.item;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.GameRegistry;
 
 public final class TilePlaceCallbackFactory implements ItemUsageCallbackFactory {
 	public TilePlaceCallbackFactory() {
@@ -37,6 +38,6 @@ public final class TilePlaceCallbackFactory implements ItemUsageCallbackFactory 
 
 	@Override
 	public ItemUsageCallback create(JsonValue itemConfig) {
-		return new TilePlaceCallback(itemConfig.getString("createdTile"));
+		return new TilePlaceCallback(GameRegistry.getTileType(itemConfig.getString("createdTile")));
 	}
 }

@@ -31,16 +31,15 @@ package com.github.antag99.aquarria.item;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.world.World;
 
 public class TilePlaceCallback implements ItemUsageCallback {
-	private String createdTileName;
+	private TileType createdTile;
 
-	public TilePlaceCallback(String createdTileName) {
-		this.createdTileName = createdTileName;
+	public TilePlaceCallback(TileType createdTile) {
+		this.createdTile = createdTile;
 	}
 
 	@Override
@@ -65,7 +64,7 @@ public class TilePlaceCallback implements ItemUsageCallback {
 
 		World world = player.getWorld();
 		if (world.getTileType(tileX, tileY) == TileType.air) {
-			world.setTileType(tileX, tileY, GameRegistry.getTileType(createdTileName));
+			world.setTileType(tileX, tileY, createdTile);
 
 			return true;
 		}

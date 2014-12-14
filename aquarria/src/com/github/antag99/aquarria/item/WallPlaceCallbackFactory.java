@@ -30,6 +30,7 @@
 package com.github.antag99.aquarria.item;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.GameRegistry;
 
 public final class WallPlaceCallbackFactory implements ItemUsageCallbackFactory {
 	public WallPlaceCallbackFactory() {
@@ -37,6 +38,6 @@ public final class WallPlaceCallbackFactory implements ItemUsageCallbackFactory 
 
 	@Override
 	public ItemUsageCallback create(JsonValue itemConfig) {
-		return new WallPlaceCallback(itemConfig.getString("createdWall"));
+		return new WallPlaceCallback(GameRegistry.getWallType(itemConfig.getString("createdWall")));
 	}
 }

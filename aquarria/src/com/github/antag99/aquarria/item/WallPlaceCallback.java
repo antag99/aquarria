@@ -31,16 +31,15 @@ package com.github.antag99.aquarria.item;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.world.World;
 
 public class WallPlaceCallback implements ItemUsageCallback {
-	private String createdWallName;
+	private WallType createdWall;
 
-	public WallPlaceCallback(String createdWallName) {
-		this.createdWallName = createdWallName;
+	public WallPlaceCallback(WallType createdWall) {
+		this.createdWall = createdWall;
 	}
 
 	@Override
@@ -65,12 +64,11 @@ public class WallPlaceCallback implements ItemUsageCallback {
 
 		World world = player.getWorld();
 		if (world.getWallType(tileX, tileY) == WallType.air) {
-			world.setWallType(tileX, tileY, GameRegistry.getWallType(createdWallName));
+			world.setWallType(tileX, tileY, createdWall);
 
 			return true;
 		}
 
 		return false;
 	}
-
 }
