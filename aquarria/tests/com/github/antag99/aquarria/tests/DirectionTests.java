@@ -27,38 +27,44 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.util;
+package com.github.antag99.aquarria.tests;
 
-public enum Direction {
-	// Note that the order is important
-	NORTH(0, 1),
-	NORTHEAST(1, 1),
-	EAST(1, 0),
-	SOUTHEAST(1, -1),
-	SOUTH(0, -1),
-	SOUTHWEST(-1, -1),
-	WEST(-1, 0),
-	NORTHWEST(-1, 1);
+import org.junit.Assert;
+import org.junit.Test;
 
-	private static Direction[] values = values();
+import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.utils.ObjectSet;
+import com.github.antag99.aquarria.util.Direction;
 
-	private int horizontal;
-	private int vertical;
-
-	private Direction(int horizontal, int vertical) {
-		this.horizontal = horizontal;
-		this.vertical = vertical;
+public class DirectionTests {
+	@Test
+	public void testOppositeDirections() {
+		Assert.assertEquals(Direction.SOUTH, Direction.NORTH.opposite());
+		Assert.assertEquals(Direction.SOUTHEAST, Direction.NORTHWEST.opposite());
+		Assert.assertEquals(Direction.SOUTHWEST, Direction.NORTHEAST.opposite());
+		Assert.assertEquals(Direction.NORTH, Direction.SOUTH.opposite());
+		Assert.assertEquals(Direction.NORTHWEST, Direction.SOUTHEAST.opposite());
+		Assert.assertEquals(Direction.NORTHEAST, Direction.SOUTHWEST.opposite());
+		Assert.assertEquals(Direction.WEST, Direction.EAST.opposite());
+		Assert.assertEquals(Direction.EAST, Direction.WEST.opposite());
 	}
 
-	public int getHorizontal() {
-		return horizontal;
+	@Test
+	public void testOppositeDirectionsCorrect() {
+		for (Direction direction : Direction.values()) {
+			Direction opposite = direction.opposite();
+			Assert.assertEquals(direction.name() + "'s opposite direction is incorrect", 0, direction.getHorizontal() + opposite.getHorizontal());
+			Assert.assertEquals(direction.name() + "'s opposite direction is incorrect", 0, direction.getVertical() + opposite.getVertical());
+		}
 	}
 
-	public int getVertical() {
-		return vertical;
-	}
-
-	public Direction opposite() {
-		return values[(ordinal() + 4) % values.length];
+	@Test
+	public void testDuplicateDirections() {
+		// Quick hack to check that no duplicate directions existed
+		ObjectSet<GridPoint2> existingDirections = new ObjectSet<GridPoint2>();
+		for (Direction direction : Direction.values()) {
+			Assert.assertTrue(direction.name() + " is duplicate", existingDirections.add(
+					new GridPoint2(direction.getHorizontal(), direction.getVertical())));
+		}
 	}
 }
