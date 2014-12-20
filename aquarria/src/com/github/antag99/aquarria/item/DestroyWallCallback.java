@@ -57,7 +57,7 @@ public class DestroyWallCallback implements ItemUsageCallback {
 		int tileX = MathUtils.floor(worldFocus.x);
 		int tileY = MathUtils.floor(worldFocus.y);
 
-		return player.destroyWall(tileX, tileY);
+		return player.getWorld().destroyWall(tileX, tileY);
 	}
 
 }

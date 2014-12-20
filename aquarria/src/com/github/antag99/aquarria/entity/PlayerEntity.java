@@ -36,9 +36,6 @@ import com.github.antag99.aquarria.item.Inventory;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.item.ItemUsageCallback;
-import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.world.World;
 
 public class PlayerEntity extends Entity {
 	private Inventory hotbar;
@@ -146,24 +143,6 @@ public class PlayerEntity extends Entity {
 				useTime = 0f;
 			}
 		}
-	}
-
-	/** @return Whether the tile at the specified position was destroyed */
-	public boolean destroyTile(int x, int y) {
-		World world = getWorld();
-		TileType type = world.getTileType(x, y);
-		type.destroyed(this, x, y);
-		world.setTileType(x, y, TileType.air);
-		return type != TileType.air;
-	}
-
-	/** @return Whether the wall at the specified position was destroyed */
-	public boolean destroyWall(int x, int y) {
-		World world = getWorld();
-		WallType type = world.getWallType(x, y);
-		type.destroyed(this, x, y);
-		world.setWallType(x, y, WallType.air);
-		return type != WallType.air;
 	}
 
 	public Inventory getHotbar() {

@@ -300,15 +300,76 @@ public class World {
 			activeLiquids.removeValue(position);
 	}
 
+	/**
+	 * Gets whether the tile is attached to another tile in the given direction.
+	 * Tiles attached to another tile will be destroyed when that tile is destroyed.
+	 * 
+	 * @param direction The direction towards the other tile.
+	 */
 	public boolean isAttached(int x, int y, Direction direction) {
 		return (attachMatrix[x + y * width] & (1 << direction.ordinal())) != 0;
 	}
 
+	/**
+	 * Sets whether the tile is attached to another tile in the given direction.
+	 * Tiles attached to another tile will be destroyed when that tile is destroyed.
+	 * 
+	 * @param direction The direction towards the other tile
+	 * @param attached Whether the given tile should be attached to the other tile.
+	 */
 	public void setAttached(int x, int y, Direction direction, boolean attached) {
 		if (attached)
 			attachMatrix[x + y * width] &= ~(1 << direction.ordinal());
 		else
 			attachMatrix[x + y * width] |= 1 << direction.ordinal();
+	}
+
+	/**
+	 * Recursively detects detached tiles and destroys them
+	 */
+	public void checkAttachment(int x, int y) {
+		// TODO: Add some property to indicate whether a tile can be attached to another
+		if (getTileType(x, y) == TileType.air) {
+			for (Direction direction : Direction.values()) {
+				if (inBounds(x + direction.getHorizontal(), y + direction.getVertical()) &&
+						isAttached(x + direction.getHorizontal(), y + direction.getVertical(), direction.opposite())) {
+					destroyTile(x + direction.getHorizontal(), y + direction.getVertical());
+				}
+			}
+		}
+	}
+
+	/**
+	 * Destroys the tile at the given position. This also causes
+	 * the tile to drop an item.
+	 * 
+	 * @return Whether the tile at the specified position was destroyed
+	 */
+	public boolean destroyTile(int x, int y) {
+		TileType type = getTileType(x, y);
+		// TODO: Add some other way to handle tile/wall drops
+		if (type.getDrop() != null) {
+			dropItem(new Item(type.getDrop()), x, y);
+		}
+		setTileType(x, y, TileType.air);
+		checkAttachment(x, y);
+		return type != TileType.air;
+	}
+
+	/**
+	 * Destroys the wall at the given position. This also causes
+	 * the wall to drop an item.
+	 * 
+	 * @return Whether the wall at the specified position was destroyed
+	 */
+	public boolean destroyWall(int x, int y) {
+		WallType type = getWallType(x, y);
+		if (type.getDrop() != null) {
+			dropItem(new Item(type.getDrop()), x, y);
+		}
+		setWallType(x, y, WallType.air);
+		checkAttachment(x, y);
+		return type != WallType.air;
 	}
 
 	public void update(float delta) {

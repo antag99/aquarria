@@ -31,10 +31,7 @@ package com.github.antag99.aquarria.tile;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
-import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.world.World;
 
 public final class TileType {
 	public static TileType air;
@@ -112,14 +109,5 @@ public final class TileType {
 
 	public void setFrame(Rectangle frame) {
 		this.frame.set(frame);
-	}
-
-	public void destroyed(PlayerEntity player, int x, int y) {
-		if (drop == null) {
-			return;
-		}
-
-		World world = player.getWorld();
-		world.dropItem(new Item(drop), x, y);
 	}
 }
