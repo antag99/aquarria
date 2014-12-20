@@ -318,7 +318,7 @@ public class World {
 	 * @param attached Whether the given tile should be attached to the other tile.
 	 */
 	public void setAttached(int x, int y, Direction direction, boolean attached) {
-		if (attached)
+		if (!attached)
 			attachMatrix[x + y * width] &= ~(1 << direction.ordinal());
 		else
 			attachMatrix[x + y * width] |= 1 << direction.ordinal();
