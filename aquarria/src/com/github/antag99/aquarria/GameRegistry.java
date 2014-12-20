@@ -234,6 +234,7 @@ public final class GameRegistry {
 			itemType.setUsageAnimationTime(itemConfiguration.getFloat("usageAnimationTime", itemType.getUsageTime()));
 			itemType.setUsageRepeat(itemConfiguration.getBoolean("usageRepeat", false));
 			itemType.setUsageStyle(ItemUsageStyle.swing); // TODO: This should be changed
+			itemType.setConsumable(itemConfiguration.getBoolean("consumable", false));
 
 			if (assetManager != null && itemConfiguration.has("texture")) {
 				itemType.setTexture(assetManager.get(itemConfiguration.getString("texture", null), TextureRegion.class));
