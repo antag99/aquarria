@@ -89,7 +89,7 @@ public class FrameSplitter {
 		treeFrames.put("fullStub", new Rectangle(88, 132, 20, 20));
 		treeFrames.put("leftStub", new Rectangle(66, 132, 20, 20));
 		treeFrames.put("rightStub", new Rectangle(0, 132, 20, 20));
-		treeFrames.put("leftFoot", new Rectangle(0, 132, 20, 20));
+		treeFrames.put("leftFoot", new Rectangle(44, 132, 20, 20));
 		treeFrames.put("rightFoot", new Rectangle(22, 132, 20, 20));
 
 		treeBranchFrames.put("leftLeaves", new Rectangle(0, 0, 40, 40));
