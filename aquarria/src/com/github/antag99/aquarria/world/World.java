@@ -74,6 +74,13 @@ public class World {
 	public World(int width, int height) {
 		this.width = width;
 		this.height = height;
+		clear();
+	}
+
+	/**
+	 * Clears this world
+	 */
+	public void clear() {
 		spawnX = width / 2f;
 		spawnY = height / 2f;
 		tileMatrix = new short[width * height];

@@ -27,52 +27,13 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.util;
+package com.github.antag99.aquarria.tile;
 
-public enum Direction {
-	// Note that the order is important
-	NORTH(0, 1),
-	NORTHEAST(1, 1),
-	EAST(1, 0),
-	SOUTHEAST(1, -1),
-	SOUTH(0, -1),
-	SOUTHWEST(-1, -1),
-	WEST(-1, 0),
-	NORTHWEST(-1, 1);
+import com.badlogic.gdx.utils.JsonValue;
 
-	private static Direction[] values = values();
-
-	private int horizontal;
-	private int vertical;
-
-	private Direction(int horizontal, int vertical) {
-		this.horizontal = horizontal;
-		this.vertical = vertical;
-	}
-
-	public int getHorizontal() {
-		return horizontal;
-	}
-
-	public int getVertical() {
-		return vertical;
-	}
-
-	public Direction opposite() {
-		return values[(ordinal() + 4) % values.length];
-	}
-
-	public static Direction get(int x, int y) {
-		x = x < 0 ? -1 : x > 0 ? 1 : 0;
-		y = y < 0 ? -1 : y > 0 ? 1 : 0;
-
-		for (Direction direction : values) {
-			if (direction.getHorizontal() == x && direction.getVertical() == y) {
-				return direction;
-			}
-		}
-
-		// (0, 0)
-		return null;
+public final class TreeFrameStyleFactory implements FrameStyleFactory {
+	@Override
+	public FrameStyle create(JsonValue tileConfiguration) {
+		return new TreeFrameStyle();
 	}
 }

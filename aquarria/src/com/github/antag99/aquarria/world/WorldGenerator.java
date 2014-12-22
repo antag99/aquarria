@@ -29,6 +29,8 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.world;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -36,6 +38,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
+import com.github.antag99.aquarria.util.Direction;
 import com.github.antag99.aquarria.util.PerlinNoise;
 
 public class WorldGenerator {
@@ -48,13 +51,7 @@ public class WorldGenerator {
 	}
 
 	public void generate() {
-		// Clear the world
-		for (int i = 0; i < world.getWidth(); ++i) {
-			for (int j = 0; j < world.getHeight(); ++j) {
-				world.setTileType(i, j, TileType.air);
-			}
-			world.setSurfaceLevel(i, 0);
-		}
+		world.clear();
 
 		// Generate terrain...
 		PerlinNoise surfaceNoise = new PerlinNoise(seed);
@@ -109,6 +106,13 @@ public class WorldGenerator {
 			}
 		}
 
+		Random treeRandom = new Random(seed);
+
+		// Place some trees...
+		for (int i = 5; i < world.getWidth() - 5; i += 10) {
+			placeTree(i, world.getSurfaceLevel(i), treeRandom);
+		}
+
 		// Set the spawnpoint
 		world.setSpawnX(world.getWidth() / 2);
 		world.setSpawnY(Math.max(world.getSurfaceLevel((int) world.getSpawnX()),
@@ -117,6 +121,47 @@ public class WorldGenerator {
 		Pixmap worldPixmap = worldToPixmap(world);
 		PixmapIO.writePNG(Gdx.files.local("debug/world.png"), worldPixmap);
 		worldPixmap.dispose();
+	}
+
+	public void placeTree(int x, int y, Random random) {
+		// Place stubs
+		if (random.nextBoolean()) {
+			world.setTileType(x - 1, y, TileType.tree);
+			world.setAttached(x - 1, y, Direction.EAST, true);
+		}
+		if (random.nextBoolean()) {
+			world.setTileType(x + 1, y, TileType.tree);
+			world.setAttached(x + 1, y, Direction.WEST, true);
+		}
+
+		// Place trunks
+		int treeHeight = random.nextInt(7) + 8;
+
+		for (int i = 0; i < treeHeight; ++i) {
+			world.setTileType(x, y + i, TileType.tree);
+			world.setAttached(x, y + i, Direction.SOUTH, true);
+		}
+
+		// Place branches
+		// How many tiles away the next branch will be placed
+		int branchCounter = 2 + random.nextInt(3);
+		// Direction in which the next branch won't be placed
+		int branchSkip = 0;
+
+		for (int i = 0; i < treeHeight; ++i) {
+			if (--branchCounter == 0) {
+				int branchDir = -branchSkip;
+				if (branchDir == 0) {
+					branchDir = random.nextBoolean() ? 1 : -1;
+				}
+
+				world.setTileType(x + branchDir, y + i, TileType.tree);
+				world.setAttached(x + branchDir, y + i, Direction.get(-branchDir, 0), true);
+
+				branchCounter = random.nextInt(3);
+				branchSkip = branchCounter == 1 ? branchDir : 0;
+			}
+		}
 	}
 
 	static Pixmap worldToPixmap(World world) {

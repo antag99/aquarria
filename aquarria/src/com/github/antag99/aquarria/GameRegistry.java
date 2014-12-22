@@ -48,6 +48,7 @@ import com.github.antag99.aquarria.item.WallPlaceCallbackFactory;
 import com.github.antag99.aquarria.tile.BlockFrameStyleFactory;
 import com.github.antag99.aquarria.tile.FrameStyleFactory;
 import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.tile.TreeFrameStyleFactory;
 import com.github.antag99.aquarria.tile.WallFrameStyleFactory;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.util.Utils;
@@ -221,6 +222,7 @@ public final class GameRegistry {
 		// Register frame style factories
 		registerFrameStyleFactory("block", new BlockFrameStyleFactory());
 		registerFrameStyleFactory("wall", new WallFrameStyleFactory());
+		registerFrameStyleFactory("tree", new TreeFrameStyleFactory());
 
 		// Initialize and register all types, leave out references to other types
 		for (JsonValue itemConfiguration : fileNameToItemConfiguration.values()) {

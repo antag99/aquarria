@@ -27,52 +27,59 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.util;
+package com.github.antag99.aquarria.tile;
 
-public enum Direction {
-	// Note that the order is important
-	NORTH(0, 1),
-	NORTHEAST(1, 1),
-	EAST(1, 0),
-	SOUTHEAST(1, -1),
-	SOUTH(0, -1),
-	SOUTHWEST(-1, -1),
-	WEST(-1, 0),
-	NORTHWEST(-1, 1);
+import com.github.antag99.aquarria.util.Direction;
+import com.github.antag99.aquarria.world.World;
 
-	private static Direction[] values = values();
+public class TreeFrameStyle implements FrameStyle {
+	@Override
+	public String findFrame(World world, int x, int y) {
+		boolean treeNorth = y + 1 < world.getHeight() && world.getTileType(x, y + 1) == TileType.tree && world.isAttached(x, y + 1, Direction.SOUTH);
+		boolean treeSouth = y > 1 && world.getTileType(x, y - 1) == TileType.tree && world.isAttached(x, y, Direction.SOUTH);
+		boolean treeEast = x + 1 < world.getWidth() && world.getTileType(x + 1, y) == TileType.tree && world.isAttached(x, y, Direction.EAST);
+		boolean treeWest = x > 1 && world.getTileType(x - 1, y) == TileType.tree && world.isAttached(x, y, Direction.WEST);
+		boolean solidSouth = y == 0 || world.getTileType(x, y - 1).isSolid();
 
-	private int horizontal;
-	private int vertical;
-
-	private Direction(int horizontal, int vertical) {
-		this.horizontal = horizontal;
-		this.vertical = vertical;
-	}
-
-	public int getHorizontal() {
-		return horizontal;
-	}
-
-	public int getVertical() {
-		return vertical;
-	}
-
-	public Direction opposite() {
-		return values[(ordinal() + 4) % values.length];
-	}
-
-	public static Direction get(int x, int y) {
-		x = x < 0 ? -1 : x > 0 ? 1 : 0;
-		y = y < 0 ? -1 : y > 0 ? 1 : 0;
-
-		for (Direction direction : values) {
-			if (direction.getHorizontal() == x && direction.getVertical() == y) {
-				return direction;
+		if (treeNorth && !treeSouth) {
+			// Stub
+			if (treeEast && !treeWest) {
+				// West stub
+				return "leftStub";
+			} else if (treeWest && !treeEast) {
+				// East stub
+				return "rightStub";
+			} else {
+				// Plain old vanilla stub
+				return "stub";
+			}
+		} else if (treeNorth && treeSouth) {
+			// Trunk
+			return "trunk";
+		} else if (!treeNorth && treeSouth) {
+			// Top
+			return "top";
+		} else {
+			// Branch, or foot
+			if (treeEast) {
+				// Left
+				if (solidSouth) {
+					// Left 'foot'
+					return "leftFoot";
+				} else {
+					// Left branch
+					return "leftBranch";
+				}
+			} else {
+				// Right
+				if (solidSouth) {
+					// Right 'foot'
+					return "rightFoot";
+				} else {
+					// Right branch
+					return "rightBranch";
+				}
 			}
 		}
-
-		// (0, 0)
-		return null;
 	}
 }

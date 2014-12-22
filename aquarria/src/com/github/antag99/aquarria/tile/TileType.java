@@ -38,6 +38,7 @@ public final class TileType {
 	public static TileType dirt;
 	public static TileType stone;
 	public static TileType grass;
+	public static TileType tree;
 
 	private String internalName;
 	private String displayName;
