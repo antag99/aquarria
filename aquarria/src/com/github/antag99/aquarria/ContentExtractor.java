@@ -55,6 +55,11 @@ public class ContentExtractor {
 		this.outputAssetDirectory = outputAssetDirectory;
 	}
 
+	/**
+	 * Extracts vanilla assets. This is only called once, as the raw
+	 * assets are not modified in any way. Always called if vanilla
+	 * assets have not been extracted when {@link ContentExtractor#convert()} is called.
+	 */
 	public void extract() {
 		// Extract XNB files to raw/
 		FileHandle rawDir = outputAssetDirectory.child("raw");
@@ -79,6 +84,28 @@ public class ContentExtractor {
 		for (FileHandle sound : contentDirectory.child("Sounds").list(".xnb")) {
 			soundExtractor.extract(sound, rawSoundDir.child(sound.nameWithoutExtension() + ".wav"));
 		}
+	}
+
+	/**
+	 * Converts the raw vanilla assets into a more suitable format.
+	 * For example, splitting sprite sheets into the individual
+	 * images and moving files to proper locations.
+	 */
+	public void convert() {
+		if (!outputAssetDirectory.child("raw").exists()) {
+			// Extract vanilla assets if not present
+			extract();
+		} else {
+			// Delete already existing processed assets
+			for (FileHandle directory : outputAssetDirectory.list()) {
+				if (!directory.name().equals("raw")) {
+					directory.delete();
+				}
+			}
+		}
+
+		FileHandle rawDir = outputAssetDirectory.child("raw");
+		FileHandle rawImagesDir = rawDir.child("images");
 
 		// Split tile & wall images into directories
 		convertTileImage("Tiles_0.png", "dirt");

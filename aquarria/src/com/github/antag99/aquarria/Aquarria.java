@@ -94,39 +94,39 @@ public class Aquarria extends Game {
 			properties = new AquarriaProperties();
 		}
 
+		// Locate terraria directory
 		terrariaDirectory = properties.getTerrariaDirectory();
 
-		if (!terrariaAssets.exists()) {
+		if (terrariaDirectory == null) {
+			terrariaDirectory = Steam.findTerrariaDirectory();
 			if (terrariaDirectory == null) {
-				terrariaDirectory = Steam.findTerrariaDirectory();
-				if (terrariaDirectory == null) {
-					System.err.println("Error: Terraria directory not found. Edit aquarria.json manually. Exiting.");
-					properties.setTerrariaDirectory(new FileHandle("<terraria directory>"));
-					Gdx.app.exit();
-					return;
-				}
-			} else if (!terrariaDirectory.exists()) {
-				System.err.println("Error: The directory " + terrariaDirectory.path() +
-						" does not exist. Edit aquarria.json manually. Exiting.");
+				System.err.println("Error: Terraria directory not found. Edit aquarria.json manually. Exiting.");
+				properties.setTerrariaDirectory(new FileHandle("<terraria directory>"));
 				Gdx.app.exit();
 				return;
 			}
+		} else if (!terrariaDirectory.exists()) {
+			System.err.println("Error: The directory " + terrariaDirectory.path() +
+					" does not exist. Edit aquarria.json manually. Exiting.");
+			Gdx.app.exit();
+			return;
+		}
 
-			if (terrariaDirectory != null && terrariaDirectory.exists()) {
-				try {
-					System.out.println("Extracting assets from " + terrariaDirectory.path());
-					long startTime = System.currentTimeMillis();
-					ContentExtractor extractor = new ContentExtractor(terrariaDirectory.child("Content"), terrariaAssets);
-					extractor.extract();
-					long time = System.currentTimeMillis() - startTime;
-					System.out.println("Done. Took " + time / 1000f + " seconds");
-				} catch (Throwable ex) {
-					System.err.println("Error extracting assets. Exiting.");
-					ex.printStackTrace();
-					Gdx.app.exit();
-					return;
-				}
-			}
+		System.out.println("Terraria directory: " + terrariaDirectory.path());
+		System.out.println("Processing vanilla assets...");
+		try {
+			long startTime = System.currentTimeMillis();
+
+			ContentExtractor extractor = new ContentExtractor(terrariaDirectory.child("Content"), terrariaAssets);
+			extractor.convert();
+
+			long time = System.currentTimeMillis() - startTime;
+			System.out.println("Done. Took " + time / 1000f + " seconds");
+		} catch (Throwable ex) {
+			System.err.println("Error extracting assets. Exiting.");
+			ex.printStackTrace();
+			Gdx.app.exit();
+			return;
 		}
 
 		Gdx.input.setInputProcessor(stage);
