@@ -67,8 +67,11 @@ class WinRegistry {
 			regDeleteKey = userClass.getDeclaredMethod("WindowsRegDeleteKey",
 					new Class[] { int.class, byte[].class });
 			regDeleteKey.setAccessible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			// Log error only on windows...
+			if (System.getProperty("os.name").toLowerCase().contains("win")) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
