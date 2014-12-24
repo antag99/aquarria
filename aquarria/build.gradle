@@ -5,11 +5,8 @@ apply plugin: 'idea'
 sourceCompatibility = 1.8
 version = '1.0'
 
-sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.java.srcDirs = [ "src/", "assets/", "config/" ]
 sourceSets.test.java.srcDirs = [ "tests/" ]
-
-project.ext.mainClassName = "com.github.antag99.aquarria.Main"
-project.ext.assetsDir = new File("../assets");
 
 ext {
     appName = 'aquarria'
@@ -30,18 +27,3 @@ dependencies {
     compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
 }
-
-task eclipsePrep {
-    delete '.classpath', '.project'
-}
-
-tasks.eclipse.doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets/' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-}
-
-tasks.eclipse.dependsOn eclipsePrep

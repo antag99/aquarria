@@ -149,9 +149,10 @@ public final class GameRegistry {
 		fileNameToWallConfiguration.clear();
 		fileNameToEntityConfiguration.clear();
 
-		// TODO: This is dependent upon the assets directory existing
-		// in a separate directory, rather than in the classpath.
-		seekConfigurationDirectory(Gdx.files.local("assets"));
+		// FIXME: This is dependent upon the config directory existing
+		// in a separate directory, rather than in the classpath;
+		// internal classpath files cannot be listed.
+		seekConfigurationDirectory(Gdx.files.local("config"));
 	}
 
 	private static void seekConfigurationDirectory(FileHandle file) {
