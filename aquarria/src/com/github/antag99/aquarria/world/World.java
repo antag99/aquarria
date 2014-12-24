@@ -29,6 +29,8 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.world;
 
+import java.util.Arrays;
+
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
@@ -38,7 +40,6 @@ import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.util.Direction;
-import com.github.antag99.aquarria.util.DynamicIDMapping;
 
 public class World {
 	public static final float PIXELS_PER_METER = 16;
@@ -48,11 +49,8 @@ public class World {
 
 	private float spawnX, spawnY;
 
-	private short[] tileMatrix;
-	private DynamicIDMapping<TileType> tileMapping;
-
-	private short[] wallMatrix;
-	private DynamicIDMapping<WallType> wallMapping;
+	private TileType[] tileMatrix;
+	private WallType[] wallMatrix;
 
 	private short[] surfaceLevel;
 	private byte[] lightMatrix;
@@ -74,6 +72,10 @@ public class World {
 	public World(int width, int height) {
 		this.width = width;
 		this.height = height;
+
+		tileMatrix = new TileType[width * height];
+		wallMatrix = new WallType[width * height];
+
 		clear();
 	}
 
@@ -83,13 +85,8 @@ public class World {
 	public void clear() {
 		spawnX = width / 2f;
 		spawnY = height / 2f;
-		tileMatrix = new short[width * height];
-		tileMapping = new DynamicIDMapping<TileType>();
-		// Ensure that ID 0 is assigned to air
-		tileMapping.getID(TileType.air);
-		wallMatrix = new short[width * height];
-		wallMapping = new DynamicIDMapping<WallType>();
-		wallMapping.getID(WallType.air);
+		Arrays.fill(tileMatrix, TileType.air);
+		Arrays.fill(wallMatrix, WallType.air);
 		entities = new Array<Entity>();
 		surfaceLevel = new short[width];
 		lightMatrix = new byte[width * height];
@@ -128,25 +125,33 @@ public class World {
 	public TileType getTileType(int x, int y) {
 		checkBounds(x, y);
 
-		return tileMapping.getObject(tileMatrix[y * width + x] & 0xffff);
+		return tileMatrix[y * width + x];
 	}
 
 	public void setTileType(int x, int y, TileType type) {
 		checkBounds(x, y);
 
-		tileMatrix[y * width + x] = (short) tileMapping.getID(type);
+		if (type == null) {
+			throw new NullPointerException();
+		}
+
+		tileMatrix[y * width + x] = type;
 	}
 
 	public WallType getWallType(int x, int y) {
 		checkBounds(x, y);
 
-		return wallMapping.getObject(wallMatrix[y * width + x]);
+		return wallMatrix[y * width + x];
 	}
 
 	public void setWallType(int x, int y, WallType type) {
 		checkBounds(x, y);
 
-		wallMatrix[y * width + x] = (short) wallMapping.getID(type);
+		if (type == null) {
+			throw new NullPointerException();
+		}
+
+		wallMatrix[y * width + x] = type;
 	}
 
 	public int getWidth() {
