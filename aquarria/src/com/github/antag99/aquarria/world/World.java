@@ -259,7 +259,7 @@ public class World {
 	public void computeLight(int x, int y, int width, int height) {
 		for (int i = 0; i < width; ++i) {
 			for (int j = 0; j < height; ++j) {
-				if (getTileType(x + i, y + j) == TileType.air &&
+				if (!getTileType(x + i, y + j).isSolid() &&
 						getWallType(x + i, y + j) == WallType.air) {
 					setLight(x + i, y + j, 1f);
 				} else {

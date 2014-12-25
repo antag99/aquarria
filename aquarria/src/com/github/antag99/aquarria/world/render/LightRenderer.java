@@ -65,12 +65,16 @@ public class LightRenderer extends WorldRendererCallback {
 				float topRightLight = i + 1 < world.getWidth() && j + 1 < world.getHeight() ? world.getLight(i + 1, j + 1) : light;
 
 				drawGradient(batch, i, j, 1f, 1f,
-						Color.toFloatBits(0f, 0f, 0f, (1f - topLeftLight) * (1f - light)),
-						Color.toFloatBits(0f, 0f, 0f, (1f - topRightLight) * (1f - light)),
-						Color.toFloatBits(0f, 0f, 0f, (1f - bottomLeftLight) * (1f - light)),
-						Color.toFloatBits(0f, 0f, 0f, (1f - bottomRightLight) * (1f - light)));
+						Color.toFloatBits(0f, 0f, 0f, 1f - combineLight(light, topLeftLight)),
+						Color.toFloatBits(0f, 0f, 0f, 1f - combineLight(light, topRightLight)),
+						Color.toFloatBits(0f, 0f, 0f, 1f - combineLight(light, bottomLeftLight)),
+						Color.toFloatBits(0f, 0f, 0f, 1f - combineLight(light, bottomRightLight)));
 			}
 		}
+	}
+
+	private float combineLight(float light, float adjacentLight) {
+		return light;
 	}
 
 	private final float[] vertices = new float[20];
