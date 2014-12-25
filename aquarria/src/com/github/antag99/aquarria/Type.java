@@ -30,10 +30,12 @@
 package com.github.antag99.aquarria;
 
 import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.event.EventManager;
 
 public abstract class Type {
 	private String internalName;
 	private JsonValue config;
+	private EventManager events = new EventManager();
 
 	public String getInternalName() {
 		return internalName;
@@ -49,5 +51,9 @@ public abstract class Type {
 
 	public void setConfig(JsonValue config) {
 		this.config = config;
+	}
+
+	public EventManager getEvents() {
+		return events;
 	}
 }

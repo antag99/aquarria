@@ -31,7 +31,6 @@ package com.github.antag99.aquarria.item;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.Type;
-import com.github.antag99.aquarria.event.EventManager;
 
 public final class ItemType extends Type {
 	// TODO: Add annotations to map fields to JSON properties.
@@ -58,7 +57,6 @@ public final class ItemType extends Type {
 	private boolean consumable;
 	private ItemUsageStyle usageStyle;
 	private TextureRegion texture;
-	private EventManager events = new EventManager();
 
 	public ItemType() {
 	}
@@ -141,9 +139,5 @@ public final class ItemType extends Type {
 
 	public void setUsageStyle(ItemUsageStyle usageStyle) {
 		this.usageStyle = usageStyle;
-	}
-
-	public EventManager getEvents() {
-		return events;
 	}
 }
