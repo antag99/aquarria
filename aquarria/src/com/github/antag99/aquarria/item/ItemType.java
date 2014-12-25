@@ -47,7 +47,6 @@ public final class ItemType extends Type {
 	public static ItemType stoneWall;
 
 	// Item properties
-	private String displayName;
 	private int maxStack;
 	private float width;
 	private float height;
@@ -59,14 +58,6 @@ public final class ItemType extends Type {
 	private TextureRegion texture;
 
 	public ItemType() {
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
 	}
 
 	public float getWidth() {

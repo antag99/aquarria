@@ -39,21 +39,12 @@ public final class WallType extends Type {
 	public static WallType dirt;
 	public static WallType stone;
 
-	private String displayName;
 	private ItemType drop;
 	private TextureAtlas atlas;
 	private FrameStyle style;
 	private Rectangle frame = new Rectangle(-0.5f, -0.5f, 2f, 2f);
 
 	public WallType() {
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
 	}
 
 	public ItemType getDrop() {

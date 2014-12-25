@@ -41,7 +41,6 @@ public final class TileType extends Type {
 	public static TileType grass;
 	public static TileType tree;
 
-	private String displayName;
 	private boolean solid;
 	private ItemType drop;
 	private TextureAtlas atlas;
@@ -49,14 +48,6 @@ public final class TileType extends Type {
 	private Rectangle frame = new Rectangle(0f, 0f, 1f, 1f);
 
 	public TileType() {
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
 	}
 
 	public boolean isSolid() {

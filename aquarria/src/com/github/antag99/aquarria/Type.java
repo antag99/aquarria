@@ -34,6 +34,7 @@ import com.github.antag99.aquarria.event.EventManager;
 
 public abstract class Type {
 	private String internalName;
+	private String displayName;
 	private JsonValue config;
 	private EventManager events = new EventManager();
 
@@ -43,6 +44,14 @@ public abstract class Type {
 
 	public void setInternalName(String internalName) {
 		this.internalName = internalName;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	public JsonValue getConfig() {

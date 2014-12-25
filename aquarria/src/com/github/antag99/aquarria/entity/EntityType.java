@@ -35,7 +35,6 @@ public final class EntityType extends Type {
 	public static EntityType player;
 	public static EntityType item;
 
-	private String displayName;
 	private boolean solid;
 	private float weight;
 	private int maxHealth;
@@ -44,14 +43,6 @@ public final class EntityType extends Type {
 	private float defaultHeight;
 
 	public EntityType() {
-	}
-
-	public String getDisplayName() {
-		return displayName;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
 	}
 
 	public boolean isSolid() {
