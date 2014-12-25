@@ -4,6 +4,5 @@ return function(player, item)
   local tileX = math.floor(focus.x)
   local tileY = math.floor(focus.y)
 
-  print("destroying tile at " .. tileX .. "," .. tileY)
   return world:destroyTile(tileX, tileY)
 end
