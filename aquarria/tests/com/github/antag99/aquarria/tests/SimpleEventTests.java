@@ -35,7 +35,7 @@ import org.junit.Test;
 import com.github.antag99.aquarria.event.Event;
 import com.github.antag99.aquarria.event.EventListeners;
 import com.github.antag99.aquarria.event.EventManager;
-import com.github.antag99.aquarria.event.Receiver;
+import com.github.antag99.aquarria.event.EventReceiver;
 
 public class SimpleEventTests extends Assert {
 	/**
@@ -69,7 +69,7 @@ public class SimpleEventTests extends Assert {
 	}
 
 	public static class SimpleEventHandler implements EventListeners {
-		@Receiver
+		@EventReceiver
 		public void onSimpleEvent(SimpleEvent event) {
 			event.counter++;
 		}

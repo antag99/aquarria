@@ -35,7 +35,7 @@ import org.junit.Test;
 import com.github.antag99.aquarria.event.Event;
 import com.github.antag99.aquarria.event.EventListeners;
 import com.github.antag99.aquarria.event.EventManager;
-import com.github.antag99.aquarria.event.Receiver;
+import com.github.antag99.aquarria.event.EventReceiver;
 
 public class InhertianceEventTests extends Assert {
 
@@ -82,14 +82,14 @@ public class InhertianceEventTests extends Assert {
 	}
 
 	public static class BaseEventListener implements EventListeners {
-		@Receiver
+		@EventReceiver
 		public void onBaseEvent(BaseEvent event) {
 			event.counter++;
 		}
 	}
 
 	public static class InheritedEventListener implements EventListeners {
-		@Receiver
+		@EventReceiver
 		public void onInheritedEvent(InheritedEvent event) {
 			event.counter++;
 		}

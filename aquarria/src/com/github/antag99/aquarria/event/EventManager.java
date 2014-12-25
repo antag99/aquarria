@@ -122,7 +122,7 @@ public class EventManager {
 		do {
 			for (Method method : level.getDeclaredMethods()) {
 				if ((method.getModifiers() & (Modifier.STATIC | Modifier.ABSTRACT)) == 0 &&
-						method.isAnnotationPresent(Receiver.class) &&
+						method.isAnnotationPresent(EventReceiver.class) &&
 						method.getParameterTypes().length == 1 &&
 						Event.class.isAssignableFrom(method.getParameterTypes()[0])) {
 					receiverMethods.add(method);
@@ -137,7 +137,7 @@ public class EventManager {
 		for (int i = 0; i < receiverMethods.size; ++i) {
 			Method receiverMethod = receiverMethods.get(i);
 			receiverMethod.setAccessible(true);
-			Receiver receiverMetadata = receiverMethod.getAnnotation(Receiver.class);
+			EventReceiver receiverMetadata = receiverMethod.getAnnotation(EventReceiver.class);
 			eventHandlers[i] = new EventHandler();
 			eventHandlers[i].eventClass = (Class<? extends Event>) receiverMethod.getParameterTypes()[0];
 			eventHandlers[i].listener = listener;

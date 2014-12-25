@@ -34,7 +34,7 @@ import org.junit.Test;
 import com.github.antag99.aquarria.event.Event;
 import com.github.antag99.aquarria.event.EventListeners;
 import com.github.antag99.aquarria.event.EventManager;
-import com.github.antag99.aquarria.event.Receiver;
+import com.github.antag99.aquarria.event.EventReceiver;
 
 public class EventBenchmarks {
 	@Test
@@ -70,7 +70,7 @@ public class EventBenchmarks {
 	}
 
 	private static class SampleEventListener implements EventListeners {
-		@Receiver
+		@EventReceiver
 		public void onSampleEvent(SampleEvent event) {
 		}
 	}

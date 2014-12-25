@@ -42,6 +42,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Receiver {
+public @interface EventReceiver {
 	float priority() default 0f;
 }
