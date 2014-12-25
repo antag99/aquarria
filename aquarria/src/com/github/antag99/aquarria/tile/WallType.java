@@ -31,6 +31,7 @@ package com.github.antag99.aquarria.tile;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.item.ItemType;
 
 public final class WallType {
@@ -44,6 +45,7 @@ public final class WallType {
 	private TextureAtlas atlas;
 	private FrameStyle style;
 	private Rectangle frame = new Rectangle(-0.5f, -0.5f, 2f, 2f);
+	private JsonValue config;
 
 	public WallType() {
 	}
@@ -99,5 +101,13 @@ public final class WallType {
 
 	public void setFrame(Rectangle frame) {
 		this.frame.set(frame);
+	}
+
+	public JsonValue getConfig() {
+		return config;
+	}
+
+	public void setConfig(JsonValue config) {
+		this.config = config;
 	}
 }

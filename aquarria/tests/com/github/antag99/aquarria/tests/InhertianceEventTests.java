@@ -67,6 +67,15 @@ public class InhertianceEventTests extends Assert {
 
 	public static class BaseEvent extends Event {
 		public int counter = 0;
+
+		@Override
+		public Object[] pack() {
+			return new Object[0];
+		}
+
+		@Override
+		public void unpack(Object[] packed) {
+		}
 	}
 
 	public static class InheritedEvent extends BaseEvent {

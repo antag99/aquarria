@@ -27,37 +27,13 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.item;
+package com.github.antag99.aquarria.event;
 
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.github.antag99.aquarria.entity.PlayerEntity;
-
-public class DestroyTileCallback implements ItemUsageCallback {
-	public DestroyTileCallback() {
+/**
+ * Fired before starting to use an item.
+ * Should be handled in order to allow the item to be used.
+ */
+public class CanUseItemEvent extends AbstractUseItemEvent {
+	public CanUseItemEvent() {
 	}
-
-	@Override
-	public boolean canUseItem(PlayerEntity player, Item item) {
-		return true;
-	}
-
-	@Override
-	public void beginUseItem(PlayerEntity player, Item item) {
-	}
-
-	@Override
-	public void updateUseItem(PlayerEntity player, Item item, float delta) {
-	}
-
-	@Override
-	public boolean useItem(PlayerEntity player, Item item) {
-		Vector2 worldFocus = player.getWorldFocus();
-
-		int tileX = MathUtils.floor(worldFocus.x);
-		int tileY = MathUtils.floor(worldFocus.y);
-
-		return player.getWorld().destroyTile(tileX, tileY);
-	}
-
 }

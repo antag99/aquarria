@@ -27,48 +27,13 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.item;
+package com.github.antag99.aquarria.event;
 
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.world.World;
-
-public class WallPlaceCallback implements ItemUsageCallback {
-	private WallType createdWall;
-
-	public WallPlaceCallback(WallType createdWall) {
-		this.createdWall = createdWall;
-	}
-
-	@Override
-	public boolean canUseItem(PlayerEntity player, Item item) {
-		return true;
-	}
-
-	@Override
-	public void beginUseItem(PlayerEntity player, Item item) {
-	}
-
-	@Override
-	public void updateUseItem(PlayerEntity player, Item item, float delta) {
-	}
-
-	@Override
-	public boolean useItem(PlayerEntity player, Item item) {
-		Vector2 worldFocus = player.getWorldFocus();
-
-		int tileX = MathUtils.floor(worldFocus.x);
-		int tileY = MathUtils.floor(worldFocus.y);
-
-		World world = player.getWorld();
-		if (world.getWallType(tileX, tileY) == WallType.air) {
-			world.setWallType(tileX, tileY, createdWall);
-
-			return true;
-		}
-
-		return false;
+/**
+ * Event that is fired every time an item is used.
+ * Should be handled in order to consume consumable items.
+ */
+public class UseItemEvent extends AbstractUseItemEvent {
+	public UseItemEvent() {
 	}
 }

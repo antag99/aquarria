@@ -30,8 +30,14 @@
 package com.github.antag99.aquarria.item;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.event.EventManager;
 
 public final class ItemType {
+	// TODO: Add annotations to map fields to JSON properties.
+	// TODO: Add annotations to indicate the JSON configuration of a static field?
+	// TODO: Remove getters and setters, replaced with public fields?
+
 	// Static fields that are automatically set by GameRegistry via reflection.
 	public static ItemType air;
 	public static ItemType dirt;
@@ -52,8 +58,9 @@ public final class ItemType {
 	private boolean usageRepeat;
 	private boolean consumable;
 	private ItemUsageStyle usageStyle;
-	private ItemUsageCallback usageCallback;
 	private TextureRegion texture;
+	private EventManager events = new EventManager();
+	private JsonValue config;
 
 	public ItemType() {
 	}
@@ -146,11 +153,15 @@ public final class ItemType {
 		this.usageStyle = usageStyle;
 	}
 
-	public ItemUsageCallback getUsageCallback() {
-		return usageCallback;
+	public EventManager getEvents() {
+		return events;
 	}
 
-	public void setUsageCallback(ItemUsageCallback usageCallback) {
-		this.usageCallback = usageCallback;
+	public JsonValue getConfig() {
+		return config;
+	}
+
+	public void setConfig(JsonValue config) {
+		this.config = config;
 	}
 }

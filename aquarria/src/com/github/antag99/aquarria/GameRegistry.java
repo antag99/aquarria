@@ -29,6 +29,19 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.luaj.vm2.lib.jse.JsePlatform;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
@@ -38,13 +51,8 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.EntityType;
-import com.github.antag99.aquarria.item.DestroyTileCallbackFactory;
-import com.github.antag99.aquarria.item.DestroyWallCallbackFactory;
 import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.item.ItemUsageCallbackFactory;
 import com.github.antag99.aquarria.item.ItemUsageStyle;
-import com.github.antag99.aquarria.item.TilePlaceCallbackFactory;
-import com.github.antag99.aquarria.item.WallPlaceCallbackFactory;
 import com.github.antag99.aquarria.tile.BlockFrameStyleFactory;
 import com.github.antag99.aquarria.tile.FrameStyleFactory;
 import com.github.antag99.aquarria.tile.TileType;
@@ -58,12 +66,6 @@ public final class GameRegistry {
 		throw new AssertionError();
 	}
 
-	// Mappings of file names (without extensions) to JSON configurations
-	private static ObjectMap<String, JsonValue> fileNameToItemConfiguration = new ObjectMap<>();
-	private static ObjectMap<String, JsonValue> fileNameToTileConfiguration = new ObjectMap<>();
-	private static ObjectMap<String, JsonValue> fileNameToWallConfiguration = new ObjectMap<>();
-	private static ObjectMap<String, JsonValue> fileNameToEntityConfiguration = new ObjectMap<>();
-
 	// Asset manager, used to get the assets when loading is done
 	private static AssetManager assetManager = null;
 
@@ -73,9 +75,9 @@ public final class GameRegistry {
 	private static ObjectMap<String, WallType> internalNameToWallType = new ObjectMap<>();
 	private static ObjectMap<String, EntityType> internalNameToEntityType = new ObjectMap<>();
 
-	// Mapping of name to ItemUsageCallback factories, name is specified when registered
-	private static ObjectMap<String, ItemUsageCallbackFactory> itemUsageCallbackFactories = new ObjectMap<>();
 	private static ObjectMap<String, FrameStyleFactory> frameStyleFactories = new ObjectMap<>();
+
+	private static Globals globals;
 
 	public static void registerItem(ItemType itemType) {
 		internalNameToItemType.put(itemType.getInternalName(), itemType);
@@ -144,46 +146,57 @@ public final class GameRegistry {
 	private static JsonReader jsonReader = new JsonReader();
 
 	private static void loadConfigurations() {
-		fileNameToItemConfiguration.clear();
-		fileNameToTileConfiguration.clear();
-		fileNameToWallConfiguration.clear();
-		fileNameToEntityConfiguration.clear();
+		// Source: http://stackoverflow.com/a/9571146
+		List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
+		classLoadersList.add(ClasspathHelper.contextClassLoader());
+		classLoadersList.add(ClasspathHelper.staticClassLoader());
 
-		// FIXME: This is dependent upon the config directory existing
-		// in a separate directory, rather than in the classpath;
-		// internal classpath files cannot be listed.
-		seekConfigurationDirectory(Gdx.files.local("config"));
-	}
+		// TODO: Limit the resources that are scanned?
+		Reflections reflections = new Reflections(new ConfigurationBuilder()
+				.setScanners(new ResourcesScanner())
+				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0]))));
 
-	private static void seekConfigurationDirectory(FileHandle file) {
-		for (FileHandle child : file.list()) {
-			if (child.isDirectory()) {
-				seekConfigurationDirectory(child);
-			} else {
-				ObjectMap<String, JsonValue> mapping = null;
+		for (String itemPath : reflections.getResources((name) -> name.endsWith(".item"))) {
+			FileHandle file = Gdx.files.internal(itemPath);
+			if (file.exists()) {
+				JsonValue value = jsonReader.parse(file);
+				ItemType itemType = new ItemType();
+				itemType.setConfig(value);
+				itemType.setInternalName(value.getString("internalName"));
+				registerItem(itemType);
+			}
+		}
 
-				switch (child.extension()) {
-				case "item":
-					mapping = fileNameToItemConfiguration;
-					break;
-				case "tile":
-					mapping = fileNameToTileConfiguration;
-					break;
-				case "wall":
-					mapping = fileNameToWallConfiguration;
-					break;
-				case "entity":
-					mapping = fileNameToEntityConfiguration;
-					break;
-				}
+		for (String tilePath : reflections.getResources((name) -> name.endsWith(".tile"))) {
+			FileHandle file = Gdx.files.internal(tilePath);
+			if (file.exists()) {
+				JsonValue value = jsonReader.parse(file);
+				TileType tileType = new TileType();
+				tileType.setConfig(value);
+				tileType.setInternalName(value.getString("internalName"));
+				registerTile(tileType);
+			}
+		}
 
-				if (mapping != null) {
-					if (mapping.containsKey(child.nameWithoutExtension())) {
-						throw new RuntimeException("Conflicting file name " + child.name());
-					}
+		for (String wallPath : reflections.getResources((name) -> name.endsWith(".wall"))) {
+			FileHandle file = Gdx.files.internal(wallPath);
+			if (file.exists()) {
+				JsonValue value = jsonReader.parse(file);
+				WallType wallType = new WallType();
+				wallType.setConfig(value);
+				wallType.setInternalName(value.getString("internalName"));
+				registerWall(wallType);
+			}
+		}
 
-					mapping.put(child.nameWithoutExtension(), jsonReader.parse(child));
-				}
+		for (String entityPath : reflections.getResources((name) -> name.endsWith(".entity"))) {
+			FileHandle file = Gdx.files.internal(entityPath);
+			if (file.exists()) {
+				JsonValue value = jsonReader.parse(file);
+				EntityType entityType = new EntityType();
+				entityType.setConfig(value);
+				entityType.setInternalName(value.getString("internalName"));
+				registerEntity(entityType);
 			}
 		}
 	}
@@ -194,104 +207,47 @@ public final class GameRegistry {
 
 		GameRegistry.assetManager = assetManager;
 
-		for (JsonValue itemConfiguration : fileNameToItemConfiguration.values()) {
-			if (itemConfiguration.has("texture")) {
-				assetManager.load(itemConfiguration.getString("texture"), TextureRegion.class);
+		for (ItemType itemType : getItemTypes()) {
+			if (itemType.getConfig().has("texture")) {
+				assetManager.load(itemType.getConfig().getString("texture"), TextureRegion.class);
 			}
 		}
 
-		for (JsonValue tileConfiguration : fileNameToTileConfiguration.values()) {
-			if (tileConfiguration.has("skin")) {
-				assetManager.load(tileConfiguration.getString("skin"), TextureAtlas.class);
+		for (TileType tileType : getTileTypes()) {
+			if (tileType.getConfig().has("skin")) {
+				assetManager.load(tileType.getConfig().getString("skin"), TextureAtlas.class);
 			}
 		}
 
-		for (JsonValue wallConfiguration : fileNameToWallConfiguration.values()) {
-			if (wallConfiguration.has("skin")) {
-				assetManager.load(wallConfiguration.getString("skin"), TextureAtlas.class);
+		for (WallType wallType : getWallTypes()) {
+			if (wallType.getConfig().has("skin")) {
+				assetManager.load(wallType.getConfig().getString("skin"), TextureAtlas.class);
 			}
 		}
 	}
 
 	public static void initialize() {
-		// Register item usage callback factories
-		registerItemUsageCallbackFactory("placeTile", new TilePlaceCallbackFactory());
-		registerItemUsageCallbackFactory("placeWall", new WallPlaceCallbackFactory());
-		registerItemUsageCallbackFactory("destroyTile", new DestroyTileCallbackFactory());
-		registerItemUsageCallbackFactory("destroyWall", new DestroyWallCallbackFactory());
+		// Create LuaJ globals and register all game classes
+		globals = JsePlatform.standardGlobals();
 
-		// Register frame style factories
-		registerFrameStyleFactory("block", new BlockFrameStyleFactory());
-		registerFrameStyleFactory("wall", new WallFrameStyleFactory());
-		registerFrameStyleFactory("tree", new TreeFrameStyleFactory());
+		// Source: http://stackoverflow.com/a/9571146
+		List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
+		classLoadersList.add(ClasspathHelper.contextClassLoader());
+		classLoadersList.add(ClasspathHelper.staticClassLoader());
 
-		// Initialize and register all types, leave out references to other types
-		for (JsonValue itemConfiguration : fileNameToItemConfiguration.values()) {
-			ItemType itemType = new ItemType();
-			itemType.setInternalName(itemConfiguration.getString("internalName"));
-			itemType.setDisplayName(itemConfiguration.getString("displayName", ""));
-			itemType.setMaxStack(itemConfiguration.getInt("maxStack", 1));
-			itemType.setWidth(itemConfiguration.getFloat("width"));
-			itemType.setHeight(itemConfiguration.getFloat("height"));
-			itemType.setUsageTime(itemConfiguration.getFloat("usageTime", 0f));
-			itemType.setUsageAnimationTime(itemConfiguration.getFloat("usageAnimationTime", itemType.getUsageTime()));
-			itemType.setUsageRepeat(itemConfiguration.getBoolean("usageRepeat", false));
-			itemType.setUsageStyle(ItemUsageStyle.swing); // TODO: This should be changed
-			itemType.setConsumable(itemConfiguration.getBoolean("consumable", false));
+		Reflections reflections = new Reflections(new ConfigurationBuilder()
+				.setScanners(new SubTypesScanner(false /* don't exclude Object.class */), new ResourcesScanner())
+				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
+				.filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("com.github.antag99.aquarria"))));
 
-			if (assetManager != null && itemConfiguration.has("texture")) {
-				itemType.setTexture(assetManager.get(itemConfiguration.getString("texture", null), TextureRegion.class));
+		for (String type : reflections.getAllTypes()) {
+			try {
+				Class<?> clazz = Class.forName(type);
+				globals.set(clazz.getSimpleName(), CoerceJavaToLua.coerce(clazz));
+			} catch (ClassNotFoundException ex) {
+				// Just shouldn't happen
+				throw new AssertionError(ex);
 			}
-
-			registerItem(itemType);
-		}
-
-		for (JsonValue tileConfiguration : fileNameToTileConfiguration.values()) {
-			TileType tileType = new TileType();
-			tileType.setInternalName(tileConfiguration.getString("internalName"));
-			tileType.setDisplayName(tileConfiguration.getString("displayName", ""));
-			tileType.setSolid(tileConfiguration.getBoolean("solid", true));
-
-			if (tileConfiguration.has("frame")) {
-				tileType.setFrame(Utils.asRectangle(tileConfiguration.get("frame")));
-			}
-
-			if (assetManager != null && tileConfiguration.has("skin")) {
-				TextureAtlas atlas = assetManager.get(tileConfiguration.getString("skin"), TextureAtlas.class);
-				tileType.setAtlas(atlas);
-			}
-
-			registerTile(tileType);
-		}
-
-		for (JsonValue wallConfiguration : fileNameToWallConfiguration.values()) {
-			WallType wallType = new WallType();
-			wallType.setInternalName(wallConfiguration.getString("internalName"));
-			wallType.setDisplayName(wallConfiguration.getString("displayName", ""));
-
-			if (wallConfiguration.has("frame")) {
-				wallType.setFrame(Utils.asRectangle(wallConfiguration.get("frame")));
-			}
-
-			if (assetManager != null && wallConfiguration.has("skin")) {
-				TextureAtlas atlas = assetManager.get(wallConfiguration.getString("skin"), TextureAtlas.class);
-				wallType.setAtlas(atlas);
-			}
-
-			registerWall(wallType);
-		}
-
-		for (JsonValue entityConfiguration : fileNameToEntityConfiguration.values()) {
-			EntityType entityType = new EntityType();
-			entityType.setInternalName(entityConfiguration.getString("internalName"));
-			entityType.setDisplayName(entityConfiguration.getString("displayName", ""));
-			entityType.setMaxHealth(entityConfiguration.getInt("maxHealth", 0));
-			entityType.setSolid(entityConfiguration.getBoolean("solid", true));
-			entityType.setWeight(entityConfiguration.getFloat("weight", 1f));
-			entityType.setDefaultWidth(entityConfiguration.getFloat("width"));
-			entityType.setDefaultHeight(entityConfiguration.getFloat("height"));
-
-			registerEntity(entityType);
 		}
 
 		// Set static convenience fields in type classes
@@ -327,17 +283,39 @@ public final class GameRegistry {
 			}
 		}
 
-		// Then fixup the references, and other stuff that might required some types to be loaded
-		for (JsonValue itemConfiguration : fileNameToItemConfiguration.values()) {
-			ItemType itemType = getItemType(itemConfiguration.getString("internalName"));
-			if (itemConfiguration.has("usage")) {
-				ItemUsageCallbackFactory factory = getItemUsageCallbackFactory(itemConfiguration.getString("usage"));
-				itemType.setUsageCallback(factory.create(itemConfiguration));
+		// Register frame style factories
+		registerFrameStyleFactory("block", new BlockFrameStyleFactory());
+		registerFrameStyleFactory("wall", new WallFrameStyleFactory());
+		registerFrameStyleFactory("tree", new TreeFrameStyleFactory());
+
+		// Initialize and register all types, leave out references to other types
+		for (ItemType itemType : getItemTypes()) {
+			JsonValue itemConfiguration = itemType.getConfig();
+			itemType.setDisplayName(itemConfiguration.getString("displayName", ""));
+			itemType.setMaxStack(itemConfiguration.getInt("maxStack", 1));
+			itemType.setWidth(itemConfiguration.getFloat("width"));
+			itemType.setHeight(itemConfiguration.getFloat("height"));
+			itemType.setUsageTime(itemConfiguration.getFloat("usageTime", 0f));
+			itemType.setUsageAnimationTime(itemConfiguration.getFloat("usageAnimationTime", itemType.getUsageTime()));
+			itemType.setUsageRepeat(itemConfiguration.getBoolean("usageRepeat", false));
+			itemType.setUsageStyle(ItemUsageStyle.swing); // TODO: This should be changed
+			itemType.setConsumable(itemConfiguration.getBoolean("consumable", false));
+
+			if (assetManager != null && itemConfiguration.has("texture")) {
+				itemType.setTexture(assetManager.get(itemConfiguration.getString("texture", null), TextureRegion.class));
 			}
+
+			registerItem(itemType);
 		}
 
-		for (JsonValue tileConfiguration : fileNameToTileConfiguration.values()) {
-			TileType tileType = getTileType(tileConfiguration.getString("internalName"));
+		for (TileType tileType : getTileTypes()) {
+			JsonValue tileConfiguration = tileType.getConfig();
+			tileType.setDisplayName(tileConfiguration.getString("displayName", ""));
+			tileType.setSolid(tileConfiguration.getBoolean("solid", true));
+
+			if (tileConfiguration.has("frame")) {
+				tileType.setFrame(Utils.asRectangle(tileConfiguration.get("frame")));
+			}
 
 			String tileFrameStyle = tileConfiguration.getString("style", "block");
 			FrameStyleFactory styleFactory = getFrameStyleFactory(tileFrameStyle);
@@ -346,10 +324,22 @@ public final class GameRegistry {
 			if (tileConfiguration.has("drop")) {
 				tileType.setDrop(getItemType(tileConfiguration.getString("drop")));
 			}
+
+			if (assetManager != null && tileConfiguration.has("skin")) {
+				TextureAtlas atlas = assetManager.get(tileConfiguration.getString("skin"), TextureAtlas.class);
+				tileType.setAtlas(atlas);
+			}
+
+			registerTile(tileType);
 		}
 
-		for (JsonValue wallConfiguration : fileNameToWallConfiguration.values()) {
-			WallType wallType = getWallType(wallConfiguration.getString("internalName"));
+		for (WallType wallType : getWallTypes()) {
+			JsonValue wallConfiguration = wallType.getConfig();
+			wallType.setDisplayName(wallConfiguration.getString("displayName", ""));
+
+			if (wallConfiguration.has("frame")) {
+				wallType.setFrame(Utils.asRectangle(wallConfiguration.get("frame")));
+			}
 
 			String wallFrameStyle = wallConfiguration.getString("style", "wall");
 			FrameStyleFactory styleFactory = getFrameStyleFactory(wallFrameStyle);
@@ -358,6 +348,25 @@ public final class GameRegistry {
 			if (wallConfiguration.has("drop")) {
 				wallType.setDrop(getItemType(wallConfiguration.getString("drop")));
 			}
+
+			if (assetManager != null && wallConfiguration.has("skin")) {
+				TextureAtlas atlas = assetManager.get(wallConfiguration.getString("skin"), TextureAtlas.class);
+				wallType.setAtlas(atlas);
+			}
+
+			registerWall(wallType);
+		}
+
+		for (EntityType entityType : getEntityTypes()) {
+			JsonValue entityConfiguration = entityType.getConfig();
+			entityType.setDisplayName(entityConfiguration.getString("displayName", ""));
+			entityType.setMaxHealth(entityConfiguration.getInt("maxHealth", 0));
+			entityType.setSolid(entityConfiguration.getBoolean("solid", true));
+			entityType.setWeight(entityConfiguration.getFloat("weight", 1f));
+			entityType.setDefaultWidth(entityConfiguration.getFloat("width"));
+			entityType.setDefaultHeight(entityConfiguration.getFloat("height"));
+
+			registerEntity(entityType);
 		}
 	}
 
@@ -365,20 +374,7 @@ public final class GameRegistry {
 		internalNameToItemType.clear();
 		internalNameToTileType.clear();
 		internalNameToEntityType.clear();
-		itemUsageCallbackFactories.clear();
 		frameStyleFactories.clear();
-	}
-
-	public static void registerItemUsageCallbackFactory(String name, ItemUsageCallbackFactory factory) {
-		itemUsageCallbackFactories.put(name, factory);
-	}
-
-	public static ItemUsageCallbackFactory getItemUsageCallbackFactory(String name) {
-		ItemUsageCallbackFactory factory = itemUsageCallbackFactories.get(name);
-		if (factory == null) {
-			throw new IllegalArgumentException("ItemUsageCallbackFactory not found: " + name);
-		}
-		return factory;
 	}
 
 	public static void registerFrameStyleFactory(String name, FrameStyleFactory factory) {

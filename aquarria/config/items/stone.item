@@ -6,7 +6,7 @@
 	"maxStack" : 99,
 	"texture" : "images/items/stone.png",
 	"usage" : "placeTile",
-	"createdTile" : "stone",
+	"placedTile" : "stone",
 	"consumable" : true,
 	"usageTime" : 0.3,
 	"usageRepeat" : true

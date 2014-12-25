@@ -32,10 +32,13 @@ package com.github.antag99.aquarria.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
+import com.github.antag99.aquarria.event.BeginUseItemEvent;
+import com.github.antag99.aquarria.event.CanUseItemEvent;
+import com.github.antag99.aquarria.event.UpdateUseItemEvent;
+import com.github.antag99.aquarria.event.UseItemEvent;
 import com.github.antag99.aquarria.item.Inventory;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.item.ItemUsageCallback;
 
 public class PlayerEntity extends Entity {
 	private Inventory hotbar;
@@ -113,12 +116,25 @@ public class PlayerEntity extends Entity {
 		}
 
 		if (usingItem || repeatUsingItem) {
-			ItemUsageCallback itemUsageCallback = usedItem.getType().getUsageCallback();
-
 			if (repeatUsingItem && !usingItem) {
-				if (itemUsageCallback != null && !usedItem.isEmpty() && itemUsageCallback.canUseItem(this, usedItem)) {
-					usingItem = true;
-					itemUsageCallback.beginUseItem(this, usedItem);
+				// Set to true again if the item starts being used
+				repeatUsingItem = false;
+
+				if (!usedItem.isEmpty()) {
+					CanUseItemEvent canUseItemEvent = new CanUseItemEvent();
+					canUseItemEvent.setPlayer(this);
+					canUseItemEvent.setItem(usedItem);
+					usedItem.getType().getEvents().fire(canUseItemEvent);
+
+					if (!canUseItemEvent.isHandled()) {
+						usingItem = true;
+						repeatUsingItem = true;
+
+						BeginUseItemEvent beginUseItemEvent = new BeginUseItemEvent();
+						beginUseItemEvent.setPlayer(this);
+						beginUseItemEvent.setItem(usedItem);
+						usedItem.getType().getEvents().fire(beginUseItemEvent);
+					}
 				} else {
 					usingItem = false;
 					repeatUsingItem = false;
@@ -127,9 +143,19 @@ public class PlayerEntity extends Entity {
 
 			if (usingItem) {
 				useTime += delta;
-				itemUsageCallback.updateUseItem(this, usedItem, delta);
+				UpdateUseItemEvent updateUseItemEvent = new UpdateUseItemEvent();
+				updateUseItemEvent.setPlayer(this);
+				updateUseItemEvent.setItem(usedItem);
+				updateUseItemEvent.setDelta(delta);
+				usedItem.getType().getEvents().fire(updateUseItemEvent);
+
 				if (useTime % usedItem.getType().getUsageTime() < delta) {
-					if (itemUsageCallback.useItem(this, usedItem) && usedItem.getType().isConsumable()) {
+					UseItemEvent useItemEvent = new UseItemEvent();
+					useItemEvent.setPlayer(this);
+					useItemEvent.setItem(usedItem);
+					usedItem.getType().getEvents().fire(useItemEvent);
+
+					if (useItemEvent.isHandled() && usedItem.getType().isConsumable()) {
 						usedItem.setStack(usedItem.getStack() - 1);
 					}
 

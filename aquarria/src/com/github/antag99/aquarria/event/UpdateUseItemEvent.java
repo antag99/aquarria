@@ -27,19 +27,24 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.item;
+package com.github.antag99.aquarria.event;
 
-import com.github.antag99.aquarria.entity.PlayerEntity;
+public class UpdateUseItemEvent extends AbstractUseItemEvent {
+	private float delta;
 
-/**
- * Item usage callback, gets called for a specific item type when that item is used.
- */
-public interface ItemUsageCallback {
-	boolean canUseItem(PlayerEntity player, Item item);
+	public UpdateUseItemEvent() {
+	}
 
-	void beginUseItem(PlayerEntity player, Item item);
+	public float getDelta() {
+		return delta;
+	}
 
-	void updateUseItem(PlayerEntity player, Item item, float delta);
-
-	boolean useItem(PlayerEntity player, Item item);
+	public void setDelta(float delta) {
+		this.delta = delta;
+	}
+	
+	@Override
+	public Object[] pack() {
+		return new Object[] { getPlayer(), getItem(), getDelta() };
+	}
 }

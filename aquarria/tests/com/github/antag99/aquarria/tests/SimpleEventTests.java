@@ -57,6 +57,15 @@ public class SimpleEventTests extends Assert {
 
 	public static class SimpleEvent extends Event {
 		public int counter;
+
+		@Override
+		public Object[] pack() {
+			return new Object[0];
+		}
+
+		@Override
+		public void unpack(Object[] packed) {
+		}
 	}
 
 	public static class SimpleEventHandler implements Listener {

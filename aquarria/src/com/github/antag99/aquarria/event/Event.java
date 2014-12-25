@@ -34,4 +34,24 @@ package com.github.antag99.aquarria.event;
  * parts of the game.
  */
 public abstract class Event {
+	private boolean handled = false;
+
+	public boolean isHandled() {
+		return handled;
+	}
+
+	public void setHandled(boolean handled) {
+		this.handled = handled;
+	}
+
+	/**
+	 * Packs this event into an array of objects,
+	 * for invoking script handlers.
+	 */
+	public abstract Object[] pack();
+
+	/**
+	 * Reverse of {@link #unpack(Object[])}.
+	 */
+	public abstract void unpack(Object[] packed);
 }

@@ -29,6 +29,8 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.entity;
 
+import com.badlogic.gdx.utils.JsonValue;
+
 public final class EntityType {
 	public static EntityType player;
 	public static EntityType item;
@@ -41,6 +43,8 @@ public final class EntityType {
 
 	private float defaultWidth;
 	private float defaultHeight;
+
+	private JsonValue config;
 
 	public EntityType() {
 	}
@@ -99,5 +103,13 @@ public final class EntityType {
 
 	public void setDefaultHeight(float defaultHeight) {
 		this.defaultHeight = defaultHeight;
+	}
+
+	public JsonValue getConfig() {
+		return config;
+	}
+
+	public void setConfig(JsonValue config) {
+		this.config = config;
 	}
 }

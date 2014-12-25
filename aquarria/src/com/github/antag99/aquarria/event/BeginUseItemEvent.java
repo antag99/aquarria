@@ -27,20 +27,9 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.item;
+package com.github.antag99.aquarria.event;
 
-import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.GameRegistry;
-
-/**
- * {@link ItemUsageCallbackFactory} produces {@link ItemUsageCallback}s based on
- * a JSON configuration. Registered in {@link GameRegistry}, to be referenceable
- * from JSON files.
- */
-public interface ItemUsageCallbackFactory {
-
-	/**
-	 * Creates a callback for the given item configuration
-	 */
-	ItemUsageCallback create(JsonValue itemConfig);
+public class BeginUseItemEvent extends AbstractUseItemEvent {
+	public BeginUseItemEvent() {
+	}
 }

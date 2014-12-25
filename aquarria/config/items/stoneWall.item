@@ -6,7 +6,7 @@
 	"maxStack" : 99,
 	"texture" : "images/items/stoneWall.png",
 	"usage" : "placeWall",
-	"createdWall" : "stone",
+	"placedWall" : "stone",
 	"consumable" : true,
 	"usageTime" : 0.3,
 	"usageRepeat" : true

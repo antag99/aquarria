@@ -5,7 +5,7 @@ apply plugin: 'idea'
 sourceCompatibility = 1.8
 version = '1.0'
 
-sourceSets.main.java.srcDirs = [ "src/", "assets/", "config/" ]
+sourceSets.main.java.srcDirs = [ "src/", "assets/", "config/", "scripts/" ]
 sourceSets.test.java.srcDirs = [ "tests/" ]
 
 ext {
@@ -26,4 +26,6 @@ dependencies {
     compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
     compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+    compile "org.luaj:luaj-jse:3.0"
+    compile "org.reflections:reflections:0.9.9"
 }

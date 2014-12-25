@@ -27,49 +27,33 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.item;
+package com.github.antag99.aquarria.event;
 
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.world.World;
+import com.github.antag99.aquarria.item.Item;
 
-public class TilePlaceCallback implements ItemUsageCallback {
-	private TileType createdTile;
+public abstract class AbstractUseItemEvent extends PlayerEvent {
+	private Item item;
 
-	public TilePlaceCallback(TileType createdTile) {
-		this.createdTile = createdTile;
+	public AbstractUseItemEvent() {
+	}
+
+	public Item getItem() {
+		return item;
+	}
+
+	public void setItem(Item item) {
+		this.item = item;
 	}
 
 	@Override
-	public boolean canUseItem(PlayerEntity player, Item item) {
-		return true;
+	public Object[] pack() {
+		return new Object[] { getPlayer(), getItem() };
 	}
 
 	@Override
-	public void beginUseItem(PlayerEntity player, Item item) {
+	public void unpack(Object[] packed) {
+		setPlayer((PlayerEntity) packed[0]);
+		setItem((Item) packed[1]);
 	}
-
-	@Override
-	public void updateUseItem(PlayerEntity player, Item item, float delta) {
-	}
-
-	@Override
-	public boolean useItem(PlayerEntity player, Item item) {
-		Vector2 worldFocus = player.getWorldFocus();
-
-		int tileX = MathUtils.floor(worldFocus.x);
-		int tileY = MathUtils.floor(worldFocus.y);
-
-		World world = player.getWorld();
-		if (world.getTileType(tileX, tileY) == TileType.air) {
-			world.setTileType(tileX, tileY, createdTile);
-
-			return true;
-		}
-
-		return false;
-	}
-
 }

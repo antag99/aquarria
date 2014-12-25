@@ -59,6 +59,14 @@ public class EventBenchmarks {
 	}
 
 	private static class SampleEvent extends Event {
+		@Override
+		public Object[] pack() {
+			return new Object[0];
+		}
+
+		@Override
+		public void unpack(Object[] packed) {
+		}
 	}
 
 	private static class SampleEventListener implements Listener {

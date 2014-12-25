@@ -46,4 +46,21 @@ public abstract class PlayerEvent extends Event {
 	public PlayerEntity getPlayer() {
 		return player;
 	}
+
+	/**
+	 * Sets the player involved in this event
+	 */
+	public void setPlayer(PlayerEntity player) {
+		this.player = player;
+	}
+
+	@Override
+	public Object[] pack() {
+		return new Object[] { getPlayer() };
+	}
+
+	@Override
+	public void unpack(Object[] packed) {
+		setPlayer((PlayerEntity) packed[0]);
+	}
 }

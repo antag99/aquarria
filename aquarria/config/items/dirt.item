@@ -6,7 +6,7 @@
 	"maxStack" : 99,
 	"texture" : "images/items/dirt.png",
 	"usage" : "placeTile",
-	"createdTile" : "dirt",
+	"placedTile" : "dirt",
 	"consumable" : true,
 	"usageTime" : 0.3,
 	"usageRepeat" : true
