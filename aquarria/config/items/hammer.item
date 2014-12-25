@@ -5,7 +5,9 @@
 	"height" : 32,
 	"maxStack" : 1,
 	"texture" : "images/items/hammer.png",
-	"usage" : "destroyWall",
+	"events" : {
+		"com.github.antag99.aquarria.event.UseItemEvent" : "destroyWall"
+	},
 	"usageTime" : 0.3,
 	"consumable" : false,
 	"usageRepeat" : true

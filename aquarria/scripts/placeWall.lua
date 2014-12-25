@@ -5,7 +5,7 @@ return function(player, item)
   local tileY = math.floor(focus.y)
 
   if world:getWallType(tileX, tileY) == WallType.air then
-    world:setWallType(tileX, tileY, GameRegistry.getWallType(item.placedWall))
+    world:setWallType(tileX, tileY, GameRegistry:getWallType(item:getType():getConfig():getString("placedWall")))
     return true
   end
 

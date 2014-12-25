@@ -5,7 +5,7 @@ return function(player, item)
   local tileY = math.floor(focus.y)
 
   if world:getTileType(tileX, tileY) == TileType.air then
-    world:setTileType(tileX, tileY, GameRegistry.getTileType(item.placedTile))
+    world:setTileType(tileX, tileY, GameRegistry:getTileType(item:getType():getConfig():getString("placedTile")))
     return true
   end
 

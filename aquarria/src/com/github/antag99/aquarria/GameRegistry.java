@@ -29,10 +29,13 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.ResourceFinder;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 import org.reflections.Reflections;
@@ -51,6 +54,8 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.EntityType;
+import com.github.antag99.aquarria.event.Event;
+import com.github.antag99.aquarria.event.ScriptEventListener;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.item.ItemUsageStyle;
 import com.github.antag99.aquarria.tile.BlockFrameStyleFactory;
@@ -226,6 +231,7 @@ public final class GameRegistry {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void initialize() {
 		// Create LuaJ globals and register all game classes
 		globals = JsePlatform.standardGlobals();
@@ -249,6 +255,14 @@ public final class GameRegistry {
 				throw new AssertionError(ex);
 			}
 		}
+
+		// Set ResourceFinder that uses internal files and adds .lua extension
+		globals.finder = new ResourceFinder() {
+			@Override
+			public InputStream findResource(String filename) {
+				return Gdx.files.internal(filename + ".lua").read();
+			}
+		};
 
 		// Set static convenience fields in type classes
 		for (ItemType type : getItemTypes()) {
@@ -300,6 +314,32 @@ public final class GameRegistry {
 			itemType.setUsageRepeat(itemConfiguration.getBoolean("usageRepeat", false));
 			itemType.setUsageStyle(ItemUsageStyle.swing); // TODO: This should be changed
 			itemType.setConsumable(itemConfiguration.getBoolean("consumable", false));
+
+			// Register event handlers
+			if (itemConfiguration.has("events")) {
+				for (JsonValue event : itemConfiguration.get("events")) {
+					Class<?> eventClass;
+					String handlerScript;
+
+					try {
+						eventClass = Class.forName(event.name);
+					} catch (ClassNotFoundException ex) {
+						throw new RuntimeException("Event class " + event.name + " not found");
+					}
+
+					if (!Event.class.isAssignableFrom(eventClass)) {
+						throw new RuntimeException(eventClass.getName() + " is not a subclass of " + Event.class.getName());
+					}
+
+					handlerScript = event.asString();
+					if (handlerScript == null) {
+						throw new RuntimeException("Invalid handler; not a string!");
+					}
+
+					LuaValue handler = globals.loadfile(handlerScript).call();
+					itemType.getEvents().registerListener(new ScriptEventListener<Event>(handler.checkfunction(), (Class<Event>) eventClass, 0f));
+				}
+			}
 
 			if (assetManager != null && itemConfiguration.has("texture")) {
 				itemType.setTexture(assetManager.get(itemConfiguration.getString("texture", null), TextureRegion.class));

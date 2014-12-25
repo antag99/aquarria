@@ -5,7 +5,11 @@
 	"height" : 28,
 	"maxStack" : 1,
 	"texture" : "images/items/pickaxe.png",
-	"usage" : "destroyTile",
+	
+	"events" : {
+		"com.github.antag99.aquarria.event.UseItemEvent" : "destroyTile"
+	},
+	
 	"usageTime" : 0.3,
 	"consumable" : false,
 	"usageRepeat" : true
