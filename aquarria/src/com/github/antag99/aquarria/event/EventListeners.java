@@ -30,7 +30,8 @@
 package com.github.antag99.aquarria.event;
 
 /**
- * Tagging interface to be implemented by event listeners
+ * Interface that is implemented by objects with {@link EventReceiver}s,
+ * registered by calling {@link EventManager#registerListeners(EventListeners)}.
  */
 public interface EventListeners {
 }

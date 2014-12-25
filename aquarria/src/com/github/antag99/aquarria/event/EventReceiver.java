@@ -36,8 +36,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for {@link EventListeners}. The annotated methods should accept
- * a single event as argument, which will be the event that is received.
+ * Annotation for event handler methods in {@link EventListeners}.
+ * The annotated methods has to accept a single event as argument.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

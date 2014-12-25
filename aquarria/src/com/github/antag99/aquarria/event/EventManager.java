@@ -36,20 +36,17 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IdentityMap;
 import com.badlogic.gdx.utils.ObjectMap;
 
-/**
- * Manages the listeners of an event and the notification of them when the event
- * is fired.
- */
 public class EventManager {
 	// TODO: Clean up this generic sh*t; it's probably worse than necessary.
 	// TODO: Find a way to handle the cache more gracefully; right now it is
 	// reset every time an event listener is removed or added. Or get rid of
 	// it entirely, if it is possible to get a reasonable speed that way.
+	// TODO: Event listeners with the same priority should depend on the order in which they were added.
 
 	/**
 	 * Cache for quickly firing an event, updated when an event is
-	 * fired for the first time after modification. This list is
-	 * sorted by priority.
+	 * fired for the first time after modification. Sorted by
+	 * event listener priority.
 	 */
 	private ObjectMap<Class<?>, EventListener<?>[]> listenerCache = new ObjectMap<>();
 
