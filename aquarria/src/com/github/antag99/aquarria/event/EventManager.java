@@ -29,7 +29,6 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.event;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -42,24 +41,68 @@ import com.badlogic.gdx.utils.ObjectMap;
  * is fired.
  */
 public class EventManager {
+	// TODO: Clean up this generic sh*t; it's probably worse than necessary.
+	// TODO: Find a way to handle the cache more gracefully; right now it is
+	// reset every time an event listener is removed or added. Or get rid of
+	// it entirely, if it is possible to get a reasonable speed that way.
 
-	/** Metadata for an event handler, containing the method receiver and event class */
-	private static class EventHandler {
-		public EventListeners listener;
-		public Method recieverMethod;
-		public Class<? extends Event> eventClass;
-		public float priority;
+	/**
+	 * Cache for quickly firing an event, updated when an event is
+	 * fired for the first time after modification. This list is
+	 * sorted by priority.
+	 */
+	private ObjectMap<Class<?>, EventListener<?>[]> listenerCache = new ObjectMap<>();
+
+	/**
+	 * Mapping of target event class to listeners
+	 */
+	private ObjectMap<Class<?>, Array<EventListener<?>>> registeredListeners = new ObjectMap<>();
+
+	/**
+	 * Mapping of {@link EventListeners} to registered handlers
+	 */
+	private IdentityMap<EventListeners, Array<EventListener<?>>> registeredHandlers = new IdentityMap<>();
+
+	private Array<EventListener<?>> getRegisteredListeners(Class<?> eventClass) {
+		if (!registeredListeners.containsKey(eventClass)) {
+			registeredListeners.put(eventClass, new Array<EventListener<?>>());
+		}
+		return registeredListeners.get(eventClass);
 	}
 
-	/**
-	 * Contains the registered event listeners and their associated event handlers.
-	 */
-	private IdentityMap<EventListeners, EventHandler[]> listeners = new IdentityMap<>();
+	private static final class EventHandler implements EventListener<Event> {
+		private Method receiverMethod;
+		private Object targetObject;
+		private float priority;
+		private Class<?> eventClass;
 
-	/**
-	 * Cache for quickly firing an event, updated when an event is fired.
-	 */
-	private ObjectMap<Class<? extends Event>, EventHandler[]> handlerCache = new ObjectMap<>();
+		public EventHandler(Method receiverMethod, Object targetObject, float priority, Class<?> eventClass) {
+			this.receiverMethod = receiverMethod;
+			this.targetObject = targetObject;
+			this.priority = priority;
+			this.eventClass = eventClass;
+		}
+
+		@Override
+		public void notify(Event event) {
+			try {
+				receiverMethod.invoke(targetObject, event);
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Class<Event> getEventClass() {
+			return (Class<Event>) eventClass;
+		}
+
+		@Override
+		public float getPriority() {
+			return priority;
+		}
+	}
 
 	/**
 	 * Creates a new event manager with no listeners
@@ -70,51 +113,58 @@ public class EventManager {
 	/**
 	 * Fires the given event. This causes all listeners to be notified.
 	 */
+	@SuppressWarnings("unchecked")
 	public void fire(Event event) {
 		// Lookup the event's type in the cache, or create the cache
-		EventHandler[] cache = handlerCache.get(event.getClass());
+		EventListener<?>[] cache = listenerCache.get(event.getClass());
 		if (cache == null) {
-			// Collect event handlers for the specific event
-			Array<EventHandler> eventHandlers = new Array<EventHandler>(EventHandler.class);
-			for (EventHandler[] eventListenerHandlers : listeners.values()) {
-				for (EventHandler eventHandler : eventListenerHandlers) {
-					if (eventHandler.eventClass.isAssignableFrom(event.getClass())) {
-						eventHandlers.add(eventHandler);
-					}
-				}
-			}
+			// Collect event listeners
+			Array<EventListener<?>> eventListeners = new Array<>(EventListener.class);
+			Class<?> eventClass = event.getClass();
+			do {
+				eventListeners.addAll(getRegisteredListeners(eventClass));
+				eventClass = eventClass.getSuperclass();
+			} while (eventClass != Event.class);
 
 			// Sort them based on priority
-			eventHandlers.sort((a, b) -> a.priority > b.priority ? 1 : b.priority > a.priority ? -1 : 0);
+			eventListeners.sort((a, b) -> {
+				float aPriority = a.getPriority();
+				float bPriority = b.getPriority();
+				return aPriority > bPriority ? 1 : bPriority > aPriority ? -1 : 0;
+			});
 
 			// Add the cache...
-			cache = eventHandlers.shrink();
-			handlerCache.put(event.getClass(), cache);
+			cache = eventListeners.shrink();
+			listenerCache.put(event.getClass(), cache);
 		}
 
 		// Fire the event!
-		for (EventHandler eventHandler : cache) {
-			try {
-				eventHandler.recieverMethod.invoke(eventHandler.listener, event);
-			} catch (InvocationTargetException e) {
-				Throwable ex = e.getTargetException();
-				if (ex instanceof RuntimeException) {
-					throw (RuntimeException) ex;
-				} else {
-					throw new RuntimeException(ex);
-				}
-			} catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
+		for (EventListener<?> listener : cache) {
+			((EventListener<Event>) listener).notify(event);
 		}
+	}
+
+	/**
+	 * Registers the given event listener
+	 */
+	public void registerListener(EventListener<?> listener) {
+		listenerCache.clear();
+		getRegisteredListeners(listener.getEventClass()).add(listener);
+	}
+
+	/**
+	 * Unregisters the given event listener
+	 */
+	public void unregisterListener(EventListener<?> listener) {
+		listenerCache.clear();
+		getRegisteredListeners(listener.getEventClass()).removeValue(listener, true);
 	}
 
 	/**
 	 * Registers the event receivers of the given listener
 	 */
-	@SuppressWarnings("unchecked")
 	public void registerListeners(EventListeners listener) {
-		handlerCache.clear();
+		listenerCache.clear();
 
 		// Find suitable event receiver methods
 		Array<Method> receiverMethods = new Array<Method>();
@@ -133,28 +183,27 @@ public class EventManager {
 		} while (EventListeners.class.isAssignableFrom(level));
 
 		// Create event handlers from the found methods
-		EventHandler[] eventHandlers = new EventHandler[receiverMethods.size];
-		for (int i = 0; i < receiverMethods.size; ++i) {
-			Method receiverMethod = receiverMethods.get(i);
+		Array<EventListener<?>> eventHandlers = new Array<>();
+		for (Method receiverMethod : receiverMethods) {
 			receiverMethod.setAccessible(true);
-			EventReceiver receiverMetadata = receiverMethod.getAnnotation(EventReceiver.class);
-			eventHandlers[i] = new EventHandler();
-			eventHandlers[i].eventClass = (Class<? extends Event>) receiverMethod.getParameterTypes()[0];
-			eventHandlers[i].listener = listener;
-			eventHandlers[i].recieverMethod = receiverMethod;
-			eventHandlers[i].priority = receiverMetadata.priority();
+			EventReceiver properties = receiverMethod.getAnnotation(EventReceiver.class);
+			eventHandlers.add(new EventHandler(receiverMethod, listener,
+					properties.priority(), receiverMethod.getParameterTypes()[0]));
 		}
-
-		// Register the event listener with associated event handlers
-		listeners.put(listener, eventHandlers);
+		for (EventListener<?> eventHandler : eventHandlers) {
+			registerListener(eventHandler);
+		}
+		registeredHandlers.put(listener, eventHandlers);
 	}
 
 	/**
 	 * Unregisters all event receivers of the given listener
 	 */
 	public void unregisterListeners(EventListeners listener) {
-		handlerCache.clear();
-
-		listeners.remove(listener);
+		Array<EventListener<?>> eventHandlers = registeredHandlers.get(listener);
+		for (EventListener<?> eventHandler : eventHandlers) {
+			unregisterListener(eventHandler);
+		}
+		registeredHandlers.remove(listener);
 	}
 }
