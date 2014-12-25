@@ -27,70 +27,27 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.entity;
+package com.github.antag99.aquarria;
 
-import com.github.antag99.aquarria.Type;
+import com.badlogic.gdx.utils.JsonValue;
 
-public final class EntityType extends Type {
-	public static EntityType player;
-	public static EntityType item;
+public abstract class Type {
+	private String internalName;
+	private JsonValue config;
 
-	private String displayName;
-	private boolean solid;
-	private float weight;
-	private int maxHealth;
-
-	private float defaultWidth;
-	private float defaultHeight;
-
-	public EntityType() {
+	public String getInternalName() {
+		return internalName;
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public void setInternalName(String internalName) {
+		this.internalName = internalName;
 	}
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
+	public JsonValue getConfig() {
+		return config;
 	}
 
-	public boolean isSolid() {
-		return solid;
-	}
-
-	public void setSolid(boolean solid) {
-		this.solid = solid;
-	}
-
-	public float getWeight() {
-		return weight;
-	}
-
-	public void setWeight(float weight) {
-		this.weight = weight;
-	}
-
-	public int getMaxHealth() {
-		return maxHealth;
-	}
-
-	public void setMaxHealth(int maxHealth) {
-		this.maxHealth = maxHealth;
-	}
-
-	public float getDefaultWidth() {
-		return defaultWidth;
-	}
-
-	public void setDefaultWidth(float defaultWidth) {
-		this.defaultWidth = defaultWidth;
-	}
-
-	public float getDefaultHeight() {
-		return defaultHeight;
-	}
-
-	public void setDefaultHeight(float defaultHeight) {
-		this.defaultHeight = defaultHeight;
+	public void setConfig(JsonValue config) {
+		this.config = config;
 	}
 }

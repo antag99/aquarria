@@ -30,10 +30,10 @@
 package com.github.antag99.aquarria.item;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.Type;
 import com.github.antag99.aquarria.event.EventManager;
 
-public final class ItemType {
+public final class ItemType extends Type {
 	// TODO: Add annotations to map fields to JSON properties.
 	// TODO: Add annotations to indicate the JSON configuration of a static field?
 	// TODO: Remove getters and setters, replaced with public fields?
@@ -48,7 +48,6 @@ public final class ItemType {
 	public static ItemType stoneWall;
 
 	// Item properties
-	private String internalName;
 	private String displayName;
 	private int maxStack;
 	private float width;
@@ -60,17 +59,8 @@ public final class ItemType {
 	private ItemUsageStyle usageStyle;
 	private TextureRegion texture;
 	private EventManager events = new EventManager();
-	private JsonValue config;
 
 	public ItemType() {
-	}
-
-	public String getInternalName() {
-		return internalName;
-	}
-
-	public void setInternalName(String internalName) {
-		this.internalName = internalName;
 	}
 
 	public String getDisplayName() {
@@ -155,13 +145,5 @@ public final class ItemType {
 
 	public EventManager getEvents() {
 		return events;
-	}
-
-	public JsonValue getConfig() {
-		return config;
-	}
-
-	public void setConfig(JsonValue config) {
-		this.config = config;
 	}
 }

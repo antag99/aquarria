@@ -31,34 +31,24 @@ package com.github.antag99.aquarria.tile;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.Type;
 import com.github.antag99.aquarria.item.ItemType;
 
-public final class TileType {
+public final class TileType extends Type {
 	public static TileType air;
 	public static TileType dirt;
 	public static TileType stone;
 	public static TileType grass;
 	public static TileType tree;
 
-	private String internalName;
 	private String displayName;
 	private boolean solid;
 	private ItemType drop;
 	private TextureAtlas atlas;
 	private FrameStyle style;
 	private Rectangle frame = new Rectangle(0f, 0f, 1f, 1f);
-	private JsonValue config;
 
 	public TileType() {
-	}
-
-	public String getInternalName() {
-		return internalName;
-	}
-
-	public void setInternalName(String internalName) {
-		this.internalName = internalName;
 	}
 
 	public String getDisplayName() {
@@ -112,13 +102,5 @@ public final class TileType {
 
 	public void setFrame(Rectangle frame) {
 		this.frame.set(frame);
-	}
-
-	public JsonValue getConfig() {
-		return config;
-	}
-
-	public void setConfig(JsonValue config) {
-		this.config = config;
 	}
 }

@@ -31,31 +31,21 @@ package com.github.antag99.aquarria.tile;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.Type;
 import com.github.antag99.aquarria.item.ItemType;
 
-public final class WallType {
+public final class WallType extends Type {
 	public static WallType air;
 	public static WallType dirt;
 	public static WallType stone;
 
-	private String internalName;
 	private String displayName;
 	private ItemType drop;
 	private TextureAtlas atlas;
 	private FrameStyle style;
 	private Rectangle frame = new Rectangle(-0.5f, -0.5f, 2f, 2f);
-	private JsonValue config;
 
 	public WallType() {
-	}
-
-	public String getInternalName() {
-		return internalName;
-	}
-
-	public void setInternalName(String internalName) {
-		this.internalName = internalName;
 	}
 
 	public String getDisplayName() {
@@ -101,13 +91,5 @@ public final class WallType {
 
 	public void setFrame(Rectangle frame) {
 		this.frame.set(frame);
-	}
-
-	public JsonValue getConfig() {
-		return config;
-	}
-
-	public void setConfig(JsonValue config) {
-		this.config = config;
 	}
 }
