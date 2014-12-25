@@ -37,6 +37,6 @@ import com.github.antag99.aquarria.world.World;
 public class BlockFrameStyle extends DefaultFrameStyle {
 	@Override
 	protected boolean merge(World world, int x, int y, int x2, int y2) {
-		return !world.inBounds(x2, y2) || world.getTileType(x2, y2) != TileType.air;
+		return !world.inBounds(x2, y2) || world.getTileType(x2, y2).isSolid();
 	}
 }
