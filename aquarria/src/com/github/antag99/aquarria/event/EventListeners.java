@@ -32,5 +32,5 @@ package com.github.antag99.aquarria.event;
 /**
  * Tagging interface to be implemented by event listeners
  */
-public interface Listener {
+public interface EventListeners {
 }

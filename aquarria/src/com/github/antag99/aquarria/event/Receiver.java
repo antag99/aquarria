@@ -36,7 +36,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for {@link Listener}s. The annotated methods should accept
+ * Annotation for {@link EventListeners}. The annotated methods should accept
  * a single event as argument, which will be the event that is received.
  */
 @Target(ElementType.METHOD)

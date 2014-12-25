@@ -45,7 +45,7 @@ public class EventManager {
 
 	/** Metadata for an event handler, containing the method receiver and event class */
 	private static class EventHandler {
-		public Listener listener;
+		public EventListeners listener;
 		public Method recieverMethod;
 		public Class<? extends Event> eventClass;
 		public float priority;
@@ -54,7 +54,7 @@ public class EventManager {
 	/**
 	 * Contains the registered event listeners and their associated event handlers.
 	 */
-	private IdentityMap<Listener, EventHandler[]> listeners = new IdentityMap<>();
+	private IdentityMap<EventListeners, EventHandler[]> listeners = new IdentityMap<>();
 
 	/**
 	 * Cache for quickly firing an event, updated when an event is fired.
@@ -113,7 +113,7 @@ public class EventManager {
 	 * Registers the event receivers of the given listener
 	 */
 	@SuppressWarnings("unchecked")
-	public void registerListeners(Listener listener) {
+	public void registerListeners(EventListeners listener) {
 		handlerCache.clear();
 
 		// Find suitable event receiver methods
@@ -130,7 +130,7 @@ public class EventManager {
 			}
 
 			level = level.getSuperclass();
-		} while (Listener.class.isAssignableFrom(level));
+		} while (EventListeners.class.isAssignableFrom(level));
 
 		// Create event handlers from the found methods
 		EventHandler[] eventHandlers = new EventHandler[receiverMethods.size];
@@ -152,7 +152,7 @@ public class EventManager {
 	/**
 	 * Unregisters all event receivers of the given listener
 	 */
-	public void unregisterListeners(Listener listener) {
+	public void unregisterListeners(EventListeners listener) {
 		handlerCache.clear();
 
 		listeners.remove(listener);
