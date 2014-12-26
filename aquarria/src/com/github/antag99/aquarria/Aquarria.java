@@ -131,6 +131,7 @@ public class Aquarria extends Game {
 
 		Gdx.input.setInputProcessor(stage);
 
+		GameRegistry.initialize();
 		ingameScreen = new IngameScreen(this);
 
 		System.out.print("Loading assets... ");
@@ -140,7 +141,7 @@ public class Aquarria extends Game {
 
 		assetManager.finishLoading();
 
-		GameRegistry.initialize();
+		GameRegistry.getAssets(assetManager);
 		ingameScreen.initialize();
 
 		System.out.println("Done!");

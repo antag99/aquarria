@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.ResourceFinder;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
@@ -48,109 +47,100 @@ import org.reflections.util.FilterBuilder;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.EntityType;
-import com.github.antag99.aquarria.event.Event;
-import com.github.antag99.aquarria.event.ScriptEventListener;
 import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.item.ItemUsageStyle;
 import com.github.antag99.aquarria.tile.BlockFrameStyleFactory;
 import com.github.antag99.aquarria.tile.FrameStyleFactory;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.TreeFrameStyleFactory;
 import com.github.antag99.aquarria.tile.WallFrameStyleFactory;
 import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.util.Utils;
 
 public final class GameRegistry {
 	private GameRegistry() {
 		throw new AssertionError();
 	}
 
-	// Asset manager, used to get the assets when loading is done
-	private static AssetManager assetManager = null;
-
 	// Mappings of internal names to concrete types
-	private static ObjectMap<String, ItemType> internalNameToItemType = new ObjectMap<>();
-	private static ObjectMap<String, TileType> internalNameToTileType = new ObjectMap<>();
-	private static ObjectMap<String, WallType> internalNameToWallType = new ObjectMap<>();
-	private static ObjectMap<String, EntityType> internalNameToEntityType = new ObjectMap<>();
+	private static ObjectMap<Class<? extends Type>, ObjectMap<String, Type>> registeredTypes = new ObjectMap<>();
+	private static ObjectMap<String, TypeLoader<?>> typeLoadersByExtension = new ObjectMap<>();
+	private static ObjectMap<Class<? extends Type>, TypeLoader<?>> typeLoadersByClass = new ObjectMap<>();
 
 	private static ObjectMap<String, FrameStyleFactory> frameStyleFactories = new ObjectMap<>();
 
 	private static Globals globals;
 
-	public static void registerItem(ItemType itemType) {
-		internalNameToItemType.put(itemType.getInternalName(), itemType);
+	private static ObjectMap<String, Type> getRegisteredTypes(Class<? extends Type> typeClass) {
+		ObjectMap<String, Type> types = registeredTypes.get(typeClass);
+		if (types == null) {
+			types = new ObjectMap<String, Type>();
+			registeredTypes.put(typeClass, types);
+		}
+		return types;
 	}
 
-	public static void registerTile(TileType tileType) {
-		internalNameToTileType.put(tileType.getInternalName(), tileType);
+	@SuppressWarnings("unchecked")
+	public static <T extends Type> Iterable<T> getTypes(Class<T> typeClass) {
+		return (Iterable<T>) getRegisteredTypes(typeClass).values();
 	}
 
-	public static void registerWall(WallType wallType) {
-		internalNameToWallType.put(wallType.getInternalName(), wallType);
+	@SuppressWarnings("unchecked")
+	public static <T extends Type> T getType(Class<T> typeClass, String internalName) {
+		T type = (T) getRegisteredTypes(typeClass).get(internalName);
+		if (type == null) {
+			throw new IllegalArgumentException(typeClass.getSimpleName() + " not found: " + internalName);
+		}
+		return type;
 	}
 
-	public static void registerEntity(EntityType entityType) {
-		internalNameToEntityType.put(entityType.getInternalName(), entityType);
+	public static void registerTypeLoader(TypeLoader<?> typeLoader) {
+		typeLoadersByExtension.put(typeLoader.getExtension(), typeLoader);
+		typeLoadersByClass.put(typeLoader.getTypeClass(), typeLoader);
+	}
+
+	public static void registerType(Type type) {
+		getRegisteredTypes(type.getClass()).put(type.getInternalName(), type);
 	}
 
 	public static ItemType getItemType(String internalName) {
-		ItemType itemType = internalNameToItemType.get(internalName);
-		if (itemType == null) {
-			throw new IllegalArgumentException("ItemType not found: " + internalName);
-		}
-		return itemType;
+		return getType(ItemType.class, internalName);
 	}
 
 	public static TileType getTileType(String internalName) {
-		TileType tileType = internalNameToTileType.get(internalName);
-		if (tileType == null) {
-			throw new IllegalArgumentException("TileType not found: " + internalName);
-		}
-		return tileType;
+		return getType(TileType.class, internalName);
 	}
 
 	public static WallType getWallType(String internalName) {
-		WallType wallType = internalNameToWallType.get(internalName);
-		if (wallType == null) {
-			throw new IllegalArgumentException("WallType not found: " + internalName);
-		}
-		return wallType;
+		return getType(WallType.class, internalName);
 	}
 
 	public static EntityType getEntityType(String internalName) {
-		EntityType entityType = internalNameToEntityType.get(internalName);
-		if (entityType == null) {
-			throw new IllegalArgumentException("EntityType not found: " + internalName);
-		}
-		return entityType;
+		return getType(EntityType.class, internalName);
 	}
 
 	public static Iterable<ItemType> getItemTypes() {
-		return internalNameToItemType.values();
+		return getTypes(ItemType.class);
 	}
 
 	public static Iterable<TileType> getTileTypes() {
-		return internalNameToTileType.values();
+		return getTypes(TileType.class);
 	}
 
 	public static Iterable<WallType> getWallTypes() {
-		return internalNameToWallType.values();
+		return getTypes(WallType.class);
 	}
 
 	public static Iterable<EntityType> getEntityTypes() {
-		return internalNameToEntityType.values();
+		return getTypes(EntityType.class);
 	}
 
 	private static JsonReader jsonReader = new JsonReader();
 
-	private static void loadConfigurations() {
+	@SuppressWarnings("unchecked")
+	private static void loadTypes() {
 		// Source: http://stackoverflow.com/a/9571146
 		List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
 		classLoadersList.add(ClasspathHelper.contextClassLoader());
@@ -161,77 +151,57 @@ public final class GameRegistry {
 				.setScanners(new ResourcesScanner())
 				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0]))));
 
-		for (String itemPath : reflections.getResources((name) -> name.endsWith(".item"))) {
-			FileHandle file = Gdx.files.internal(itemPath);
-			if (file.exists()) {
-				JsonValue value = jsonReader.parse(file);
-				ItemType itemType = new ItemType();
-				itemType.setConfig(value);
-				itemType.setInternalName(value.getString("internalName"));
-				registerItem(itemType);
+		for (String typePath : reflections.getResources((resourceName) -> {
+			return typeLoadersByExtension.containsKey(new FileHandle(resourceName).extension());
+		})) {
+			FileHandle file = Gdx.files.internal(typePath);
+			JsonValue config = jsonReader.parse(file);
+
+			TypeLoader<?> loader = typeLoadersByExtension.get(file.extension());
+			Type typeInstance = null;
+
+			try {
+				typeInstance = (Type) loader.getTypeClass().newInstance();
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
 			}
+
+			typeInstance.setInternalName(config.getString("internalName"));
+			typeInstance.setConfig(config);
+
+			((TypeLoader<Type>) loader).load(typeInstance, config);
+
+			registerType(typeInstance);
 		}
 
-		for (String tilePath : reflections.getResources((name) -> name.endsWith(".tile"))) {
-			FileHandle file = Gdx.files.internal(tilePath);
-			if (file.exists()) {
-				JsonValue value = jsonReader.parse(file);
-				TileType tileType = new TileType();
-				tileType.setConfig(value);
-				tileType.setInternalName(value.getString("internalName"));
-				registerTile(tileType);
-			}
-		}
-
-		for (String wallPath : reflections.getResources((name) -> name.endsWith(".wall"))) {
-			FileHandle file = Gdx.files.internal(wallPath);
-			if (file.exists()) {
-				JsonValue value = jsonReader.parse(file);
-				WallType wallType = new WallType();
-				wallType.setConfig(value);
-				wallType.setInternalName(value.getString("internalName"));
-				registerWall(wallType);
-			}
-		}
-
-		for (String entityPath : reflections.getResources((name) -> name.endsWith(".entity"))) {
-			FileHandle file = Gdx.files.internal(entityPath);
-			if (file.exists()) {
-				JsonValue value = jsonReader.parse(file);
-				EntityType entityType = new EntityType();
-				entityType.setConfig(value);
-				entityType.setInternalName(value.getString("internalName"));
-				registerEntity(entityType);
-			}
-		}
-	}
-
-	/** Called to queue the required assets for loading */
-	static void loadAssets(AssetManager assetManager) {
-		loadConfigurations();
-
-		GameRegistry.assetManager = assetManager;
-
-		for (ItemType itemType : getItemTypes()) {
-			if (itemType.getConfig().has("texture")) {
-				assetManager.load(itemType.getConfig().getString("texture"), TextureRegion.class);
-			}
-		}
-
-		for (TileType tileType : getTileTypes()) {
-			if (tileType.getConfig().has("skin")) {
-				assetManager.load(tileType.getConfig().getString("skin"), TextureAtlas.class);
-			}
-		}
-
-		for (WallType wallType : getWallTypes()) {
-			if (wallType.getConfig().has("skin")) {
-				assetManager.load(wallType.getConfig().getString("skin"), TextureAtlas.class);
+		for (Class<? extends Type> typeClass : registeredTypes.keys()) {
+			TypeLoader<?> loader = typeLoadersByClass.get(typeClass);
+			for (Type type : getTypes(typeClass)) {
+				((TypeLoader<Type>) loader).postLoad(type, type.getConfig());
 			}
 		}
 	}
 
 	@SuppressWarnings("unchecked")
+	static void loadAssets(AssetManager assetManager) {
+		for (Class<? extends Type> typeClass : registeredTypes.keys()) {
+			TypeLoader<?> loader = typeLoadersByClass.get(typeClass);
+			for (Type type : getTypes(typeClass)) {
+				((TypeLoader<Type>) loader).loadAssets(type, type.getConfig(), assetManager);
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	static void getAssets(AssetManager assetManager) {
+		for (Class<? extends Type> typeClass : registeredTypes.keys()) {
+			TypeLoader<?> loader = typeLoadersByClass.get(typeClass);
+			for (Type type : getTypes(typeClass)) {
+				((TypeLoader<Type>) loader).getAssets(type, type.getConfig(), assetManager);
+			}
+		}
+	}
+
 	public static void initialize() {
 		// Create LuaJ globals and register all game classes
 		globals = JsePlatform.standardGlobals();
@@ -264,156 +234,33 @@ public final class GameRegistry {
 			}
 		};
 
-		// Set static convenience fields in type classes
-		for (ItemType type : getItemTypes()) {
-			try {
-				ItemType.class.getField(type.getInternalName()).set(null, type);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
+		registerTypeLoader(new ItemTypeLoader());
+		registerTypeLoader(new TileTypeLoader());
+		registerTypeLoader(new WallTypeLoader());
+		registerTypeLoader(new EntityTypeLoader());
 
-		for (TileType type : getTileTypes()) {
-			try {
-				TileType.class.getField(type.getInternalName()).set(null, type);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		for (WallType type : getWallTypes()) {
-			try {
-				WallType.class.getField(type.getInternalName()).set(null, type);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		for (EntityType type : getEntityTypes()) {
-			try {
-				EntityType.class.getField(type.getInternalName()).set(null, type);
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		// Register frame style factories
 		registerFrameStyleFactory("block", new BlockFrameStyleFactory());
 		registerFrameStyleFactory("wall", new WallFrameStyleFactory());
 		registerFrameStyleFactory("tree", new TreeFrameStyleFactory());
 
-		// Initialize and register all types, leave out references to other types
-		for (ItemType itemType : getItemTypes()) {
-			JsonValue itemConfiguration = itemType.getConfig();
-			itemType.setDisplayName(itemConfiguration.getString("displayName", ""));
-			itemType.setMaxStack(itemConfiguration.getInt("maxStack", 1));
-			itemType.setWidth(itemConfiguration.getFloat("width"));
-			itemType.setHeight(itemConfiguration.getFloat("height"));
-			itemType.setUsageTime(itemConfiguration.getFloat("usageTime", 0f));
-			itemType.setUsageAnimationTime(itemConfiguration.getFloat("usageAnimationTime", itemType.getUsageTime()));
-			itemType.setUsageRepeat(itemConfiguration.getBoolean("usageRepeat", false));
-			itemType.setUsageStyle(ItemUsageStyle.swing); // TODO: This should be changed
-			itemType.setConsumable(itemConfiguration.getBoolean("consumable", false));
+		loadTypes();
 
-			// Register event handlers
-			if (itemConfiguration.has("events")) {
-				for (JsonValue event : itemConfiguration.get("events")) {
-					Class<?> eventClass;
-					String handlerScript;
-
-					try {
-						eventClass = Class.forName(event.name);
-					} catch (ClassNotFoundException ex) {
-						throw new RuntimeException("Event class " + event.name + " not found");
-					}
-
-					if (!Event.class.isAssignableFrom(eventClass)) {
-						throw new RuntimeException(eventClass.getName() + " is not a subclass of " + Event.class.getName());
-					}
-
-					handlerScript = event.asString();
-					if (handlerScript == null) {
-						throw new RuntimeException("Invalid handler; not a string!");
-					}
-
-					LuaValue handler = globals.loadfile(handlerScript).call();
-					itemType.getEvents().registerListener(new ScriptEventListener<Event>(handler.checkfunction(), (Class<Event>) eventClass, 0f));
+		// Set static convenience fields in type classes
+		for (Class<? extends Type> typeClass : registeredTypes.keys()) {
+			for (Type type : getTypes(typeClass)) {
+				try {
+					typeClass.getField(type.getInternalName()).set(null, type);
+				} catch (Exception ex) {
+					ex.printStackTrace();
 				}
 			}
-
-			if (assetManager != null && itemConfiguration.has("texture")) {
-				itemType.setTexture(assetManager.get(itemConfiguration.getString("texture", null), TextureRegion.class));
-			}
-
-			registerItem(itemType);
-		}
-
-		for (TileType tileType : getTileTypes()) {
-			JsonValue tileConfiguration = tileType.getConfig();
-			tileType.setDisplayName(tileConfiguration.getString("displayName", ""));
-			tileType.setSolid(tileConfiguration.getBoolean("solid", true));
-
-			if (tileConfiguration.has("frame")) {
-				tileType.setFrame(Utils.asRectangle(tileConfiguration.get("frame")));
-			}
-
-			String tileFrameStyle = tileConfiguration.getString("style", "block");
-			FrameStyleFactory styleFactory = getFrameStyleFactory(tileFrameStyle);
-			tileType.setStyle(styleFactory.create(tileConfiguration));
-
-			if (tileConfiguration.has("drop")) {
-				tileType.setDrop(getItemType(tileConfiguration.getString("drop")));
-			}
-
-			if (assetManager != null && tileConfiguration.has("skin")) {
-				TextureAtlas atlas = assetManager.get(tileConfiguration.getString("skin"), TextureAtlas.class);
-				tileType.setAtlas(atlas);
-			}
-
-			registerTile(tileType);
-		}
-
-		for (WallType wallType : getWallTypes()) {
-			JsonValue wallConfiguration = wallType.getConfig();
-			wallType.setDisplayName(wallConfiguration.getString("displayName", ""));
-
-			if (wallConfiguration.has("frame")) {
-				wallType.setFrame(Utils.asRectangle(wallConfiguration.get("frame")));
-			}
-
-			String wallFrameStyle = wallConfiguration.getString("style", "wall");
-			FrameStyleFactory styleFactory = getFrameStyleFactory(wallFrameStyle);
-			wallType.setStyle(styleFactory.create(wallConfiguration));
-
-			if (wallConfiguration.has("drop")) {
-				wallType.setDrop(getItemType(wallConfiguration.getString("drop")));
-			}
-
-			if (assetManager != null && wallConfiguration.has("skin")) {
-				TextureAtlas atlas = assetManager.get(wallConfiguration.getString("skin"), TextureAtlas.class);
-				wallType.setAtlas(atlas);
-			}
-
-			registerWall(wallType);
-		}
-
-		for (EntityType entityType : getEntityTypes()) {
-			JsonValue entityConfiguration = entityType.getConfig();
-			entityType.setDisplayName(entityConfiguration.getString("displayName", ""));
-			entityType.setMaxHealth(entityConfiguration.getInt("maxHealth", 0));
-			entityType.setSolid(entityConfiguration.getBoolean("solid", true));
-			entityType.setWeight(entityConfiguration.getFloat("weight", 1f));
-			entityType.setDefaultWidth(entityConfiguration.getFloat("width"));
-			entityType.setDefaultHeight(entityConfiguration.getFloat("height"));
-
-			registerEntity(entityType);
 		}
 	}
 
 	public static void clear() {
-		internalNameToItemType.clear();
-		internalNameToTileType.clear();
-		internalNameToEntityType.clear();
+		typeLoadersByClass.clear();
+		typeLoadersByExtension.clear();
+		registeredTypes.clear();
 		frameStyleFactories.clear();
 	}
 
@@ -427,5 +274,9 @@ public final class GameRegistry {
 			throw new IllegalArgumentException("FrameStyleFactory not found: " + name);
 		}
 		return factory;
+	}
+
+	public static Globals getGlobals() {
+		return globals;
 	}
 }
