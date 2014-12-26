@@ -99,7 +99,7 @@ public class ContentExtractor {
 			// Delete already existing processed assets
 			for (FileHandle directory : outputAssetDirectory.list()) {
 				if (!directory.name().equals("raw")) {
-					directory.delete();
+					directory.deleteDirectory();
 				}
 			}
 		}
