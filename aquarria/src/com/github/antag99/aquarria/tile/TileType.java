@@ -29,8 +29,6 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Rectangle;
 import com.github.antag99.aquarria.Type;
 import com.github.antag99.aquarria.item.ItemType;
 
@@ -43,9 +41,8 @@ public final class TileType extends Type {
 
 	private boolean solid;
 	private ItemType drop;
-	private TextureAtlas atlas;
+	private FrameSkin skin;
 	private FrameStyle style;
-	private Rectangle frame = new Rectangle(0f, 0f, 1f, 1f);
 
 	public TileType() {
 	}
@@ -58,12 +55,12 @@ public final class TileType extends Type {
 		this.solid = solid;
 	}
 
-	public TextureAtlas getAtlas() {
-		return atlas;
+	public FrameSkin getSkin() {
+		return skin;
 	}
 
-	public void setAtlas(TextureAtlas atlas) {
-		this.atlas = atlas;
+	public void setSkin(FrameSkin skin) {
+		this.skin = skin;
 	}
 
 	public FrameStyle getStyle() {
@@ -80,18 +77,5 @@ public final class TileType extends Type {
 
 	public void setDrop(ItemType drop) {
 		this.drop = drop;
-	}
-
-	/**
-	 * Gets the frame of this tile type. This specifies the
-	 * rendering bounds of a tile, relative to the tile's
-	 * position.
-	 */
-	public Rectangle getFrame() {
-		return frame;
-	}
-
-	public void setFrame(Rectangle frame) {
-		this.frame.set(frame);
 	}
 }

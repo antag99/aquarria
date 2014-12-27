@@ -2,8 +2,8 @@
 	"internalName" : "tree",
 	"displayName" : "Tree",
 	"solid" : false,
-	"skin" : "images/tiles/tree/tree.atlas",
+	"skin" : "frame/tree.json",
+	"skinDirectory" : "images/tiles/tree/",
 	"style" : "treeFrame",
-	"frame" : [ -0.125, -0.125, 1.25, 1.25 ],
 	"drop" : "dirt"
 }

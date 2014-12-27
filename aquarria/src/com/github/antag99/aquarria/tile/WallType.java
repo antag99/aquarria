@@ -29,7 +29,6 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
 import com.github.antag99.aquarria.Type;
 import com.github.antag99.aquarria.item.ItemType;
@@ -40,7 +39,7 @@ public final class WallType extends Type {
 	public static WallType stone;
 
 	private ItemType drop;
-	private TextureAtlas atlas;
+	private FrameSkin skin;
 	private FrameStyle style;
 	private Rectangle frame = new Rectangle(-0.5f, -0.5f, 2f, 2f);
 
@@ -55,12 +54,12 @@ public final class WallType extends Type {
 		this.drop = drop;
 	}
 
-	public TextureAtlas getAtlas() {
-		return atlas;
+	public FrameSkin getSkin() {
+		return skin;
 	}
 
-	public void setAtlas(TextureAtlas atlas) {
-		this.atlas = atlas;
+	public void setSkin(FrameSkin skin) {
+		this.skin = skin;
 	}
 
 	public FrameStyle getStyle() {

@@ -1,6 +1,7 @@
 {
 	"internalName" : "dirt",
 	"displayName" : "Dirt",
-	"skin" : "images/walls/dirt/dirt.atlas",
+	"skin" : "frame/wall.json",
+	"skinDirectory" : "images/walls/dirt/",
 	"drop" : "dirtWall"
 }

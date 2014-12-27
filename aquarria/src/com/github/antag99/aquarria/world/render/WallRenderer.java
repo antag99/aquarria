@@ -31,9 +31,8 @@ package com.github.antag99.aquarria.world.render;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
+import com.github.antag99.aquarria.tile.Frame;
+import com.github.antag99.aquarria.tile.FrameSkin;
 import com.github.antag99.aquarria.tile.FrameStyle;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.world.World;
@@ -49,13 +48,16 @@ public class WallRenderer extends WorldRendererCallback {
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
 				WallType type = world.getWallType(i, j);
-				TextureAtlas atlas = type.getAtlas();
+				FrameSkin skin = type.getSkin();
 
-				if (atlas != null) {
+				if (skin != null) {
 					FrameStyle style = type.getStyle();
-					Rectangle frame = type.getFrame();
-					TextureRegion texture = atlas.findRegion(style.findFrame(world, i, j));
-					batch.draw(texture, i + frame.x, j + frame.y, frame.width, frame.height);
+					Frame frame = skin.getFrame(style.findFrame(world, i, j));
+					batch.draw(frame.getTexture(),
+							i + frame.getOffsetX() / World.PIXELS_PER_METER,
+							j + frame.getOffsetY() / World.PIXELS_PER_METER,
+							frame.getWidth() / World.PIXELS_PER_METER,
+							frame.getHeight() / World.PIXELS_PER_METER);
 				}
 			}
 		}

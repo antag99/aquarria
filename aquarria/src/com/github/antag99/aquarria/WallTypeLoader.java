@@ -32,10 +32,11 @@ package com.github.antag99.aquarria;
 import org.luaj.vm2.LuaFunction;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.tile.FrameSkin;
 import com.github.antag99.aquarria.tile.ScriptFrameStyle;
 import com.github.antag99.aquarria.tile.WallType;
+import com.github.antag99.aquarria.util.FrameSkinLoader.FrameSkinParameter;
 import com.github.antag99.aquarria.util.Utils;
 
 public class WallTypeLoader extends TypeLoader<WallType> {
@@ -57,24 +58,25 @@ public class WallTypeLoader extends TypeLoader<WallType> {
 	}
 
 	@Override
+	public void postLoad(WallType type, JsonValue config) {
+		if (config.has("drop")) {
+			type.setDrop(GameRegistry.getItemType(config.getString("drop")));
+		}
+	}
+
+	@Override
 	public void loadAssets(WallType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("skin")) {
-			assetManager.load(config.getString("skin"), TextureAtlas.class);
+		if (config.has("skin") && config.has("skinDirectory")) {
+			FrameSkinParameter param = new FrameSkinParameter(config.getString("skin"));
+			assetManager.load(config.getString("skinDirectory"), FrameSkin.class, param);
 		}
 	}
 
 	@Override
 	public void getAssets(WallType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("skin")) {
-			TextureAtlas atlas = assetManager.get(config.getString("skin"), TextureAtlas.class);
-			type.setAtlas(atlas);
-		}
-	}
-
-	@Override
-	public void postLoad(WallType type, JsonValue config) {
-		if (config.has("drop")) {
-			type.setDrop(GameRegistry.getItemType(config.getString("drop")));
+		if (config.has("skin") && config.has("skinDirectory")) {
+			FrameSkin skin = assetManager.get(config.getString("skinDirectory"), FrameSkin.class);
+			type.setSkin(skin);
 		}
 	}
 }

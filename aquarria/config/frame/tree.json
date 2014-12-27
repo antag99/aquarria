@@ -1,0 +1,26 @@
+{
+	"~default" : {
+		"offset" : [ -2, -2 ],
+		"size" : [ 20, 20 ]
+	},
+	"bottom_trunk" : "~default",
+	"bottom_trunk_with_both_stubs" : "~default",
+	"bottom_trunk_with_left_stub" : "~default",
+	"bottom_trunk_with_right_stub" : "~default",
+	"left_branch" : "~default",
+	"left_stub" : "~default",
+	"middle_trunk" : "~default",
+	"middle_trunk_with_both_branches" : "~default",
+	"middle_trunk_with_left_branch" : "~default",
+	"middle_trunk_with_right_branch" : "~default",
+	"right_branch" : "~default",
+	"right_stub" : "~default",
+	"stub" : "~default",
+	"stub_with_both_stubs" : "~default",
+	"stub_with_left_stub" : "~default",
+	"stub_with_right_stub" : "~default",
+	"top_trunk" : "~default",
+	"top_trunk_with_both_branches" : "~default",
+	"top_trunk_with_left_branch" : "~default",
+	"top_trunk_with_right_branch" : "~default"
+}

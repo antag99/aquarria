@@ -2,6 +2,7 @@
 	"internalName" : "stone",
 	"displayName" : "Stone",
 	"solid" : true,
-	"skin" : "images/tiles/stone/stone.atlas",
+	"skin" : "frame/block.json",
+	"skinDirectory" : "images/tiles/stone/",
 	"drop" : "stone"
 }

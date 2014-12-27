@@ -2,6 +2,7 @@
 	"internalName" : "grass",
 	"displayName" : "Grass",
 	"solid" : true,
-	"skin" : "images/tiles/grass/grass.atlas",
+	"skin" : "frame/block.json",
+	"skinDirectory" : "images/tiles/grass/",
 	"drop" : "dirt"
 }

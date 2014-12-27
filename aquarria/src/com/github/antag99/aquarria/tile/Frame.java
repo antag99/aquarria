@@ -27,38 +27,42 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.world.render;
+package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.github.antag99.aquarria.tile.Frame;
-import com.github.antag99.aquarria.tile.FrameSkin;
-import com.github.antag99.aquarria.tile.FrameStyle;
-import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.world.World;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class TileRenderer extends WorldRendererCallback {
-	public TileRenderer() {
+public class Frame {
+	private TextureRegion texture;
+	private float offsetX;
+	private float offsetY;
+	private float width;
+	private float height;
+
+	public Frame(TextureRegion texture, float offsetX, float offsetY, float width, float height) {
+		this.texture = texture;
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
+		this.width = width;
+		this.height = height;
 	}
 
-	@Override
-	public void render(Batch batch, World world, int startX, int startY, int endX, int endY) {
-		batch.setColor(Color.WHITE);
+	public TextureRegion getTexture() {
+		return texture;
+	}
 
-		for (int i = startX; i < endX; ++i) {
-			for (int j = startY; j < endY; ++j) {
-				TileType type = world.getTileType(i, j);
-				FrameSkin skin = type.getSkin();
+	public float getOffsetX() {
+		return offsetX;
+	}
 
-				if (skin != null) {
-					FrameStyle style = type.getStyle();
-					Frame frame = skin.getFrame(style.findFrame(world, i, j));
-					batch.draw(frame.getTexture(), i + frame.getOffsetX() / World.PIXELS_PER_METER,
-							j + frame.getOffsetY() / World.PIXELS_PER_METER,
-							frame.getWidth() / World.PIXELS_PER_METER,
-							frame.getHeight() / World.PIXELS_PER_METER);
-				}
-			}
-		}
+	public float getOffsetY() {
+		return offsetY;
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public float getHeight() {
+		return height;
 	}
 }

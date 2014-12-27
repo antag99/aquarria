@@ -43,9 +43,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.github.antag99.aquarria.tile.FrameSkin;
 import com.github.antag99.aquarria.ui.IngameScreen;
 import com.github.antag99.aquarria.util.DirectoryFileHandleResolver;
 import com.github.antag99.aquarria.util.FileHandleResolverMultiplexer;
+import com.github.antag99.aquarria.util.FrameSkinLoader;
 import com.github.antag99.aquarria.util.TextureAtlasLoader;
 import com.github.antag99.aquarria.util.TextureRegionLoader;
 import com.github.antag99.aquarria.xnb.Steam;
@@ -84,8 +86,11 @@ public class Aquarria extends Game {
 		// Replace libgdx's default TextureAtlasLoader
 		TextureAtlasLoader textureAtlasLoader = new TextureAtlasLoader(resolver, 2048, 2048);
 
+		FrameSkinLoader frameSkinLoader = new FrameSkinLoader(resolver);
+
 		assetManager.setLoader(TextureRegion.class, textureRegionLoader);
 		assetManager.setLoader(TextureAtlas.class, textureAtlasLoader);
+		assetManager.setLoader(FrameSkin.class, frameSkinLoader);
 
 		configFile = Gdx.files.local("aquarria.json");
 		if (configFile.exists()) {

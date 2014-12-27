@@ -1,0 +1,22 @@
+{
+	"~default" : {
+		"offset" : [ 0, 0 ],
+		"size" : [ 16, 16 ]
+	},
+	"all_merge" : "~default",
+	"bottom_left_merge" : "~default",
+	"bottom_merge" : "~default",
+	"bottom_right_merge" : "~default",
+	"left_merge" : "~default",
+	"left_right_merge" : "~default",
+	"no_merge" : "~default",
+	"right_merge" : "~default",
+	"top_bottom_merge" : "~default",
+	"top_left_merge" : "~default",
+	"top_merge" : "~default",
+	"top_right_merge" : "~default",
+	"without_bottom_merge" : "~default",
+	"without_left_merge" : "~default",
+	"without_right_merge" : "~default",
+	"without_top_merge" : "~default"
+}

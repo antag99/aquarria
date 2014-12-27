@@ -27,38 +27,30 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.world.render;
+package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.github.antag99.aquarria.tile.Frame;
-import com.github.antag99.aquarria.tile.FrameSkin;
-import com.github.antag99.aquarria.tile.FrameStyle;
-import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.world.World;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
 
-public class TileRenderer extends WorldRendererCallback {
-	public TileRenderer() {
+public class FrameSkin {
+	private ObjectMap<String, Array<Frame>> frames = new ObjectMap<>();
+
+	public FrameSkin() {
 	}
 
-	@Override
-	public void render(Batch batch, World world, int startX, int startY, int endX, int endY) {
-		batch.setColor(Color.WHITE);
-
-		for (int i = startX; i < endX; ++i) {
-			for (int j = startY; j < endY; ++j) {
-				TileType type = world.getTileType(i, j);
-				FrameSkin skin = type.getSkin();
-
-				if (skin != null) {
-					FrameStyle style = type.getStyle();
-					Frame frame = skin.getFrame(style.findFrame(world, i, j));
-					batch.draw(frame.getTexture(), i + frame.getOffsetX() / World.PIXELS_PER_METER,
-							j + frame.getOffsetY() / World.PIXELS_PER_METER,
-							frame.getWidth() / World.PIXELS_PER_METER,
-							frame.getHeight() / World.PIXELS_PER_METER);
-				}
-			}
+	public void addFrame(String frameName, Frame frame) {
+		if (!frames.containsKey(frameName)) {
+			frames.put(frameName, new Array<Frame>());
 		}
+
+		frames.get(frameName).add(frame);
+	}
+
+	public Frame getFrame(String frameName) {
+		return getFrames(frameName).get(0);
+	}
+
+	public Array<Frame> getFrames(String frameName) {
+		return frames.get(frameName);
 	}
 }
