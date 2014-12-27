@@ -20,7 +20,7 @@ local function treeFrame(world, x, y)
     if treeLeft and treeRight then return "top_trunk_with_both_branches" end
     if treeLeft then return "top_trunk_with_left_branch" end
     if treeRight then return "top_trunk_with_right_branch" end
-    return "top_trunk"
+    return "top_trunk_leaves"
   end
   
   if not trunkBottom and trunkTop then
@@ -37,8 +37,8 @@ local function treeFrame(world, x, y)
   
   if not trunkBottom and not trunkTop then
     if not world:isAttached(x, y, Direction.SOUTH) then
-      if trunkRight then return "left_branch" end
-      if trunkLeft then return "right_branch" end
+      if trunkRight then return "left_branch_leaves" end
+      if trunkLeft then return "right_branch_leaves" end
       error("Invalid tile frame")
     else
       if trunkRight then return "left_stub" end
