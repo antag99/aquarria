@@ -42,7 +42,7 @@ public class UpdateUseItemEvent extends AbstractUseItemEvent {
 	public void setDelta(float delta) {
 		this.delta = delta;
 	}
-	
+
 	@Override
 	public Object[] pack() {
 		return new Object[] { getPlayer(), getItem(), getDelta() };

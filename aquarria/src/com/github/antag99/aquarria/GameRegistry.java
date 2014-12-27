@@ -34,6 +34,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.ResourceFinder;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
@@ -52,12 +54,9 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.EntityType;
 import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.tile.BlockFrameStyleFactory;
-import com.github.antag99.aquarria.tile.FrameStyleFactory;
 import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.tile.TreeFrameStyleFactory;
-import com.github.antag99.aquarria.tile.WallFrameStyleFactory;
 import com.github.antag99.aquarria.tile.WallType;
+import com.github.antag99.aquarria.util.Direction;
 
 public final class GameRegistry {
 	private GameRegistry() {
@@ -68,8 +67,6 @@ public final class GameRegistry {
 	private static ObjectMap<Class<? extends Type>, ObjectMap<String, Type>> registeredTypes = new ObjectMap<>();
 	private static ObjectMap<String, TypeLoader<?>> typeLoadersByExtension = new ObjectMap<>();
 	private static ObjectMap<Class<? extends Type>, TypeLoader<?>> typeLoadersByClass = new ObjectMap<>();
-
-	private static ObjectMap<String, FrameStyleFactory> frameStyleFactories = new ObjectMap<>();
 
 	private static Globals globals;
 
@@ -214,23 +211,41 @@ public final class GameRegistry {
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.setScanners(new SubTypesScanner(false /* don't exclude Object.class */), new ResourcesScanner())
 				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
-				.filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix("com.github.antag99.aquarria"))));
+				.filterInputsBy(new FilterBuilder()
+						/** Include aquarria classes */
+						.include(FilterBuilder.prefix("com.github.antag99.aquarria"))
+						/** Exclude tests and benchmarks in eclipse */
+						.exclude(FilterBuilder.prefix("com.github.antag99.aquarria.tests"))
+						.exclude(FilterBuilder.prefix("com.github.antag99.aquarria.benchmarks"))
+						/** Exclude anonymous inner classes */
+						.exclude(".*\\$\\d+.*")));
 
 		for (String type : reflections.getAllTypes()) {
+			// FIXME: This dosen't seem to include enumerations; find a workaround
 			try {
 				Class<?> clazz = Class.forName(type);
-				globals.set(clazz.getSimpleName(), CoerceJavaToLua.coerce(clazz));
+				// Put inner classes in nested tables
+				String[] nesting = clazz.getSimpleName().split("\\$");
+				LuaTable table = globals;
+				for (int i = 0; i < nesting.length - 1; ++i) {
+					if (table.get(nesting[i]) == LuaValue.NIL) {
+						table.set(nesting[i], new LuaTable());
+					}
+				}
+				table.set(nesting[nesting.length - 1], CoerceJavaToLua.coerce(clazz));
 			} catch (ClassNotFoundException ex) {
 				// Just shouldn't happen
 				throw new AssertionError(ex);
 			}
 		}
+		
+		globals.set("Direction", CoerceJavaToLua.coerce(Direction.class));
 
-		// Set ResourceFinder that uses internal files and adds .lua extension
+		// Set ResourceFinder that uses internal files
 		globals.finder = new ResourceFinder() {
 			@Override
 			public InputStream findResource(String filename) {
-				return Gdx.files.internal(filename + ".lua").read();
+				return Gdx.files.internal(filename).read();
 			}
 		};
 
@@ -238,10 +253,6 @@ public final class GameRegistry {
 		registerTypeLoader(new TileTypeLoader());
 		registerTypeLoader(new WallTypeLoader());
 		registerTypeLoader(new EntityTypeLoader());
-
-		registerFrameStyleFactory("block", new BlockFrameStyleFactory());
-		registerFrameStyleFactory("wall", new WallFrameStyleFactory());
-		registerFrameStyleFactory("tree", new TreeFrameStyleFactory());
 
 		loadTypes();
 
@@ -261,19 +272,6 @@ public final class GameRegistry {
 		typeLoadersByClass.clear();
 		typeLoadersByExtension.clear();
 		registeredTypes.clear();
-		frameStyleFactories.clear();
-	}
-
-	public static void registerFrameStyleFactory(String name, FrameStyleFactory factory) {
-		frameStyleFactories.put(name, factory);
-	}
-
-	public static FrameStyleFactory getFrameStyleFactory(String name) {
-		FrameStyleFactory factory = frameStyleFactories.get(name);
-		if (factory == null) {
-			throw new IllegalArgumentException("FrameStyleFactory not found: " + name);
-		}
-		return factory;
 	}
 
 	public static Globals getGlobals() {

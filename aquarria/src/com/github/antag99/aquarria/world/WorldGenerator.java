@@ -128,10 +128,12 @@ public class WorldGenerator {
 		if (random.nextBoolean()) {
 			world.setTileType(x - 1, y, TileType.tree);
 			world.setAttached(x - 1, y, Direction.EAST, true);
+			world.setAttached(x - 1, y, Direction.SOUTH, true);
 		}
 		if (random.nextBoolean()) {
 			world.setTileType(x + 1, y, TileType.tree);
 			world.setAttached(x + 1, y, Direction.WEST, true);
+			world.setAttached(x + 1, y, Direction.SOUTH, true);
 		}
 
 		// Place trunks

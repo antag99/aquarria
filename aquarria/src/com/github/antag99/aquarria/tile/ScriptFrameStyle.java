@@ -29,11 +29,22 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.utils.JsonValue;
+import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
-public final class TreeFrameStyleFactory implements FrameStyleFactory {
+import com.github.antag99.aquarria.world.World;
+
+public class ScriptFrameStyle implements FrameStyle {
+	private LuaFunction function;
+
+	public ScriptFrameStyle(LuaFunction function) {
+		this.function = function;
+	}
+
 	@Override
-	public FrameStyle create(JsonValue tileConfiguration) {
-		return new TreeFrameStyle();
+	public String findFrame(World world, int x, int y) {
+		return function.call(CoerceJavaToLua.coerce(world),
+				LuaValue.valueOf(x), LuaValue.valueOf(y)).tojstring();
 	}
 }

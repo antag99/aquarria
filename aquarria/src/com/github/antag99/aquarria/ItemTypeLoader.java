@@ -78,7 +78,7 @@ public class ItemTypeLoader extends TypeLoader<ItemType> {
 					throw new RuntimeException("Invalid handler; not a string!");
 				}
 
-				LuaValue handler = GameRegistry.getGlobals().loadfile(handlerScript).call();
+				LuaValue handler = GameRegistry.getGlobals().loadfile(handlerScript + ".lua").call();
 				type.getEvents().registerListener(new ScriptEventListener<Event>(handler.checkfunction(), (Class<Event>) eventClass, 0f));
 			}
 		}

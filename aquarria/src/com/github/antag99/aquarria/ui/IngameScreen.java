@@ -167,7 +167,7 @@ public class IngameScreen extends AquarriaScreen {
 			player.setWorldFocus(null);
 		}
 
-		if (!Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+		if (!Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && !Gdx.input.isKeyPressed(Input.Keys.HOME)) {
 			if (player.getWorldFocus() != null) {
 				if (Gdx.input.justTouched()) {
 					if (!player.getRepeatUsingItem()) {
@@ -188,13 +188,16 @@ public class IngameScreen extends AquarriaScreen {
 				player.setUsedItem(null);
 			}
 		} else if (player.getWorldFocus() != null) {
-			int liquidX = (int) player.getWorldFocus().x;
-			int liquidY = (int) player.getWorldFocus().y;
-
-			if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-				world.setLiquid(liquidX, liquidY, 255);
-			} else if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-				world.setLiquid(liquidX, liquidY, 0);
+			int tileX = (int) player.getWorldFocus().x;
+			int tileY = (int) player.getWorldFocus().y;
+			if (Gdx.input.isKeyPressed(Input.Keys.HOME)) {
+				System.out.println(world.getTileType(tileX, tileY).getStyle().findFrame(world, tileX, tileY));
+			} else {
+				if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+					world.setLiquid(tileX, tileY, 255);
+				} else if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+					world.setLiquid(tileX, tileY, 0);
+				}
 			}
 		}
 	}
