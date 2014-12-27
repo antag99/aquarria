@@ -43,6 +43,9 @@ local function treeFrame(world, x, y)
     else
       if trunkRight then return "left_stub" end
       if trunkLeft then return "right_stub" end
+      if treeLeft and treeRight then return "stub_with_both_stubs" end
+      if treeLeft then return "stub_with_left_stub" end
+      if treeRight then return "stub_with_right_stub" end
       return "stub"
     end
   end
