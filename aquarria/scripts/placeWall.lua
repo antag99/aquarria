@@ -6,5 +6,5 @@ return function(player, item)
   local wallType = GameRegistry:getWallType(
     item:getType():getConfig():getString("placedWall"))
 
-  return world:placeWall(tileX, tileY, wall, player)
+  return world:placeWall(tileX, tileY, wallType, player)
 end
