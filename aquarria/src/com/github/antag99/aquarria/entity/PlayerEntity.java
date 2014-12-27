@@ -83,9 +83,9 @@ public class PlayerEntity extends Entity {
 			setVelocityX(0f);
 		}
 
-		setY(getY() - getHeight() / 50f);
+		setY(getY() - 0.1f);
 		grounded = inCollision();
-		setY(getY() + getHeight() / 50f);
+		setY(getY() + 0.1f);
 
 		if (jump && grounded) {
 			setVelocityY(20f);
