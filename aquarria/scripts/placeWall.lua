@@ -3,11 +3,8 @@ return function(player, item)
   local focus = player:getWorldFocus()
   local tileX = math.floor(focus.x)
   local tileY = math.floor(focus.y)
+  local wallType = GameRegistry:getWallType(
+    item:getType():getConfig():getString("placedWall"))
 
-  if world:getWallType(tileX, tileY) == WallType.air then
-    world:setWallType(tileX, tileY, GameRegistry:getWallType(item:getType():getConfig():getString("placedWall")))
-    return true
-  end
-
-  return false
+  return world:placeWall(tileX, tileY, wall, player)
 end

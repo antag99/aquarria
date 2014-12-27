@@ -29,26 +29,5 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.event;
 
-import org.luaj.vm2.LuaValue;
-
-/**
- * Base class for all events. Events are used to pass messages between different
- * parts of the game.
- */
-public abstract class Event {
-	private boolean handled = false;
-
-	public boolean isHandled() {
-		return handled;
-	}
-
-	public void setHandled(boolean handled) {
-		this.handled = handled;
-	}
-
-	/**
-	 * Packs this event into an array of lua values,
-	 * for invoking script handlers.
-	 */
-	public abstract LuaValue[] pack();
+public class WallPlaceEvent extends WallChangeEvent {
 }

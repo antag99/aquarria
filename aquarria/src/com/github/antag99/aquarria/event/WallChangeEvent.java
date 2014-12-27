@@ -30,25 +30,48 @@
 package com.github.antag99.aquarria.event;
 
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
-/**
- * Base class for all events. Events are used to pass messages between different
- * parts of the game.
- */
-public abstract class Event {
-	private boolean handled = false;
+import com.github.antag99.aquarria.entity.PlayerEntity;
 
-	public boolean isHandled() {
-		return handled;
+public abstract class WallChangeEvent extends Event {
+	private PlayerEntity player;
+	private int tileX;
+	private int tileY;
+
+	public WallChangeEvent() {
 	}
 
-	public void setHandled(boolean handled) {
-		this.handled = handled;
+	public PlayerEntity getPlayer() {
+		return player;
 	}
 
-	/**
-	 * Packs this event into an array of lua values,
-	 * for invoking script handlers.
-	 */
-	public abstract LuaValue[] pack();
+	public void setPlayer(PlayerEntity player) {
+		this.player = player;
+	}
+
+	public int getTileX() {
+		return tileX;
+	}
+
+	public void setTileX(int tileX) {
+		this.tileX = tileX;
+	}
+
+	public int getTileY() {
+		return tileY;
+	}
+
+	public void setTileY(int tileY) {
+		this.tileY = tileY;
+	}
+
+	@Override
+	public LuaValue[] pack() {
+		return new LuaValue[] {
+				CoerceJavaToLua.coerce(getPlayer()),
+				LuaValue.valueOf(getTileX()),
+				LuaValue.valueOf(getTileY())
+		};
+	}
 }

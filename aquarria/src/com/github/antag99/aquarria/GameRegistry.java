@@ -238,7 +238,7 @@ public final class GameRegistry {
 				throw new AssertionError(ex);
 			}
 		}
-		
+
 		globals.set("Direction", CoerceJavaToLua.coerce(Direction.class));
 
 		// Set ResourceFinder that uses internal files

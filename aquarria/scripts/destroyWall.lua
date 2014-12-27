@@ -4,5 +4,5 @@ return function(player, item)
   local tileX = math.floor(focus.x)
   local tileY = math.floor(focus.y)
 
-  return world:destroyWall(tileX, tileY)
+  return world:destroyWall(tileX, tileY, player)
 end

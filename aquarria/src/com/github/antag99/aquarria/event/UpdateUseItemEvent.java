@@ -29,6 +29,9 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.event;
 
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+
 public class UpdateUseItemEvent extends AbstractUseItemEvent {
 	private float delta;
 
@@ -44,7 +47,11 @@ public class UpdateUseItemEvent extends AbstractUseItemEvent {
 	}
 
 	@Override
-	public Object[] pack() {
-		return new Object[] { getPlayer(), getItem(), getDelta() };
+	public LuaValue[] pack() {
+		return new LuaValue[] {
+				CoerceJavaToLua.coerce(getPlayer()),
+				CoerceJavaToLua.coerce(getItem()),
+				LuaValue.valueOf(getDelta())
+		};
 	}
 }

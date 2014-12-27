@@ -3,11 +3,8 @@ return function(player, item)
   local focus = player:getWorldFocus()
   local tileX = math.floor(focus.x)
   local tileY = math.floor(focus.y)
+  local tileType = GameRegistry:getTileType(
+    item:getType():getConfig():getString("placedTile"))
 
-  if world:getTileType(tileX, tileY) == TileType.air then
-    world:setTileType(tileX, tileY, GameRegistry:getTileType(item:getType():getConfig():getString("placedTile")))
-    return true
-  end
-
-  return false
+  return world:placeTile(tileX, tileY, tileType, player)
 end

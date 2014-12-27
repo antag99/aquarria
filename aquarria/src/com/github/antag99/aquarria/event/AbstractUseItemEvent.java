@@ -29,7 +29,9 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.event;
 
-import com.github.antag99.aquarria.entity.PlayerEntity;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+
 import com.github.antag99.aquarria.item.Item;
 
 public abstract class AbstractUseItemEvent extends PlayerEvent {
@@ -47,13 +49,10 @@ public abstract class AbstractUseItemEvent extends PlayerEvent {
 	}
 
 	@Override
-	public Object[] pack() {
-		return new Object[] { getPlayer(), getItem() };
-	}
-
-	@Override
-	public void unpack(Object[] packed) {
-		setPlayer((PlayerEntity) packed[0]);
-		setItem((Item) packed[1]);
+	public LuaValue[] pack() {
+		return new LuaValue[] {
+				CoerceJavaToLua.coerce(getPlayer()),
+				CoerceJavaToLua.coerce(getItem())
+		};
 	}
 }

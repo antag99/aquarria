@@ -29,6 +29,9 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.event;
 
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+
 import com.github.antag99.aquarria.entity.PlayerEntity;
 
 /**
@@ -55,12 +58,9 @@ public abstract class PlayerEvent extends Event {
 	}
 
 	@Override
-	public Object[] pack() {
-		return new Object[] { getPlayer() };
-	}
-
-	@Override
-	public void unpack(Object[] packed) {
-		setPlayer((PlayerEntity) packed[0]);
+	public LuaValue[] pack() {
+		return new LuaValue[] {
+				CoerceJavaToLua.coerce(getPlayer())
+		};
 	}
 }

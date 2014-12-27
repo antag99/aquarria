@@ -31,6 +31,7 @@ package com.github.antag99.aquarria.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.luaj.vm2.LuaValue;
 
 import com.github.antag99.aquarria.event.Event;
 import com.github.antag99.aquarria.event.EventListeners;
@@ -59,12 +60,8 @@ public class SimpleEventTests extends Assert {
 		public int counter;
 
 		@Override
-		public Object[] pack() {
-			return new Object[0];
-		}
-
-		@Override
-		public void unpack(Object[] packed) {
+		public LuaValue[] pack() {
+			return new LuaValue[0];
 		}
 	}
 

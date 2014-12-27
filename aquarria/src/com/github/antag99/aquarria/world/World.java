@@ -36,6 +36,12 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.ItemEntity;
+import com.github.antag99.aquarria.entity.PlayerEntity;
+import com.github.antag99.aquarria.event.EventManager;
+import com.github.antag99.aquarria.event.TileDestroyEvent;
+import com.github.antag99.aquarria.event.TilePlaceEvent;
+import com.github.antag99.aquarria.event.WallDestroyEvent;
+import com.github.antag99.aquarria.event.WallPlaceEvent;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
@@ -63,6 +69,8 @@ public class World {
 	private float tickCounter;
 	private IntArray activeLiquids;
 
+	private EventManager events;
+
 	// Liquid simulation uses a fixed time step,
 	// as it is quite hard to interpolate liquid movement
 	// based on the time since the last frame.
@@ -75,6 +83,8 @@ public class World {
 
 		tileMatrix = new TileType[width * height];
 		wallMatrix = new WallType[width * height];
+
+		events = new EventManager();
 
 		clear();
 	}
@@ -338,50 +348,109 @@ public class World {
 
 	/**
 	 * Recursively detects detached tiles and destroys them
+	 * 
+	 * @param player The player that caused the attachment to be changed,
+	 *            and therefore should be responsible for destroying the tiles.
+	 *            May be null, which will suppress any item drops.
 	 */
-	public void checkAttachment(int x, int y) {
+	public void checkAttachment(int x, int y, PlayerEntity player) {
 		// TODO: Add some property to indicate whether a tile can be attached to another
 		if (getTileType(x, y) == TileType.air) {
 			for (Direction direction : Direction.values()) {
 				if (inBounds(x + direction.getHorizontal(), y + direction.getVertical()) &&
 						isAttached(x + direction.getHorizontal(), y + direction.getVertical(), direction.opposite())) {
-					destroyTile(x + direction.getHorizontal(), y + direction.getVertical());
+					destroyTile(x + direction.getHorizontal(), y + direction.getVertical(), player);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Destroys the tile at the given position. This also causes
-	 * the tile to drop an item.
+	 * Destroys the tile at the given position. This also checks the attachment of the adjacent
+	 * tiles and drops items if the tile was destroyed by a player.
 	 * 
+	 * @param player The player that destroyed the tile. May be null,
+	 *            which will suppress any item drops.
 	 * @return Whether the tile at the specified position was destroyed
 	 */
-	public boolean destroyTile(int x, int y) {
+	public boolean destroyTile(int x, int y, PlayerEntity player) {
 		TileType type = getTileType(x, y);
-		// TODO: Add some other way to handle tile/wall drops
-		if (type.getDrop() != null) {
-			dropItem(new Item(type.getDrop()), x, y);
+		if (type != TileType.air) {
+			// TODO: Add some other way to handle tile/wall drops
+			if (player != null && type.getDrop() != null) {
+				dropItem(new Item(type.getDrop()), x, y);
+			}
+
+			TileDestroyEvent event = new TileDestroyEvent();
+			event.setPlayer(player);
+			event.setTileX(x);
+			event.setTileY(y);
+			getEvents().fire(event);
+
+			setTileType(x, y, TileType.air);
+			checkAttachment(x, y, player);
+			return true;
 		}
-		setTileType(x, y, TileType.air);
-		checkAttachment(x, y);
-		return type != TileType.air;
+		return false;
+	}
+
+	public boolean placeTile(int x, int y, TileType type, PlayerEntity player) {
+		if (getTileType(x, y) == TileType.air) {
+			setTileType(x, y, type);
+
+			TilePlaceEvent event = new TilePlaceEvent();
+			event.setPlayer(player);
+			event.setTileX(x);
+			event.setTileY(y);
+			getEvents().fire(event);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Destroys the wall at the given position. This also causes
-	 * the wall to drop an item.
+	 * the wall to drop an item if it was destroyed by a player.
 	 * 
+	 * @param player The player that destroyed the wall. May be null,
+	 *            which will suppress any item drops.
 	 * @return Whether the wall at the specified position was destroyed
 	 */
-	public boolean destroyWall(int x, int y) {
+	public boolean destroyWall(int x, int y, PlayerEntity player) {
 		WallType type = getWallType(x, y);
-		if (type.getDrop() != null) {
-			dropItem(new Item(type.getDrop()), x, y);
+		if (type != WallType.air) {
+			if (type.getDrop() != null) {
+				dropItem(new Item(type.getDrop()), x, y);
+			}
+
+			WallDestroyEvent event = new WallDestroyEvent();
+			event.setPlayer(player);
+			event.setTileX(x);
+			event.setTileY(y);
+			getEvents().fire(event);
+
+			setWallType(x, y, WallType.air);
+			return true;
 		}
-		setWallType(x, y, WallType.air);
-		checkAttachment(x, y);
-		return type != WallType.air;
+		return false;
+	}
+
+	public boolean placeWall(int x, int y, WallType type, PlayerEntity player) {
+		if (getWallType(x, y) == WallType.air) {
+			setWallType(x, y, type);
+
+			WallPlaceEvent event = new WallPlaceEvent();
+			event.setPlayer(player);
+			event.setTileX(x);
+			event.setTileY(y);
+			getEvents().fire(event);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	public void update(float delta) {
@@ -406,5 +475,9 @@ public class World {
 				entities.removeIndex(i);
 			}
 		}
+	}
+
+	public EventManager getEvents() {
+		return events;
 	}
 }
