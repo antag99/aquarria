@@ -6,7 +6,7 @@ new cool features, and the game wouldn't suit a phone in the near future. The go
 Terraria that is more maintainable and open sourcier than the original.
 
 ##Screenshot
-![Aquarria Screenshot](https://www.dropbox.com/s/uo2wqpgctx6vlo9/Aquarria%20Screenshot.png?raw=1)
+![Aquarria Screenshot - Trees](https://www.dropbox.com/s/3ls375ztmgdhap1/Aquarria%20Screenshot%20-%20Trees.png?raw=1)
 
 ##License
 Aquarria is licensed under the [New BSD License](http://choosealicense.com/licenses/bsd-3-clause/).
