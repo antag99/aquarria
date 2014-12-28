@@ -133,12 +133,16 @@ public class WorldGenerator {
 
 	public void placeTree(int x, int y, Random random) {
 		// Place stubs
-		if (random.nextBoolean()) {
+		if (world.getTileType(x - 1, y) == TileType.air &&
+				world.getTileType(x - 1, y - 1).isSolid() &&
+				random.nextBoolean()) {
 			world.setTileType(x - 1, y, TileType.tree);
 			world.setAttached(x - 1, y, Direction.EAST, true);
 			world.setAttached(x - 1, y, Direction.SOUTH, true);
 		}
-		if (random.nextBoolean()) {
+		if (world.getTileType(x + 1, y) == TileType.air &&
+				world.getTileType(x + 1, y - 1).isSolid() &&
+				random.nextBoolean()) {
 			world.setTileType(x + 1, y, TileType.tree);
 			world.setAttached(x + 1, y, Direction.WEST, true);
 			world.setAttached(x + 1, y, Direction.SOUTH, true);
