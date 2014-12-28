@@ -43,6 +43,7 @@ import com.github.antag99.aquarria.event.TilePlaceEvent;
 import com.github.antag99.aquarria.event.WallDestroyEvent;
 import com.github.antag99.aquarria.event.WallPlaceEvent;
 import com.github.antag99.aquarria.item.Item;
+import com.github.antag99.aquarria.tile.Frame;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.util.Direction;
@@ -57,6 +58,8 @@ public class World {
 
 	private TileType[] tileMatrix;
 	private WallType[] wallMatrix;
+	private Frame[] tileFrameMatrix;
+	private Frame[] wallFrameMatrix;
 
 	private short[] surfaceLevel;
 	private byte[] lightMatrix;
@@ -97,6 +100,8 @@ public class World {
 		spawnY = height / 2f;
 		Arrays.fill(tileMatrix, TileType.air);
 		Arrays.fill(wallMatrix, WallType.air);
+		tileFrameMatrix = new Frame[width * height];
+		wallFrameMatrix = new Frame[width * height];
 		entities = new Array<Entity>();
 		surfaceLevel = new short[width];
 		lightMatrix = new byte[width * height];
@@ -162,6 +167,82 @@ public class World {
 		}
 
 		wallMatrix[y * width + x] = type;
+	}
+
+	public Frame getTileFrame(int x, int y) {
+		checkBounds(x, y);
+
+		return tileFrameMatrix[x + y * width];
+	}
+
+	public void setTileFrame(int x, int y, Frame frame) {
+		checkBounds(x, y);
+
+		tileFrameMatrix[x + y * width] = frame;
+	}
+
+	public void findTileFrame(int x, int y) {
+		if (!inBounds(x, y))
+			return;
+
+		TileType type = getTileType(x, y);
+		if (type != TileType.air) {
+			setTileFrame(x, y, type.getSkin().getFrame(type.getStyle().findFrame(this, x, y)));
+		} else {
+			setTileFrame(x, y, null);
+		}
+	}
+
+	public void findTileFrameSquare(int x, int y) {
+		checkBounds(x, y);
+
+		findTileFrame(x, y);
+		findTileFrame(x, y + 1);
+		findTileFrame(x + 1, y + 1);
+		findTileFrame(x + 1, y);
+		findTileFrame(x + 1, y - 1);
+		findTileFrame(x, y - 1);
+		findTileFrame(x - 1, y - 1);
+		findTileFrame(x - 1, y);
+		findTileFrame(x - 1, y + 1);
+	}
+
+	public Frame getWallFrame(int x, int y) {
+		checkBounds(x, y);
+
+		return wallFrameMatrix[x + y * width];
+	}
+
+	public void setWallFrame(int x, int y, Frame frame) {
+		checkBounds(x, y);
+
+		wallFrameMatrix[x + y * width] = frame;
+	}
+
+	public void findWallFrame(int x, int y) {
+		if (!inBounds(x, y))
+			return;
+
+		WallType type = getWallType(x, y);
+		if (type != WallType.air) {
+			setWallFrame(x, y, type.getSkin().getFrame(type.getStyle().findFrame(this, x, y)));
+		} else {
+			setWallFrame(x, y, null);
+		}
+	}
+
+	public void findWallFrameSquare(int x, int y) {
+		checkBounds(x, y);
+
+		findWallFrame(x, y);
+		findWallFrame(x, y + 1);
+		findWallFrame(x + 1, y + 1);
+		findWallFrame(x + 1, y);
+		findWallFrame(x + 1, y - 1);
+		findWallFrame(x, y - 1);
+		findWallFrame(x - 1, y - 1);
+		findWallFrame(x - 1, y);
+		findWallFrame(x - 1, y + 1);
 	}
 
 	public int getWidth() {
@@ -365,6 +446,10 @@ public class World {
 		}
 	}
 
+	public void clearAttachment(int x, int y) {
+		attachMatrix[x + y * width] = 0;
+	}
+
 	/**
 	 * Destroys the tile at the given position. This also checks the attachment of the adjacent
 	 * tiles and drops items if the tile was destroyed by a player.
@@ -388,7 +473,10 @@ public class World {
 			getEvents().fire(event);
 
 			setTileType(x, y, TileType.air);
+			clearAttachment(x, y);
 			checkAttachment(x, y, player);
+			findTileFrameSquare(x, y);
+
 			return true;
 		}
 		return false;
@@ -397,6 +485,8 @@ public class World {
 	public boolean placeTile(int x, int y, TileType type, PlayerEntity player) {
 		if (getTileType(x, y) == TileType.air) {
 			setTileType(x, y, type);
+			checkAttachment(x, y, player);
+			findTileFrameSquare(x, y);
 
 			TilePlaceEvent event = new TilePlaceEvent();
 			event.setPlayer(player);
@@ -432,6 +522,8 @@ public class World {
 			getEvents().fire(event);
 
 			setWallType(x, y, WallType.air);
+			findWallFrameSquare(x, y);
+
 			return true;
 		}
 		return false;
@@ -440,6 +532,7 @@ public class World {
 	public boolean placeWall(int x, int y, WallType type, PlayerEntity player) {
 		if (getWallType(x, y) == WallType.air) {
 			setWallType(x, y, type);
+			findWallFrame(x, y);
 
 			WallPlaceEvent event = new WallPlaceEvent();
 			event.setPlayer(player);

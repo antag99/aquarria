@@ -39,7 +39,7 @@ local function treeFrame(world, x, y)
     if not world:isAttached(x, y, Direction.SOUTH) then
       if trunkRight then return "left_branch_leaves" end
       if trunkLeft then return "right_branch_leaves" end
-      error("Invalid tile frame")
+      return "stub" -- Invalid frame; add special texture?
     else
       if trunkRight then return "left_stub" end
       if trunkLeft then return "right_stub" end
@@ -49,7 +49,7 @@ local function treeFrame(world, x, y)
       return "stub"
     end
   end
-  error("Invalid tile frame")
+  return "stub" -- Invalid frame; add special texture?
 end
 
 return treeFrame

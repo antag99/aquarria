@@ -113,6 +113,14 @@ public class WorldGenerator {
 			placeTree(i, world.getSurfaceLevel(i), treeRandom);
 		}
 
+		// Find frames...
+		for (int i = 0; i < world.getWidth(); ++i) {
+			for (int j = 0; j < world.getHeight(); ++j) {
+				world.findTileFrame(i, j);
+				world.findWallFrame(i, j);
+			}
+		}
+
 		// Set the spawnpoint
 		world.setSpawnX(world.getWidth() / 2);
 		world.setSpawnY(Math.max(world.getSurfaceLevel((int) world.getSpawnX()),

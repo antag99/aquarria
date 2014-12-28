@@ -32,9 +32,6 @@ package com.github.antag99.aquarria.world.render;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.github.antag99.aquarria.tile.Frame;
-import com.github.antag99.aquarria.tile.FrameSkin;
-import com.github.antag99.aquarria.tile.FrameStyle;
-import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.world.World;
 
 public class WallRenderer extends WorldRendererCallback {
@@ -47,12 +44,9 @@ public class WallRenderer extends WorldRendererCallback {
 
 		for (int i = startX; i < endX; ++i) {
 			for (int j = startY; j < endY; ++j) {
-				WallType type = world.getWallType(i, j);
-				FrameSkin skin = type.getSkin();
+				Frame frame = world.getWallFrame(i, j);
 
-				if (skin != null) {
-					FrameStyle style = type.getStyle();
-					Frame frame = skin.getFrame(style.findFrame(world, i, j));
+				if (frame != null) {
 					batch.draw(frame.getTexture(),
 							i + frame.getOffsetX() / World.PIXELS_PER_METER,
 							j + frame.getOffsetY() / World.PIXELS_PER_METER,
