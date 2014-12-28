@@ -27,43 +27,50 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.tile;
+
+import org.luaj.vm2.LuaFunction;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.item.ItemUsageStyle;
+import com.github.antag99.aquarria.GameRegistry;
+import com.github.antag99.aquarria.TypeLoader;
+import com.github.antag99.aquarria.util.FrameSkinLoader.FrameSkinParameter;
 
-public class ItemTypeLoader extends TypeLoader<ItemType> {
-	public ItemTypeLoader() {
-		super("item", ItemType.class);
+public class TileTypeLoader extends TypeLoader<TileType> {
+	public TileTypeLoader() {
+		super("tile", TileType.class);
 	}
 
 	@Override
-	public void load(ItemType type, JsonValue config) {
+	public void load(TileType type, JsonValue config) {
 		type.setDisplayName(config.getString("displayName", ""));
-		type.setMaxStack(config.getInt("maxStack", 1));
-		type.setWidth(config.getFloat("width"));
-		type.setHeight(config.getFloat("height"));
-		type.setUsageTime(config.getFloat("usageTime", 0f));
-		type.setUsageAnimationTime(config.getFloat("usageAnimationTime", type.getUsageTime()));
-		type.setUsageRepeat(config.getBoolean("usageRepeat", false));
-		type.setUsageStyle(ItemUsageStyle.swing); // TODO: This should be changed
-		type.setConsumable(config.getBoolean("consumable", false));
+		type.setSolid(config.getBoolean("solid", true));
+		String frameScript = config.getString("style", "blockFrame") + ".lua";
+		LuaFunction frameFunction = GameRegistry.getGlobals().loadfile(frameScript).call().checkfunction();
+		type.setStyle(new ScriptFrameStyle(frameFunction));
 	}
 
 	@Override
-	public void loadAssets(ItemType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("texture")) {
-			assetManager.load(config.getString("texture"), TextureRegion.class);
+	public void postLoad(TileType type, JsonValue config) {
+		if (config.has("drop")) {
+			type.setDrop(GameRegistry.getItemType(config.getString("drop")));
 		}
 	}
 
 	@Override
-	public void getAssets(ItemType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("texture")) {
-			type.setTexture(assetManager.get(config.getString("texture", null), TextureRegion.class));
+	public void loadAssets(TileType type, JsonValue config, AssetManager assetManager) {
+		if (config.has("skin") && config.has("skinDirectory")) {
+			FrameSkinParameter param = new FrameSkinParameter(config.getString("skin"));
+			assetManager.load(config.getString("skinDirectory"), FrameSkin.class, param);
+		}
+	}
+
+	@Override
+	public void getAssets(TileType type, JsonValue config, AssetManager assetManager) {
+		if (config.has("skin") && config.has("skinDirectory")) {
+			FrameSkin skin = assetManager.get(config.getString("skinDirectory"), FrameSkin.class);
+			type.setSkin(skin);
 		}
 	}
 }

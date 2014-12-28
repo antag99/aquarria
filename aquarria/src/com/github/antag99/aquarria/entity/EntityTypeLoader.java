@@ -27,10 +27,10 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.entity;
 
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.entity.EntityType;
+import com.github.antag99.aquarria.TypeLoader;
 
 public class EntityTypeLoader extends TypeLoader<EntityType> {
 	public EntityTypeLoader() {

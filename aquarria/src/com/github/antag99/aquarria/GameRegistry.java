@@ -52,11 +52,15 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.EntityType;
+import com.github.antag99.aquarria.entity.EntityTypeLoader;
 import com.github.antag99.aquarria.event.Event;
 import com.github.antag99.aquarria.event.ScriptEventListener;
 import com.github.antag99.aquarria.item.ItemType;
+import com.github.antag99.aquarria.item.ItemTypeLoader;
 import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.tile.TileTypeLoader;
 import com.github.antag99.aquarria.tile.WallType;
+import com.github.antag99.aquarria.tile.WallTypeLoader;
 import com.github.antag99.aquarria.util.Direction;
 
 public final class GameRegistry {

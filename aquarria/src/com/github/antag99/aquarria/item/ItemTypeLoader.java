@@ -27,56 +27,42 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria;
-
-import org.luaj.vm2.LuaFunction;
+package com.github.antag99.aquarria.item;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.tile.FrameSkin;
-import com.github.antag99.aquarria.tile.ScriptFrameStyle;
-import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.util.FrameSkinLoader.FrameSkinParameter;
-import com.github.antag99.aquarria.util.Utils;
+import com.github.antag99.aquarria.TypeLoader;
 
-public class WallTypeLoader extends TypeLoader<WallType> {
-	public WallTypeLoader() {
-		super("wall", WallType.class);
+public class ItemTypeLoader extends TypeLoader<ItemType> {
+	public ItemTypeLoader() {
+		super("item", ItemType.class);
 	}
 
 	@Override
-	public void load(WallType type, JsonValue config) {
+	public void load(ItemType type, JsonValue config) {
 		type.setDisplayName(config.getString("displayName", ""));
-
-		if (config.has("frame")) {
-			type.setFrame(Utils.asRectangle(config.get("frame")));
-		}
-
-		String frameScript = config.getString("style", "wallFrame") + ".lua";
-		LuaFunction frameFunction = GameRegistry.getGlobals().loadfile(frameScript).call().checkfunction();
-		type.setStyle(new ScriptFrameStyle(frameFunction));
+		type.setMaxStack(config.getInt("maxStack", 1));
+		type.setWidth(config.getFloat("width"));
+		type.setHeight(config.getFloat("height"));
+		type.setUsageTime(config.getFloat("usageTime", 0f));
+		type.setUsageAnimationTime(config.getFloat("usageAnimationTime", type.getUsageTime()));
+		type.setUsageRepeat(config.getBoolean("usageRepeat", false));
+		type.setUsageStyle(ItemUsageStyle.swing); // TODO: This should be changed
+		type.setConsumable(config.getBoolean("consumable", false));
 	}
 
 	@Override
-	public void postLoad(WallType type, JsonValue config) {
-		if (config.has("drop")) {
-			type.setDrop(GameRegistry.getItemType(config.getString("drop")));
-		}
-	}
-
-	@Override
-	public void loadAssets(WallType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("skin") && config.has("skinDirectory")) {
-			FrameSkinParameter param = new FrameSkinParameter(config.getString("skin"));
-			assetManager.load(config.getString("skinDirectory"), FrameSkin.class, param);
+	public void loadAssets(ItemType type, JsonValue config, AssetManager assetManager) {
+		if (config.has("texture")) {
+			assetManager.load(config.getString("texture"), TextureRegion.class);
 		}
 	}
 
 	@Override
-	public void getAssets(WallType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("skin") && config.has("skinDirectory")) {
-			FrameSkin skin = assetManager.get(config.getString("skinDirectory"), FrameSkin.class);
-			type.setSkin(skin);
+	public void getAssets(ItemType type, JsonValue config, AssetManager assetManager) {
+		if (config.has("texture")) {
+			type.setTexture(assetManager.get(config.getString("texture", null), TextureRegion.class));
 		}
 	}
 }

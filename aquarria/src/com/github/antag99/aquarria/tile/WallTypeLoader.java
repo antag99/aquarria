@@ -27,40 +27,44 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria;
+package com.github.antag99.aquarria.tile;
 
 import org.luaj.vm2.LuaFunction;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.tile.FrameSkin;
-import com.github.antag99.aquarria.tile.ScriptFrameStyle;
-import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.GameRegistry;
+import com.github.antag99.aquarria.TypeLoader;
 import com.github.antag99.aquarria.util.FrameSkinLoader.FrameSkinParameter;
+import com.github.antag99.aquarria.util.Utils;
 
-public class TileTypeLoader extends TypeLoader<TileType> {
-	public TileTypeLoader() {
-		super("tile", TileType.class);
+public class WallTypeLoader extends TypeLoader<WallType> {
+	public WallTypeLoader() {
+		super("wall", WallType.class);
 	}
 
 	@Override
-	public void load(TileType type, JsonValue config) {
+	public void load(WallType type, JsonValue config) {
 		type.setDisplayName(config.getString("displayName", ""));
-		type.setSolid(config.getBoolean("solid", true));
-		String frameScript = config.getString("style", "blockFrame") + ".lua";
+
+		if (config.has("frame")) {
+			type.setFrame(Utils.asRectangle(config.get("frame")));
+		}
+
+		String frameScript = config.getString("style", "wallFrame") + ".lua";
 		LuaFunction frameFunction = GameRegistry.getGlobals().loadfile(frameScript).call().checkfunction();
 		type.setStyle(new ScriptFrameStyle(frameFunction));
 	}
 
 	@Override
-	public void postLoad(TileType type, JsonValue config) {
+	public void postLoad(WallType type, JsonValue config) {
 		if (config.has("drop")) {
 			type.setDrop(GameRegistry.getItemType(config.getString("drop")));
 		}
 	}
 
 	@Override
-	public void loadAssets(TileType type, JsonValue config, AssetManager assetManager) {
+	public void loadAssets(WallType type, JsonValue config, AssetManager assetManager) {
 		if (config.has("skin") && config.has("skinDirectory")) {
 			FrameSkinParameter param = new FrameSkinParameter(config.getString("skin"));
 			assetManager.load(config.getString("skinDirectory"), FrameSkin.class, param);
@@ -68,7 +72,7 @@ public class TileTypeLoader extends TypeLoader<TileType> {
 	}
 
 	@Override
-	public void getAssets(TileType type, JsonValue config, AssetManager assetManager) {
+	public void getAssets(WallType type, JsonValue config, AssetManager assetManager) {
 		if (config.has("skin") && config.has("skinDirectory")) {
 			FrameSkin skin = assetManager.get(config.getString("skinDirectory"), FrameSkin.class);
 			type.setSkin(skin);
