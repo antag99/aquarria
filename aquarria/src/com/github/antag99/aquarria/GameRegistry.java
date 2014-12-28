@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.ResourceFinder;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -53,6 +52,8 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.antag99.aquarria.entity.EntityType;
+import com.github.antag99.aquarria.event.Event;
+import com.github.antag99.aquarria.event.ScriptEventListener;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
@@ -166,6 +167,32 @@ public final class GameRegistry {
 			typeInstance.setInternalName(config.getString("internalName"));
 			typeInstance.setConfig(config);
 
+			// Register event handlers
+			if (config.has("events")) {
+				for (JsonValue event : config.get("events")) {
+					Class<?> eventClass;
+					String handlerScript;
+
+					try {
+						eventClass = Class.forName(event.name);
+					} catch (ClassNotFoundException ex) {
+						throw new RuntimeException("Event class " + event.name + " not found");
+					}
+
+					if (!Event.class.isAssignableFrom(eventClass)) {
+						throw new RuntimeException(eventClass.getName() + " is not a subclass of " + Event.class.getName());
+					}
+
+					handlerScript = event.asString();
+					if (handlerScript == null) {
+						throw new RuntimeException("Invalid handler; not a string!");
+					}
+
+					LuaValue handler = GameRegistry.getGlobals().loadfile(handlerScript + ".lua").call();
+					typeInstance.getEvents().registerListener(new ScriptEventListener<Event>(handler.checkfunction(), (Class<Event>) eventClass, 0f));
+				}
+			}
+
 			((TypeLoader<Type>) loader).load(typeInstance, config);
 
 			registerType(typeInstance);
@@ -224,15 +251,7 @@ public final class GameRegistry {
 			// FIXME: This dosen't seem to include enumerations; find a workaround
 			try {
 				Class<?> clazz = Class.forName(type);
-				// Put inner classes in nested tables
-				String[] nesting = clazz.getSimpleName().split("\\$");
-				LuaTable table = globals;
-				for (int i = 0; i < nesting.length - 1; ++i) {
-					if (table.get(nesting[i]) == LuaValue.NIL) {
-						table.set(nesting[i], new LuaTable());
-					}
-				}
-				table.set(nesting[nesting.length - 1], CoerceJavaToLua.coerce(clazz));
+				globals.set(clazz.getSimpleName(), CoerceJavaToLua.coerce(clazz));
 			} catch (ClassNotFoundException ex) {
 				// Just shouldn't happen
 				throw new AssertionError(ex);

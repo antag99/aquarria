@@ -29,13 +29,9 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import org.luaj.vm2.LuaValue;
-
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.event.Event;
-import com.github.antag99.aquarria.event.ScriptEventListener;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.item.ItemUsageStyle;
 
@@ -44,7 +40,6 @@ public class ItemTypeLoader extends TypeLoader<ItemType> {
 		super("item", ItemType.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void load(ItemType type, JsonValue config) {
 		type.setDisplayName(config.getString("displayName", ""));
@@ -56,32 +51,6 @@ public class ItemTypeLoader extends TypeLoader<ItemType> {
 		type.setUsageRepeat(config.getBoolean("usageRepeat", false));
 		type.setUsageStyle(ItemUsageStyle.swing); // TODO: This should be changed
 		type.setConsumable(config.getBoolean("consumable", false));
-
-		// Register event handlers
-		if (config.has("events")) {
-			for (JsonValue event : config.get("events")) {
-				Class<?> eventClass;
-				String handlerScript;
-
-				try {
-					eventClass = Class.forName(event.name);
-				} catch (ClassNotFoundException ex) {
-					throw new RuntimeException("Event class " + event.name + " not found");
-				}
-
-				if (!Event.class.isAssignableFrom(eventClass)) {
-					throw new RuntimeException(eventClass.getName() + " is not a subclass of " + Event.class.getName());
-				}
-
-				handlerScript = event.asString();
-				if (handlerScript == null) {
-					throw new RuntimeException("Invalid handler; not a string!");
-				}
-
-				LuaValue handler = GameRegistry.getGlobals().loadfile(handlerScript + ".lua").call();
-				type.getEvents().registerListener(new ScriptEventListener<Event>(handler.checkfunction(), (Class<Event>) eventClass, 0f));
-			}
-		}
 	}
 
 	@Override
