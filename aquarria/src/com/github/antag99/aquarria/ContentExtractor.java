@@ -198,14 +198,12 @@ public class ContentExtractor {
 		FileHandle imageFile = outputAssetDirectory.child("raw/images/" + imageName);
 		FileHandle imageDirectory = outputAssetDirectory.child("images/tiles/" + tileName + "/");
 		tileSplitter.split(imageFile, imageDirectory);
-		createAtlas(imageDirectory, tileName);
 	}
 
 	private void convertWallImage(String imageName, String wallName) {
 		FileHandle imageFile = outputAssetDirectory.child("raw/images/" + imageName);
 		FileHandle imageDirectory = outputAssetDirectory.child("images/walls/" + wallName + "/");
 		wallSplitter.split(imageFile, imageDirectory);
-		createAtlas(imageDirectory, wallName);
 	}
 
 	private void createAtlas(FileHandle directory, String atlasName) {
