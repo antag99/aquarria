@@ -1,6 +1,6 @@
 {
 	"~default" : {
-		"offset" : [ 0, 0 ],
+		"offset" : [ -8, -8 ],
 		"size" : [ 32, 32 ]
 	},
 	"all_merge" : "~default",

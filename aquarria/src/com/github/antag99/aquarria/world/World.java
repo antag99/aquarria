@@ -532,7 +532,7 @@ public class World {
 	public boolean placeWall(int x, int y, WallType type, PlayerEntity player) {
 		if (getWallType(x, y) == WallType.air) {
 			setWallType(x, y, type);
-			findWallFrame(x, y);
+			findWallFrameSquare(x, y);
 
 			WallPlaceEvent event = new WallPlaceEvent();
 			event.setPlayer(player);
