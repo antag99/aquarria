@@ -158,7 +158,7 @@ public class WorldGenerator {
 		// Direction in which the next branch won't be placed
 		int branchSkip = 0;
 
-		for (int i = 0; i < treeHeight; ++i) {
+		for (int i = 0; i + 1 < treeHeight; ++i) {
 			if (--branchCounter == 0) {
 				int branchDir = -branchSkip;
 				if (branchDir == 0) {
@@ -168,7 +168,7 @@ public class WorldGenerator {
 				world.setTileType(x + branchDir, y + i, TileType.tree);
 				world.setAttached(x + branchDir, y + i, Direction.get(-branchDir, 0), true);
 
-				branchCounter = random.nextInt(3);
+				branchCounter = 1 + random.nextInt(3);
 				branchSkip = branchCounter == 1 ? branchDir : 0;
 			}
 		}
