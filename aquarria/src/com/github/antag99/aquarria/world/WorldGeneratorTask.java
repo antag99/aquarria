@@ -27,20 +27,25 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.util;
+package com.github.antag99.aquarria.world;
 
 /**
- * Base class for noise implementations.
- * Results are in the range [0, 1].
+ * {@link WorldGeneratorTask}s are called during world generation to
+ * generate different parts of the world, such as generating the base
+ * terrain, placing dirt close to the surface, placing walls, planting
+ * trees and so on.
  */
-public abstract class Noise {
-	public float get(float x) {
-		return get(x, 0f, 0f);
-	}
+public interface WorldGeneratorTask {
 
-	public float get(float x, float y) {
-		return get(x, y, 0f);
-	}
-
-	public abstract float get(float x, float y, float z);
+	/**
+	 * Called to generate the part of the world this
+	 * task is responsible for.
+	 * 
+	 * @param generator The world generator. Used to get
+	 *            information about the world and to place tiles.
+	 * @param seed Seed to be used for generating random numbers
+	 *            in this task. Might be different from the world
+	 *            generators seed.
+	 */
+	void generate(WorldGenerator generator, long seed);
 }
