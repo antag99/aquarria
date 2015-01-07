@@ -1,0 +1,44 @@
+
+allprojects {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+
+    version = '1.0'
+    
+    ext {
+        appName = 'aquarria'
+        gdxVersion = '1.4.2-SNAPSHOT'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+    }
+}
+
+project(":joise") {
+    apply plugin: "java"
+}
+
+
+project(":aquarria") {
+    apply plugin: "java"
+
+    dependencies {
+        compile project(":joise")
+
+        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        compile "org.luaj:luaj-jse:3.0"
+        compile "org.reflections:reflections:0.9.9"
+        testCompile "junit:junit:4.+"
+    }
+}
+
+tasks.eclipse.doLast { /* remove root project - only the subprojects should be imported */
+    delete ".project"
+}

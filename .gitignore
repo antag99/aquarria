@@ -3,12 +3,13 @@
 hs_err_pid*
 
 ## Eclipse
-*/.settings
-*/bin
+.settings
+bin
 .metadata
 .recommenders
 .project
 .classpath
+RemoteSystemsTempFiles
 
 ## Intellij IDEA
 .idea/
@@ -28,5 +29,4 @@ aquarria/debug
 ## Hiero/OS
 out*
 *~
-RemoteSystemsTempFiles
 .DS_Store

@@ -1,31 +1,4 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
 
-sourceCompatibility = 1.8
-version = '1.0'
-
-sourceSets.main.java.srcDirs = [ "src/", "assets/", "config/", "scripts/" ]
+sourceSets.main.java.srcDirs = [ "src/"  ]
+sourceSets.main.resources.srcDirs = [ "assets/", "config/", "scripts/" ]
 sourceSets.test.java.srcDirs = [ "tests/" ]
-
-ext {
-    appName = 'aquarria'
-    gdxVersion = '1.4.2-SNAPSHOT'
-}
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-}
-
-dependencies {
-    compile "junit:junit:4.+"
-    compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-    compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
-    compile "org.luaj:luaj-jse:3.0"
-    compile "org.reflections:reflections:0.9.9"
-}
