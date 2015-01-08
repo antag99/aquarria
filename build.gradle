@@ -1,13 +1,14 @@
 
-allprojects {
-    apply plugin: 'eclipse'
-    apply plugin: 'idea'
+subprojects {
+    apply plugin: "java"
+    apply plugin: "eclipse"
+    apply plugin: "idea"
 
-    version = '1.0'
+    version = "1.0"
     
     ext {
-        appName = 'aquarria'
-        gdxVersion = '1.4.2-SNAPSHOT'
+        appName = "aquarria"
+        gdxVersion = "1.4.2-SNAPSHOT"
     }
 
     repositories {
@@ -19,13 +20,10 @@ allprojects {
 }
 
 project(":joise") {
-    apply plugin: "java"
 }
 
 
 project(":aquarria") {
-    apply plugin: "java"
-
     dependencies {
         compile project(":joise")
 
@@ -37,8 +35,4 @@ project(":aquarria") {
         compile "org.reflections:reflections:0.9.9"
         testCompile "junit:junit:4.+"
     }
-}
-
-tasks.eclipse.doLast { /* remove root project - only the subprojects should be imported */
-    delete ".project"
 }
