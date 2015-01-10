@@ -29,22 +29,20 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-
+import com.github.antag99.aquarria.lua.LuaInterface;
+import com.github.antag99.aquarria.lua.LuaObject;
 import com.github.antag99.aquarria.world.World;
 
 public class ScriptFrameStyle implements FrameStyle {
-	private LuaFunction function;
+	private LuaObject frameFunction;
 
-	public ScriptFrameStyle(LuaFunction function) {
-		this.function = function;
+	public ScriptFrameStyle(LuaObject frameFunction) {
+		this.frameFunction = frameFunction;
 	}
 
 	@Override
 	public String findFrame(World world, int x, int y) {
-		return function.call(CoerceJavaToLua.coerce(world),
-				LuaValue.valueOf(x), LuaValue.valueOf(y)).tojstring();
+		return frameFunction.call(LuaInterface.create(world),
+				LuaInterface.toLua(x), LuaInterface.toLua(y)).get(0).convertString();
 	}
 }

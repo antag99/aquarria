@@ -29,15 +29,9 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.ResourceFinder;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-import org.luaj.vm2.lib.jse.JsePlatform;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
 import org.reflections.scanners.SubTypesScanner;
@@ -57,6 +51,9 @@ import com.github.antag99.aquarria.event.Event;
 import com.github.antag99.aquarria.event.ScriptEventListener;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.item.ItemTypeLoader;
+import com.github.antag99.aquarria.lua.LuaEnvironment;
+import com.github.antag99.aquarria.lua.LuaInterface;
+import com.github.antag99.aquarria.lua.LuaObject;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.TileTypeLoader;
 import com.github.antag99.aquarria.tile.WallType;
@@ -73,7 +70,7 @@ public final class GameRegistry {
 	private static ObjectMap<String, TypeLoader<?>> typeLoadersByExtension = new ObjectMap<>();
 	private static ObjectMap<Class<? extends Type>, TypeLoader<?>> typeLoadersByClass = new ObjectMap<>();
 
-	private static Globals globals;
+	private static LuaEnvironment luaEnvironment;
 
 	private static ObjectMap<String, Type> getRegisteredTypes(Class<? extends Type> typeClass) {
 		ObjectMap<String, Type> types = registeredTypes.get(typeClass);
@@ -192,8 +189,8 @@ public final class GameRegistry {
 						throw new RuntimeException("Invalid handler; not a string!");
 					}
 
-					LuaValue handler = GameRegistry.getGlobals().loadfile(handlerScript + ".lua").call();
-					typeInstance.getEvents().registerListener(new ScriptEventListener<Event>(handler.checkfunction(), (Class<Event>) eventClass, 0f));
+					LuaObject handler = luaEnvironment.loadScript(handlerScript + ".lua").call().get(0);
+					typeInstance.getEvents().registerListener(new ScriptEventListener<Event>(handler, (Class<Event>) eventClass, 0f));
 				}
 			}
 
@@ -231,8 +228,8 @@ public final class GameRegistry {
 	}
 
 	public static void initialize() {
-		// Create LuaJ globals and register all game classes
-		globals = JsePlatform.standardGlobals();
+		/* create lua environment and register all aquarria classes */
+		luaEnvironment = new LuaEnvironment();
 
 		// Source: http://stackoverflow.com/a/9571146
 		List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
@@ -255,22 +252,14 @@ public final class GameRegistry {
 			// FIXME: This dosen't seem to include enumerations; find a workaround
 			try {
 				Class<?> clazz = Class.forName(type);
-				globals.set(clazz.getSimpleName(), CoerceJavaToLua.coerce(clazz));
+				luaEnvironment.setGlobal(clazz.getSimpleName(), LuaInterface.create(clazz));
 			} catch (ClassNotFoundException ex) {
 				// Just shouldn't happen
 				throw new AssertionError(ex);
 			}
 		}
 
-		globals.set("Direction", CoerceJavaToLua.coerce(Direction.class));
-
-		// Set ResourceFinder that uses internal files
-		globals.finder = new ResourceFinder() {
-			@Override
-			public InputStream findResource(String filename) {
-				return Gdx.files.internal(filename).read();
-			}
-		};
+		luaEnvironment.setGlobal("Direction", LuaInterface.create(Direction.class));
 
 		registerTypeLoader(new ItemTypeLoader());
 		registerTypeLoader(new TileTypeLoader());
@@ -297,7 +286,7 @@ public final class GameRegistry {
 		registeredTypes.clear();
 	}
 
-	public static Globals getGlobals() {
-		return globals;
+	public static LuaEnvironment getLuaEnvironment() {
+		return luaEnvironment;
 	}
 }

@@ -27,37 +27,58 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.event;
+package com.github.antag99.aquarria.lua;
 
-import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.lua.LuaArguments;
-import com.github.antag99.aquarria.lua.LuaInterface;
+import java.util.Arrays;
 
-/**
- * Base class for events involving a player
- */
-public abstract class PlayerEvent extends Event {
-	private PlayerEntity player;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 
-	public PlayerEvent() {
+public class LuaArguments {
+	private LuaObject[] arguments;
+
+	LuaArguments(Varargs varargs) {
+		arguments = new LuaObject[varargs.narg()];
+		for (int i = 0; i < arguments.length; ++i) {
+			arguments[i] = new LuaObject(varargs.arg(i + 1));
+		}
+	}
+
+	Varargs toVarargs() {
+		return toVarargs(arguments);
+	}
+
+	static Varargs toVarargs(LuaObject[] arguments) {
+		LuaValue[] raw = new LuaValue[arguments.length];
+		for (int i = 0; i < raw.length; ++i) {
+			raw[i] = arguments[i].value;
+		}
+		return LuaValue.varargsOf(raw);
+	}
+
+	public LuaArguments(LuaObject... arguments) {
+		this.arguments = arguments;
 	}
 
 	/**
-	 * Gets the player involved in this event
+	 * Gets the argument at the given 0-based index
 	 */
-	public PlayerEntity getPlayer() {
-		return player;
+	public LuaObject get(int index) {
+		/* attempting to access arguments with negative indexes is a bug */
+		return index < arguments.length ? arguments[index] : LuaObject.NIL;
 	}
 
-	/**
-	 * Sets the player involved in this event
-	 */
-	public void setPlayer(PlayerEntity player) {
-		this.player = player;
+	public int count() {
+		return arguments.length;
 	}
 
 	@Override
-	public LuaArguments pack() {
-		return new LuaArguments(LuaInterface.create(getPlayer()));
+	public int hashCode() {
+		return Arrays.hashCode(arguments);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof LuaArguments) && Arrays.equals(arguments, ((LuaArguments) obj).arguments);
 	}
 }

@@ -30,7 +30,6 @@
 package com.github.antag99.aquarria.benchmarks;
 
 import org.junit.Test;
-import org.luaj.vm2.LuaValue;
 
 import com.github.antag99.aquarria.event.Event;
 import com.github.antag99.aquarria.event.EventListeners;
@@ -60,10 +59,6 @@ public class EventBenchmarks {
 	}
 
 	private static class SampleEvent extends Event {
-		@Override
-		public LuaValue[] pack() {
-			return new LuaValue[0];
-		}
 	}
 
 	private static class SampleEventListener implements EventListeners {

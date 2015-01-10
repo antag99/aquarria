@@ -31,7 +31,6 @@ package com.github.antag99.aquarria.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.luaj.vm2.LuaValue;
 
 import com.github.antag99.aquarria.event.Event;
 import com.github.antag99.aquarria.event.EventListeners;
@@ -68,11 +67,6 @@ public class InhertianceEventTests extends Assert {
 
 	public static class BaseEvent extends Event {
 		public int counter = 0;
-
-		@Override
-		public LuaValue[] pack() {
-			return new LuaValue[0];
-		}
 	}
 
 	public static class InheritedEvent extends BaseEvent {

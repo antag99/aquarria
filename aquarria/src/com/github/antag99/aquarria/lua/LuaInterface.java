@@ -27,37 +27,42 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.event;
+package com.github.antag99.aquarria.lua;
 
-import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.lua.LuaArguments;
-import com.github.antag99.aquarria.lua.LuaInterface;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import org.luaj.vm2.lib.jse.CoerceLuaToJava;
 
-/**
- * Base class for events involving a player
- */
-public abstract class PlayerEvent extends Event {
-	private PlayerEntity player;
+public final class LuaInterface {
+	// TODO: Implement this without using LuaJ
 
-	public PlayerEvent() {
+	private LuaInterface() {
 	}
 
 	/**
-	 * Gets the player involved in this event
+	 * Creates an uservalue wrapper for the given class
 	 */
-	public PlayerEntity getPlayer() {
-		return player;
+	public static LuaObject create(Class<?> clazz) {
+		return new LuaObject(CoerceJavaToLua.coerce(clazz));
 	}
 
 	/**
-	 * Sets the player involved in this event
+	 * Creates an uservalue wrapper for the given instance
 	 */
-	public void setPlayer(PlayerEntity player) {
-		this.player = player;
+	public static LuaObject create(Object instance) {
+		return new LuaObject(CoerceJavaToLua.coerce(instance));
 	}
 
-	@Override
-	public LuaArguments pack() {
-		return new LuaArguments(LuaInterface.create(getPlayer()));
+	/**
+	 * Converts the given java object to the corresponding lua object
+	 */
+	public static LuaObject toLua(Object instance) {
+		return new LuaObject(CoerceJavaToLua.coerce(instance));
+	}
+
+	/**
+	 * Converts the given lua object to the corresponding java object
+	 */
+	public static <T> T toJava(LuaObject object, Class<T> expected) {
+		return expected.cast(CoerceLuaToJava.coerce(object.value, expected));
 	}
 }

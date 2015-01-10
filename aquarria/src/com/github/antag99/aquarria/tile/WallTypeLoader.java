@@ -29,12 +29,11 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import org.luaj.vm2.LuaFunction;
-
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.TypeLoader;
+import com.github.antag99.aquarria.lua.LuaObject;
 import com.github.antag99.aquarria.util.FrameSkinLoader.FrameSkinParameter;
 import com.github.antag99.aquarria.util.Utils;
 
@@ -52,7 +51,7 @@ public class WallTypeLoader extends TypeLoader<WallType> {
 		}
 
 		String frameScript = config.getString("style", "wallFrame") + ".lua";
-		LuaFunction frameFunction = GameRegistry.getGlobals().loadfile(frameScript).call().checkfunction();
+		LuaObject frameFunction = GameRegistry.getLuaEnvironment().loadScript(frameScript).call().get(0);
 		type.setStyle(new ScriptFrameStyle(frameFunction));
 	}
 

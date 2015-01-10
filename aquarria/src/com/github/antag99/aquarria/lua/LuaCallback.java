@@ -27,37 +27,8 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.event;
+package com.github.antag99.aquarria.lua;
 
-import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.lua.LuaArguments;
-import com.github.antag99.aquarria.lua.LuaInterface;
-
-/**
- * Base class for events involving a player
- */
-public abstract class PlayerEvent extends Event {
-	private PlayerEntity player;
-
-	public PlayerEvent() {
-	}
-
-	/**
-	 * Gets the player involved in this event
-	 */
-	public PlayerEntity getPlayer() {
-		return player;
-	}
-
-	/**
-	 * Sets the player involved in this event
-	 */
-	public void setPlayer(PlayerEntity player) {
-		this.player = player;
-	}
-
-	@Override
-	public LuaArguments pack() {
-		return new LuaArguments(LuaInterface.create(getPlayer()));
-	}
+public interface LuaCallback {
+	LuaArguments call(LuaArguments arguments);
 }

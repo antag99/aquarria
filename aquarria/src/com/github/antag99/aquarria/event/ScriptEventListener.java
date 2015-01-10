@@ -29,37 +29,26 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.event;
 
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
+import com.github.antag99.aquarria.lua.LuaArguments;
+import com.github.antag99.aquarria.lua.LuaObject;
 
 public class ScriptEventListener<T extends Event> implements EventListener<T> {
-	private LuaFunction function;
+	private LuaObject callback;
 	private Class<T> eventClass;
 	private float priority;
 
-	public ScriptEventListener(LuaFunction function,
-			Class<T> eventClass, float priority) {
-		this.function = function;
+	public ScriptEventListener(LuaObject callback, Class<T> eventClass, float priority) {
+		this.callback = callback;
 		this.eventClass = eventClass;
 		this.priority = priority;
 	}
 
 	@Override
 	public void notify(T event) {
-		Object[] arguments = event.pack();
-		LuaValue[] luaArguments = new LuaValue[arguments.length];
-
-		for (int i = 0; i < arguments.length; ++i) {
-			luaArguments[i] = CoerceJavaToLua.coerce(arguments[i]);
-		}
-
-		Varargs varargs = function.invoke(luaArguments);
-		if (varargs.narg() >= 1) {
-			if (varargs.optboolean(1, false)) {
-				event.setHandled(true);
-			}
+		LuaArguments arguments = event.pack();
+		LuaArguments results = callback.call(arguments);
+		if (results.get(0).isBoolean() && results.get(0).convertBoolean()) {
+			event.setHandled(true);
 		}
 	}
 

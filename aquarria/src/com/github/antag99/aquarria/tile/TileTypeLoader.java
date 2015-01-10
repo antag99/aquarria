@@ -29,12 +29,11 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import org.luaj.vm2.LuaFunction;
-
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.TypeLoader;
+import com.github.antag99.aquarria.lua.LuaObject;
 import com.github.antag99.aquarria.util.FrameSkinLoader.FrameSkinParameter;
 
 public class TileTypeLoader extends TypeLoader<TileType> {
@@ -47,7 +46,7 @@ public class TileTypeLoader extends TypeLoader<TileType> {
 		type.setDisplayName(config.getString("displayName", ""));
 		type.setSolid(config.getBoolean("solid", true));
 		String frameScript = config.getString("style", "blockFrame") + ".lua";
-		LuaFunction frameFunction = GameRegistry.getGlobals().loadfile(frameScript).call().checkfunction();
+		LuaObject frameFunction = GameRegistry.getLuaEnvironment().loadScript(frameScript).call().get(0);
 		type.setStyle(new ScriptFrameStyle(frameFunction));
 	}
 

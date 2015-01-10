@@ -29,7 +29,7 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.event;
 
-import org.luaj.vm2.LuaValue;
+import com.github.antag99.aquarria.lua.LuaArguments;
 
 /**
  * Base class for all events. Events are used to pass messages between different
@@ -47,8 +47,11 @@ public abstract class Event {
 	}
 
 	/**
-	 * Packs this event into an array of lua values,
-	 * for invoking script handlers.
+	 * Packs this event into an array of lua arguments,
+	 * to simplify the script interface; handler methods
+	 * will be called with these arguments.
 	 */
-	public abstract LuaValue[] pack();
+	public LuaArguments pack() {
+		throw new UnsupportedOperationException();
+	}
 }

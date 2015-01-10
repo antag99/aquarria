@@ -29,10 +29,9 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.event;
 
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.CoerceJavaToLua;
-
 import com.github.antag99.aquarria.item.Item;
+import com.github.antag99.aquarria.lua.LuaArguments;
+import com.github.antag99.aquarria.lua.LuaInterface;
 
 public abstract class AbstractUseItemEvent extends PlayerEvent {
 	private Item item;
@@ -49,10 +48,8 @@ public abstract class AbstractUseItemEvent extends PlayerEvent {
 	}
 
 	@Override
-	public LuaValue[] pack() {
-		return new LuaValue[] {
-				CoerceJavaToLua.coerce(getPlayer()),
-				CoerceJavaToLua.coerce(getItem())
-		};
+	public LuaArguments pack() {
+		return new LuaArguments(LuaInterface.create(getPlayer()),
+				LuaInterface.create(getItem()));
 	}
 }
