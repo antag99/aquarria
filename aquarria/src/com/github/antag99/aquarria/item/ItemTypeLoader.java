@@ -50,17 +50,17 @@ public class ItemTypeLoader extends TypeLoader<ItemType> {
 		type.setConsumable(config.getBoolean("consumable", false));
 	}
 
-//	@Override
-//	public void loadAssets(ItemType type, JsonValue config, AssetManager assetManager) {
-//		if (config.has("texture")) {
-//			assetManager.load(config.getString("texture"), TextureRegion.class);
-//		}
-//	}
-//
-//	@Override
-//	public void getAssets(ItemType type, JsonValue config, AssetManager assetManager) {
-//		if (config.has("texture")) {
-//			type.setTexture(assetManager.get(config.getString("texture", null), TextureRegion.class));
-//		}
-//	}
+	// @Override
+	// public void loadAssets(ItemType type, JsonValue config, AssetManager assetManager) {
+	// if (config.has("texture")) {
+	// assetManager.load(config.getString("texture"), TextureRegion.class);
+	// }
+	// }
+	//
+	// @Override
+	// public void getAssets(ItemType type, JsonValue config, AssetManager assetManager) {
+	// if (config.has("texture")) {
+	// type.setTexture(assetManager.get(config.getString("texture", null), TextureRegion.class));
+	// }
+	// }
 }

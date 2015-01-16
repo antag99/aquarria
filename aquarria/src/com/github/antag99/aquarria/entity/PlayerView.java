@@ -168,7 +168,7 @@ public class PlayerView implements EntityView {
 	public float getUseOffsetY() {
 		return useOffsetY;
 	}
-	
+
 	public PlayerEntity getPlayer() {
 		return player;
 	}
