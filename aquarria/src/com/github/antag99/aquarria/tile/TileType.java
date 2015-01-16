@@ -29,6 +29,7 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.Type;
 import com.github.antag99.aquarria.item.ItemType;
 
@@ -41,8 +42,8 @@ public final class TileType extends Type {
 
 	private boolean solid;
 	private ItemType drop;
-	private FrameSkin skin;
-	private FrameStyle style;
+	private TileStyle style;
+	private TextureRegion[][] textureSheet;
 
 	public TileType() {
 	}
@@ -55,27 +56,27 @@ public final class TileType extends Type {
 		this.solid = solid;
 	}
 
-	public FrameSkin getSkin() {
-		return skin;
-	}
-
-	public void setSkin(FrameSkin skin) {
-		this.skin = skin;
-	}
-
-	public FrameStyle getStyle() {
-		return style;
-	}
-
-	public void setStyle(FrameStyle style) {
-		this.style = style;
-	}
-
 	public ItemType getDrop() {
 		return drop;
 	}
 
 	public void setDrop(ItemType drop) {
 		this.drop = drop;
+	}
+
+	public TileStyle getStyle() {
+		return style;
+	}
+
+	public void setStyle(TileStyle style) {
+		this.style = style;
+	}
+
+	public TextureRegion[][] getTextureSheet() {
+		return textureSheet;
+	}
+
+	public void setTextureSheet(TextureRegion[][] textureSheet) {
+		this.textureSheet = textureSheet;
 	}
 }

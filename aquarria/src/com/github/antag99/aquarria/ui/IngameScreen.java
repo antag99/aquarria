@@ -31,8 +31,6 @@ package com.github.antag99.aquarria.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.SkinLoader.SkinParameter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -41,11 +39,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.github.antag99.aquarria.Aquarria;
 import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.util.GraphicsDelegate;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
 import com.github.antag99.aquarria.world.WorldView;
-import com.github.antag99.aquarria.world.render.WorldRenderer;
 
 public class IngameScreen extends AquarriaScreen {
 	private World world;
@@ -60,9 +56,6 @@ public class IngameScreen extends AquarriaScreen {
 	private Vector2 tmpVector2 = new Vector2();
 	private Vector3 tmpVector3 = new Vector3();
 
-	private float debugGameSpeed = 1f;
-	private GraphicsDelegate debugGraphics;
-
 	private boolean debugStage;
 
 	public IngameScreen(Aquarria aquarria) {
@@ -73,29 +66,21 @@ public class IngameScreen extends AquarriaScreen {
 	public void load() {
 		super.load();
 
-		SkinParameter skinParameter = new SkinParameter("images/ui/ui.atlas");
-		AssetManager assetManager = aquarria.getAssetManager();
-		assetManager.load("skins/ingame.json", Skin.class, skinParameter);
+		// SkinParameter skinParameter = new SkinParameter("images/ui/ui.atlas");
+		// AssetManager assetManager = aquarria.getAssetManager();
+		// assetManager.load("skins/ingame.json", Skin.class, skinParameter);
 
 		worldRenderer = new WorldRenderer();
-		worldRenderer.queueAssets(assetManager);
-
-		debugGraphics = new GraphicsDelegate(Gdx.graphics) {
-			@Override
-			public float getDeltaTime() {
-				return super.getDeltaTime() * debugGameSpeed;
-			}
-		};
-		Gdx.graphics = debugGraphics;
+		// worldRenderer.queueAssets(assetManager);
 	}
 
 	@Override
 	public void initialize() {
 		super.initialize();
 
-		AssetManager assetManager = aquarria.getAssetManager();
-		skin = assetManager.get("skins/ingame.json");
-		worldRenderer.getAssets(assetManager);
+		// AssetManager assetManager = aquarria.getAssetManager();
+		// skin = assetManager.get("skins/ingame.json");
+		// worldRenderer.getAssets(assetManager);
 
 		world = new World(1024, 512);
 		worldGenerator = new WorldGenerator(world, MathUtils.random.nextLong());
@@ -132,14 +117,6 @@ public class IngameScreen extends AquarriaScreen {
 			root.getStage().setDebugAll(debugStage);
 		}
 
-		if (Gdx.input.isKeyJustPressed(Input.Keys.F7)) {
-			debugGameSpeed *= 0.5f;
-			if (debugGameSpeed < 0.125f) {
-				debugGameSpeed = 4f;
-			}
-			System.out.println("Game speed: " + (int) (debugGameSpeed * 100) + "%");
-		}
-
 		delta = Gdx.graphics.getDeltaTime();
 
 		world.update(delta);
@@ -167,39 +144,35 @@ public class IngameScreen extends AquarriaScreen {
 			player.setWorldFocus(null);
 		}
 
-		if (!Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && !Gdx.input.isKeyPressed(Input.Keys.HOME)) {
-			if (player.getWorldFocus() != null) {
-				if (Gdx.input.justTouched()) {
-					if (!player.getRepeatUsingItem()) {
-						player.setRepeatUsingItem(true);
-					}
-					player.setUsedItem(ingameInterface.getFocusItem());
+		// if (!Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && !Gdx.input.isKeyPressed(Input.Keys.HOME)) {
+		if (player.getWorldFocus() != null) {
+			if (Gdx.input.justTouched()) {
+				if (!player.getRepeatUsingItem()) {
+					player.setRepeatUsingItem(true);
 				}
+				player.setUsedItem(ingameInterface.getFocusItem());
+			}
 
-				if (!Gdx.input.isTouched()) {
-					if (player.getRepeatUsingItem()) {
-						player.setRepeatUsingItem(false);
-					}
-				}
-			} else {
-				player.setRepeatUsingItem(false);
-				player.setUsingItem(false);
-				player.setUseTime(0f);
-				player.setUsedItem(null);
-			}
-		} else if (player.getWorldFocus() != null) {
-			int tileX = (int) player.getWorldFocus().x;
-			int tileY = (int) player.getWorldFocus().y;
-			if (Gdx.input.isKeyPressed(Input.Keys.HOME)) {
-				System.out.println(world.getTileType(tileX, tileY).getStyle().findFrame(world, tileX, tileY));
-			} else {
-				if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-					world.setLiquid(tileX, tileY, 255);
-				} else if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-					world.setLiquid(tileX, tileY, 0);
+			if (!Gdx.input.isTouched()) {
+				if (player.getRepeatUsingItem()) {
+					player.setRepeatUsingItem(false);
 				}
 			}
+		} else {
+			player.setRepeatUsingItem(false);
+			player.setUsingItem(false);
+			player.setUseTime(0f);
+			player.setUsedItem(null);
 		}
+		// } else if (player.getWorldFocus() != null) {
+		// int tileX = (int) player.getWorldFocus().x;
+		// int tileY = (int) player.getWorldFocus().y;
+		// if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+		// world.setLiquid(tileX, tileY, 255);
+		// } else if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+		// world.setLiquid(tileX, tileY, 0);
+		// }
+		// }
 	}
 
 	@Override

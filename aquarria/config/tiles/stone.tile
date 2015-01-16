@@ -1,8 +1,0 @@
-{
-	"internalName" : "stone",
-	"displayName" : "Stone",
-	"solid" : true,
-	"skin" : "frame/block.json",
-	"skinDirectory" : "images/tiles/stone/",
-	"drop" : "stone"
-}

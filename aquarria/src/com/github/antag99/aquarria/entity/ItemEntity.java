@@ -36,8 +36,6 @@ public class ItemEntity extends Entity {
 	private Item item;
 
 	public ItemEntity(Item item) {
-		super(EntityType.item);
-
 		setItem(item);
 	}
 
@@ -57,5 +55,11 @@ public class ItemEntity extends Entity {
 	@Override
 	public float getHeight() {
 		return item.getType().getHeight() / World.PIXELS_PER_METER;
+	}
+
+	@Override
+	protected EntityView createView() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

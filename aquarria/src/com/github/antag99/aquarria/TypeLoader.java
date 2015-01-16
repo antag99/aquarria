@@ -29,7 +29,6 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.JsonValue;
 
 /**
@@ -63,22 +62,6 @@ public abstract class TypeLoader<T extends Type> {
 	 * and JSON configuration have already been set.
 	 */
 	public abstract void load(T type, JsonValue config);
-
-	/**
-	 * Called to load assets after the type has been loaded
-	 * 
-	 * @see AssetManager
-	 */
-	public void loadAssets(T type, JsonValue config, AssetManager assetManager) {
-	}
-
-	/**
-	 * Called to get the loaded assets after all assets have been loaded
-	 * 
-	 * @see AssetManager
-	 */
-	public void getAssets(T type, JsonValue config, AssetManager assetManager) {
-	}
 
 	/**
 	 * Called after all types have been loaded and registered

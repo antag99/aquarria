@@ -1,7 +1,0 @@
-{
-	"internalName" : "stone",
-	"displayName" : "Stone",
-	"skin" : "frame/wall.json",
-	"skinDirectory" : "images/walls/stone/",
-	"drop" : "stoneWall"
-}

@@ -1,0 +1,14 @@
+{
+	"image" : "images/tiles/stone.png",
+	"style" : "block",
+	"grid" : {
+		"offsetX" : 0,
+		"offsetY" : 0,
+		"spacingX" : 2,
+		"spacingY" : 2,
+		"width" : 16,
+		"height" : 16,
+		"countX" : 10,
+		"countY" : 10
+	}
+}

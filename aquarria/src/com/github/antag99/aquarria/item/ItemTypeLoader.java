@@ -29,8 +29,6 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.item;
 
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.TypeLoader;
 
@@ -41,7 +39,7 @@ public class ItemTypeLoader extends TypeLoader<ItemType> {
 
 	@Override
 	public void load(ItemType type, JsonValue config) {
-		type.setDisplayName(config.getString("displayName", ""));
+		type.setName(config.getString("displayName", ""));
 		type.setMaxStack(config.getInt("maxStack", 1));
 		type.setWidth(config.getFloat("width"));
 		type.setHeight(config.getFloat("height"));
@@ -52,17 +50,17 @@ public class ItemTypeLoader extends TypeLoader<ItemType> {
 		type.setConsumable(config.getBoolean("consumable", false));
 	}
 
-	@Override
-	public void loadAssets(ItemType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("texture")) {
-			assetManager.load(config.getString("texture"), TextureRegion.class);
-		}
-	}
-
-	@Override
-	public void getAssets(ItemType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("texture")) {
-			type.setTexture(assetManager.get(config.getString("texture", null), TextureRegion.class));
-		}
-	}
+//	@Override
+//	public void loadAssets(ItemType type, JsonValue config, AssetManager assetManager) {
+//		if (config.has("texture")) {
+//			assetManager.load(config.getString("texture"), TextureRegion.class);
+//		}
+//	}
+//
+//	@Override
+//	public void getAssets(ItemType type, JsonValue config, AssetManager assetManager) {
+//		if (config.has("texture")) {
+//			type.setTexture(assetManager.get(config.getString("texture", null), TextureRegion.class));
+//		}
+//	}
 }

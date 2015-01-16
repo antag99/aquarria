@@ -1,0 +1,6 @@
+{
+	"id" : "grass",
+	"name" : "Grass",
+	"solid" : true,
+	"render" : "grass.render"
+}

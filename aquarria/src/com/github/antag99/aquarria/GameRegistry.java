@@ -40,13 +40,10 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.github.antag99.aquarria.entity.EntityType;
-import com.github.antag99.aquarria.entity.EntityTypeLoader;
 import com.github.antag99.aquarria.event.Event;
 import com.github.antag99.aquarria.event.ScriptEventListener;
 import com.github.antag99.aquarria.item.ItemType;
@@ -58,14 +55,12 @@ import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.TileTypeLoader;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.tile.WallTypeLoader;
-import com.github.antag99.aquarria.util.Direction;
 
 public final class GameRegistry {
 	private GameRegistry() {
 		throw new AssertionError();
 	}
 
-	// Mappings of internal names to concrete types
 	private static ObjectMap<Class<? extends Type>, ObjectMap<String, Type>> registeredTypes = new ObjectMap<>();
 	private static ObjectMap<String, TypeLoader<?>> typeLoadersByExtension = new ObjectMap<>();
 	private static ObjectMap<Class<? extends Type>, TypeLoader<?>> typeLoadersByClass = new ObjectMap<>();
@@ -101,7 +96,7 @@ public final class GameRegistry {
 	}
 
 	public static void registerType(Type type) {
-		getRegisteredTypes(type.getClass()).put(type.getInternalName(), type);
+		getRegisteredTypes(type.getClass()).put(type.getId(), type);
 	}
 
 	public static ItemType getItemType(String internalName) {
@@ -116,10 +111,6 @@ public final class GameRegistry {
 		return getType(WallType.class, internalName);
 	}
 
-	public static EntityType getEntityType(String internalName) {
-		return getType(EntityType.class, internalName);
-	}
-
 	public static Iterable<ItemType> getItemTypes() {
 		return getTypes(ItemType.class);
 	}
@@ -130,10 +121,6 @@ public final class GameRegistry {
 
 	public static Iterable<WallType> getWallTypes() {
 		return getTypes(WallType.class);
-	}
-
-	public static Iterable<EntityType> getEntityTypes() {
-		return getTypes(EntityType.class);
 	}
 
 	private static JsonReader jsonReader = new JsonReader();
@@ -165,10 +152,10 @@ public final class GameRegistry {
 				throw new RuntimeException(ex);
 			}
 
-			typeInstance.setInternalName(config.getString("internalName"));
+			typeInstance.setId(config.getString("id"));
+			typeInstance.setName(config.getString("name"));
 			typeInstance.setConfig(config);
 
-			// Register event handlers
 			if (config.has("events")) {
 				for (JsonValue event : config.get("events")) {
 					Class<?> eventClass;
@@ -203,26 +190,6 @@ public final class GameRegistry {
 			TypeLoader<?> loader = typeLoadersByClass.get(typeClass);
 			for (Type type : getTypes(typeClass)) {
 				((TypeLoader<Type>) loader).postLoad(type, type.getConfig());
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	static void loadAssets(AssetManager assetManager) {
-		for (Class<? extends Type> typeClass : registeredTypes.keys()) {
-			TypeLoader<?> loader = typeLoadersByClass.get(typeClass);
-			for (Type type : getTypes(typeClass)) {
-				((TypeLoader<Type>) loader).loadAssets(type, type.getConfig(), assetManager);
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	static void getAssets(AssetManager assetManager) {
-		for (Class<? extends Type> typeClass : registeredTypes.keys()) {
-			TypeLoader<?> loader = typeLoadersByClass.get(typeClass);
-			for (Type type : getTypes(typeClass)) {
-				((TypeLoader<Type>) loader).getAssets(type, type.getConfig(), assetManager);
 			}
 		}
 	}
@@ -264,7 +231,6 @@ public final class GameRegistry {
 		registerTypeLoader(new ItemTypeLoader());
 		registerTypeLoader(new TileTypeLoader());
 		registerTypeLoader(new WallTypeLoader());
-		registerTypeLoader(new EntityTypeLoader());
 
 		loadTypes();
 
@@ -272,7 +238,7 @@ public final class GameRegistry {
 		for (Class<? extends Type> typeClass : registeredTypes.keys()) {
 			for (Type type : getTypes(typeClass)) {
 				try {
-					typeClass.getField(type.getInternalName()).set(null, type);
+					typeClass.getField(type.getId()).set(null, type);
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}

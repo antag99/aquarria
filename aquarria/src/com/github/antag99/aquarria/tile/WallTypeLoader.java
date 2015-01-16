@@ -29,13 +29,9 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.TypeLoader;
-import com.github.antag99.aquarria.lua.LuaObject;
-import com.github.antag99.aquarria.util.FrameSkinLoader.FrameSkinParameter;
-import com.github.antag99.aquarria.util.Utils;
 
 public class WallTypeLoader extends TypeLoader<WallType> {
 	public WallTypeLoader() {
@@ -44,37 +40,13 @@ public class WallTypeLoader extends TypeLoader<WallType> {
 
 	@Override
 	public void load(WallType type, JsonValue config) {
-		type.setDisplayName(config.getString("displayName", ""));
-
-		if (config.has("frame")) {
-			type.setFrame(Utils.asRectangle(config.get("frame")));
-		}
-
-		String frameScript = config.getString("style", "wallFrame") + ".lua";
-		LuaObject frameFunction = GameRegistry.getLuaEnvironment().loadScript(frameScript).call().get(0);
-		type.setStyle(new ScriptFrameStyle(frameFunction));
+		type.setName(config.getString("displayName", ""));
 	}
 
 	@Override
 	public void postLoad(WallType type, JsonValue config) {
 		if (config.has("drop")) {
 			type.setDrop(GameRegistry.getItemType(config.getString("drop")));
-		}
-	}
-
-	@Override
-	public void loadAssets(WallType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("skin") && config.has("skinDirectory")) {
-			FrameSkinParameter param = new FrameSkinParameter(config.getString("skin"));
-			assetManager.load(config.getString("skinDirectory"), FrameSkin.class, param);
-		}
-	}
-
-	@Override
-	public void getAssets(WallType type, JsonValue config, AssetManager assetManager) {
-		if (config.has("skin") && config.has("skinDirectory")) {
-			FrameSkin skin = assetManager.get(config.getString("skinDirectory"), FrameSkin.class);
-			type.setSkin(skin);
 		}
 	}
 }

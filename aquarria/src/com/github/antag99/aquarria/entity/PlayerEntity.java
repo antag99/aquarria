@@ -54,8 +54,6 @@ public class PlayerEntity extends Entity {
 	private boolean repeatUsingItem;
 
 	public PlayerEntity() {
-		super(EntityType.player);
-
 		hotbar = new Inventory(10);
 		inventory = new Inventory(40);
 
@@ -238,7 +236,23 @@ public class PlayerEntity extends Entity {
 	}
 
 	@Override
-	protected EntityView<?> createView() {
-		return new PlayerView(this);
+	public float getWidth() {
+		return 1.25f;
+	}
+
+	@Override
+	public float getHeight() {
+		return 2.625f;
+	}
+
+	@Override
+	public int getHealth() {
+		return 400;
+	}
+
+	@Override
+	protected EntityView createView() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

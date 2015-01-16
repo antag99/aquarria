@@ -34,7 +34,7 @@ import org.junit.Test;
 
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.ObjectSet;
-import com.github.antag99.aquarria.util.Direction;
+import com.github.antag99.aquarria.Direction;
 
 public class DirectionTests {
 	@Test

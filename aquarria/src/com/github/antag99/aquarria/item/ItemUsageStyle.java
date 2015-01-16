@@ -49,7 +49,7 @@ public abstract class ItemUsageStyle {
 				useOffsetX = 0.2f;
 			}
 
-			if (player.getEntity().getDirection() == 1) {
+			if (player.getPlayer().getDirectionX() == 1) {
 				useOffsetX = 1.25f - useOffsetX;
 			}
 
@@ -71,7 +71,7 @@ public abstract class ItemUsageStyle {
 
 		@Override
 		public float getUsedItemRotation(PlayerView player, float usageProgress) {
-			if (player.getEntity().getDirection() == 1) {
+			if (player.getPlayer().getDirectionX() == 1) {
 				return 90f - 180f * usageProgress;
 			} else {
 				return 180f * usageProgress;

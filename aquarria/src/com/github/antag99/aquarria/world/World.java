@@ -34,6 +34,7 @@ import java.util.Arrays;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
+import com.github.antag99.aquarria.Direction;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.ItemEntity;
 import com.github.antag99.aquarria.entity.PlayerEntity;
@@ -43,10 +44,8 @@ import com.github.antag99.aquarria.event.TilePlaceEvent;
 import com.github.antag99.aquarria.event.WallDestroyEvent;
 import com.github.antag99.aquarria.event.WallPlaceEvent;
 import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.tile.Frame;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.util.Direction;
 
 public class World {
 	public static final float PIXELS_PER_METER = 16;
@@ -56,19 +55,17 @@ public class World {
 
 	private float spawnX, spawnY;
 
-	private TileType[] tileMatrix;
-	private WallType[] wallMatrix;
-	private Frame[] tileFrameMatrix;
-	private Frame[] wallFrameMatrix;
+	private TileType[] tiles;
+	private WallType[] walls;
 
 	private short[] surfaceLevel;
-	private byte[] lightMatrix;
+	private byte[] light;
 
-	private byte[] attachMatrix;
+	private byte[] tileAttachment;
 
 	private Array<Entity> entities;
 
-	private byte[] liquidMatrix;
+	private byte[] liquidLevel;
 	private float tickCounter;
 	private IntArray activeLiquids;
 
@@ -84,8 +81,8 @@ public class World {
 		this.width = width;
 		this.height = height;
 
-		tileMatrix = new TileType[width * height];
-		wallMatrix = new WallType[width * height];
+		tiles = new TileType[width * height];
+		walls = new WallType[width * height];
 
 		events = new EventManager();
 
@@ -98,15 +95,13 @@ public class World {
 	public void clear() {
 		spawnX = width / 2f;
 		spawnY = height / 2f;
-		Arrays.fill(tileMatrix, TileType.air);
-		Arrays.fill(wallMatrix, WallType.air);
-		tileFrameMatrix = new Frame[width * height];
-		wallFrameMatrix = new Frame[width * height];
+		Arrays.fill(tiles, TileType.air);
+		Arrays.fill(walls, WallType.air);
 		entities = new Array<Entity>();
 		surfaceLevel = new short[width];
-		lightMatrix = new byte[width * height];
-		liquidMatrix = new byte[width * height];
-		attachMatrix = new byte[width * height];
+		light = new byte[width * height];
+		liquidLevel = new byte[width * height];
+		tileAttachment = new byte[width * height];
 		activeLiquids = new IntArray();
 	}
 
@@ -140,7 +135,7 @@ public class World {
 	public TileType getTileType(int x, int y) {
 		checkBounds(x, y);
 
-		return tileMatrix[y * width + x];
+		return tiles[y * width + x];
 	}
 
 	public void setTileType(int x, int y, TileType type) {
@@ -150,13 +145,13 @@ public class World {
 			throw new NullPointerException();
 		}
 
-		tileMatrix[y * width + x] = type;
+		tiles[y * width + x] = type;
 	}
 
 	public WallType getWallType(int x, int y) {
 		checkBounds(x, y);
 
-		return wallMatrix[y * width + x];
+		return walls[y * width + x];
 	}
 
 	public void setWallType(int x, int y, WallType type) {
@@ -166,83 +161,7 @@ public class World {
 			throw new NullPointerException();
 		}
 
-		wallMatrix[y * width + x] = type;
-	}
-
-	public Frame getTileFrame(int x, int y) {
-		checkBounds(x, y);
-
-		return tileFrameMatrix[x + y * width];
-	}
-
-	public void setTileFrame(int x, int y, Frame frame) {
-		checkBounds(x, y);
-
-		tileFrameMatrix[x + y * width] = frame;
-	}
-
-	public void findTileFrame(int x, int y) {
-		if (!inBounds(x, y))
-			return;
-
-		TileType type = getTileType(x, y);
-		if (type != TileType.air) {
-			setTileFrame(x, y, type.getSkin().getFrame(type.getStyle().findFrame(this, x, y)));
-		} else {
-			setTileFrame(x, y, null);
-		}
-	}
-
-	public void findTileFrameSquare(int x, int y) {
-		checkBounds(x, y);
-
-		findTileFrame(x, y);
-		findTileFrame(x, y + 1);
-		findTileFrame(x + 1, y + 1);
-		findTileFrame(x + 1, y);
-		findTileFrame(x + 1, y - 1);
-		findTileFrame(x, y - 1);
-		findTileFrame(x - 1, y - 1);
-		findTileFrame(x - 1, y);
-		findTileFrame(x - 1, y + 1);
-	}
-
-	public Frame getWallFrame(int x, int y) {
-		checkBounds(x, y);
-
-		return wallFrameMatrix[x + y * width];
-	}
-
-	public void setWallFrame(int x, int y, Frame frame) {
-		checkBounds(x, y);
-
-		wallFrameMatrix[x + y * width] = frame;
-	}
-
-	public void findWallFrame(int x, int y) {
-		if (!inBounds(x, y))
-			return;
-
-		WallType type = getWallType(x, y);
-		if (type != WallType.air) {
-			setWallFrame(x, y, type.getSkin().getFrame(type.getStyle().findFrame(this, x, y)));
-		} else {
-			setWallFrame(x, y, null);
-		}
-	}
-
-	public void findWallFrameSquare(int x, int y) {
-		checkBounds(x, y);
-
-		findWallFrame(x, y);
-		findWallFrame(x, y + 1);
-		findWallFrame(x + 1, y + 1);
-		findWallFrame(x + 1, y);
-		findWallFrame(x + 1, y - 1);
-		findWallFrame(x, y - 1);
-		findWallFrame(x - 1, y - 1);
-		findWallFrame(x - 1, y);
-		findWallFrame(x - 1, y + 1);
+		walls[y * width + x] = type;
 	}
 
 	public int getWidth() {
@@ -340,11 +259,11 @@ public class World {
 	}
 
 	public float getLight(int x, int y) {
-		return (lightMatrix[width * y + x] & 0xff) / 255f;
+		return (light[width * y + x] & 0xff) / 255f;
 	}
 
 	public void setLight(int x, int y, float light) {
-		this.lightMatrix[y * width + x] = (byte) (light * 255);
+		this.light[y * width + x] = (byte) (light * 255);
 	}
 
 	public void computeLight(int x, int y, int width, int height) {
@@ -387,14 +306,14 @@ public class World {
 	public int getLiquid(int x, int y) {
 		checkBounds(x, y);
 
-		return liquidMatrix[x + y * width] & 0xff;
+		return liquidLevel[x + y * width] & 0xff;
 	}
 
 	public void setLiquid(int x, int y, int liquid) {
 		checkBounds(x, y);
 
 		int position = x + y * width;
-		liquidMatrix[position] = (byte) liquid;
+		liquidLevel[position] = (byte) liquid;
 
 		boolean liquidActive = activeLiquids.contains(position);
 		if (liquid != 0 && !liquidActive)
@@ -410,7 +329,7 @@ public class World {
 	 * @param direction The direction towards the other tile.
 	 */
 	public boolean isAttached(int x, int y, Direction direction) {
-		return (attachMatrix[x + y * width] & (1 << direction.ordinal())) != 0;
+		return (tileAttachment[x + y * width] & (1 << direction.ordinal())) != 0;
 	}
 
 	/**
@@ -422,9 +341,9 @@ public class World {
 	 */
 	public void setAttached(int x, int y, Direction direction, boolean attached) {
 		if (!attached)
-			attachMatrix[x + y * width] &= ~(1 << direction.ordinal());
+			tileAttachment[x + y * width] &= ~(1 << direction.ordinal());
 		else
-			attachMatrix[x + y * width] |= 1 << direction.ordinal();
+			tileAttachment[x + y * width] |= 1 << direction.ordinal();
 	}
 
 	/**
@@ -447,7 +366,7 @@ public class World {
 	}
 
 	public void clearAttachment(int x, int y) {
-		attachMatrix[x + y * width] = 0;
+		tileAttachment[x + y * width] = 0;
 	}
 
 	/**
@@ -475,7 +394,6 @@ public class World {
 			setTileType(x, y, TileType.air);
 			clearAttachment(x, y);
 			checkAttachment(x, y, player);
-			findTileFrameSquare(x, y);
 
 			return true;
 		}
@@ -486,7 +404,6 @@ public class World {
 		if (getTileType(x, y) == TileType.air) {
 			setTileType(x, y, type);
 			checkAttachment(x, y, player);
-			findTileFrameSquare(x, y);
 
 			TilePlaceEvent event = new TilePlaceEvent();
 			event.setPlayer(player);
@@ -522,7 +439,6 @@ public class World {
 			getEvents().fire(event);
 
 			setWallType(x, y, WallType.air);
-			findWallFrameSquare(x, y);
 
 			return true;
 		}
@@ -532,7 +448,6 @@ public class World {
 	public boolean placeWall(int x, int y, WallType type, PlayerEntity player) {
 		if (getWallType(x, y) == WallType.air) {
 			setWallType(x, y, type);
-			findWallFrameSquare(x, y);
 
 			WallPlaceEvent event = new WallPlaceEvent();
 			event.setPlayer(player);

@@ -32,9 +32,6 @@ package com.github.antag99.aquarria;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker.Settings;
-import com.github.antag99.aquarria.util.FrameSplitter;
-import com.github.antag99.aquarria.util.FrameSplitter.SplitType;
-import com.github.antag99.aquarria.util.ImageCanvasResizer;
 import com.github.antag99.aquarria.xnb.XnbExtractor;
 import com.github.antag99.aquarria.xnb.XnbFontExtractor;
 import com.github.antag99.aquarria.xnb.XnbSoundExtractor;
@@ -43,12 +40,6 @@ import com.github.antag99.aquarria.xnb.XnbTextureExtractor;
 public class ContentExtractor {
 	private FileHandle contentDirectory;
 	private FileHandle outputAssetDirectory;
-
-	private FrameSplitter tileSplitter = new FrameSplitter(SplitType.BLOCK);
-	private FrameSplitter wallSplitter = new FrameSplitter(SplitType.WALL);
-	private FrameSplitter treeSplitter = new FrameSplitter(SplitType.TREE);
-	private FrameSplitter treeBranchSplitter = new FrameSplitter(SplitType.TREE_BRANCH);
-	private FrameSplitter treeTopSplitter = new FrameSplitter(SplitType.TREE_TOP);
 
 	public ContentExtractor(FileHandle contentDirectory, FileHandle outputAssetDirectory) {
 		this.contentDirectory = contentDirectory;
@@ -104,106 +95,88 @@ public class ContentExtractor {
 			}
 		}
 
-		FileHandle rawDir = outputAssetDirectory.child("raw");
-		FileHandle rawImagesDir = rawDir.child("images");
+		copy("images/Tiles_0.png", "images/tiles/dirt.png");
+		copy("images/Tiles_1.png", "images/tiles/stone.png");
+		copy("images/Tiles_2.png", "images/tiles/grass.png");
 
-		// Split tile & wall images into directories
-		convertTileImage("Tiles_0.png", "dirt");
-		convertTileImage("Tiles_1.png", "stone");
-		convertTileImage("Tiles_2.png", "grass");
+		copy("images/Wall_2.png", "images/walls/dirt.png");
+		copy("images/Wall_1.png", "images/walls/dirt.png");
 
-		convertWallImage("Wall_2.png", "dirt");
-		convertWallImage("Wall_1.png", "stone");
+		copy("images/Item_1.png", "images/items/pickaxe.png");
+		copy("images/Item_2.png", "images/items/dirt.png");
+		copy("images/Item_3.png", "images/items/stone.png");
 
-		treeSplitter.split(rawImagesDir.child("Tiles_5.png"), outputAssetDirectory.child("images/tiles/tree/"));
-		treeBranchSplitter.split(rawImagesDir.child("Tree_Branches_0.png"), outputAssetDirectory.child("images/tiles/tree/"));
-		treeTopSplitter.split(rawImagesDir.child("Tree_Tops_0.png"), outputAssetDirectory.child("images/tiles/tree/"));
-		createAtlas(outputAssetDirectory.child("images/tiles/tree/"), "tree");
+		copy("images/Item_7.png", "images/items/hammer.png");
+		copy("images/Item_30.png", "images/items/dirtWall.png");
+		copy("images/Item_26.png", "images/items/stoneWall.png");
 
-		// Move around images, for easier maintenance
-		rawImagesDir.child("Item_1.png").copyTo(outputAssetDirectory.child("images/items/pickaxe.png"));
-		rawImagesDir.child("Item_2.png").copyTo(outputAssetDirectory.child("images/items/dirt.png"));
-		rawImagesDir.child("Item_3.png").copyTo(outputAssetDirectory.child("images/items/stone.png"));
+		copy("images/Background_0.png", "images/background/sky.png");
+		copy("images/Background_1.png", "images/background/dirtEdge.png");
+		copy("images/Background_2.png", "images/background/dirtLayer.png");
+		copy("images/Background_4.png", "images/background/caveEdge.png");
+		copy("images/Background_3.png", "images/background/cave.png");
+		copy("images/Background_5.png", "images/background/hell.png");
+		copy("images/Background_6.png", "images/background/hellEdge.png");
+		copy("images/Background_7.png", "images/background/surface.png");
+		copy("images/Background_9.png", "images/background/forest.png");
 
-		rawImagesDir.child("Item_7.png").copyTo(outputAssetDirectory.child("images/items/hammer.png"));
-		rawImagesDir.child("Item_30.png").copyTo(outputAssetDirectory.child("images/items/dirtWall.png"));
-		rawImagesDir.child("Item_26.png").copyTo(outputAssetDirectory.child("images/items/stoneWall.png"));
+		copy("images/Bubble.png", "images/ui/bubble.png");
+		copy("images/CoolDown.png", "images/ui/block.png");
+		copy("images/CraftButton.png", "images/ui/craft.png");
+		copy("images/Cursor.png", "images/ui/cursor.png");
+		copy("images/Cursor2.png", "images/ui/cursor2.png");
+		copy("images/HealthBar1.png", "images/ui/healthBarFill.png");
+		copy("images/HealthBar2.png", "images/ui/healthBarEmpty.png");
+		copy("images/Heart.png", "images/ui/heart.png");
+		copy("images/Heart2.png", "images/ui/goldHeart.png");
+		copy("images/House_1.png", "images/ui/house.png");
+		copy("images/House_2.png", "images/ui/disabledHouse.png");
+		copy("images/House_Banner_1.png", "images/ui/npcBanner.png");
+		copy("images/Inventory_Back.png", "images/ui/slot/blue.png");
+		copy("images/Inventory_Back14.png", "images/ui/slot/focus.png");
+		copy("images/Inventory_Tick_Off.png", "images/ui/accessoryDisabled.png");
+		copy("images/Inventory_Tick_On.png", "images/ui/accessoryEnabled.png");
+		copy("images/Sun.png", "images/ui/sun.png");
+		copy("images/Team.png", "images/ui/team.png");
+		copy("images/Lock_0.png", "images/ui/hotbarLocked.png");
+		copy("images/Lock_1.png", "images/ui/hotbarUnlocked.png");
+		copy("images/Mana.png", "images/ui/mana.png");
 
-		rawImagesDir.child("Background_0.png").copyTo(outputAssetDirectory.child("images/background/sky.png"));
-		rawImagesDir.child("Background_1.png").copyTo(outputAssetDirectory.child("images/background/dirtEdge.png"));
-		rawImagesDir.child("Background_2.png").copyTo(outputAssetDirectory.child("images/background/dirtLayer.png"));
-		rawImagesDir.child("Background_4.png").copyTo(outputAssetDirectory.child("images/background/caveEdge.png"));
-		rawImagesDir.child("Background_3.png").copyTo(outputAssetDirectory.child("images/background/cave.png"));
-		rawImagesDir.child("Background_5.png").copyTo(outputAssetDirectory.child("images/background/hell.png"));
-		rawImagesDir.child("Background_6.png").copyTo(outputAssetDirectory.child("images/background/hellEdge.png"));
-		rawImagesDir.child("Background_7.png").copyTo(outputAssetDirectory.child("images/background/surface.png"));
-		rawImagesDir.child("Background_9.png").copyTo(outputAssetDirectory.child("images/background/forest.png"));
+		copy("images/Player_Hair_1.png", "images/player/hair.png");
+		copy("images/Player_Head.png", "images/player/head.png");
+		copy("images/Player_Eyes.png", "images/player/eyes.png");
+		copy("images/Player_Eye_Whites.png", "images/player/eyeWhites.png");
+		copy("images/Player_Shirt.png", "images/player/shirt.png");
+		copy("images/Player_Undershirt.png", "images/player/undershirt.png");
+		copy("images/Player_Hands.png", "images/player/hands.png");
+		copy("images/Player_Pants.png", "images/player/pants.png");
+		copy("images/Player_Shoes.png", "images/player/shoes.png");
 
-		rawImagesDir.child("Bubble.png").copyTo(outputAssetDirectory.child("images/ui/bubble.png"));
-		rawImagesDir.child("CoolDown.png").copyTo(outputAssetDirectory.child("images/ui/block.png"));
-		rawImagesDir.child("CraftButton.png").copyTo(outputAssetDirectory.child("images/ui/craft.png"));
-		rawImagesDir.child("Cursor.png").copyTo(outputAssetDirectory.child("images/ui/cursor.png"));
-		rawImagesDir.child("Cursor2.png").copyTo(outputAssetDirectory.child("images/ui/cursor2.png"));
-		rawImagesDir.child("HealthBar1.png").copyTo(outputAssetDirectory.child("images/ui/healthBarFill.png"));
-		rawImagesDir.child("HealthBar2.png").copyTo(outputAssetDirectory.child("images/ui/healthBarEmpty.png"));
-		rawImagesDir.child("Heart.png").copyTo(outputAssetDirectory.child("images/ui/heart.png"));
-		rawImagesDir.child("Heart2.png").copyTo(outputAssetDirectory.child("images/ui/goldHeart.png"));
-		rawImagesDir.child("House_1.png").copyTo(outputAssetDirectory.child("images/ui/house.png"));
-		rawImagesDir.child("House_2.png").copyTo(outputAssetDirectory.child("images/ui/disabledHouse.png"));
-		rawImagesDir.child("House_Banner_1.png").copyTo(outputAssetDirectory.child("images/ui/npcBanner.png"));
-		rawImagesDir.child("Inventory_Back.png").copyTo(outputAssetDirectory.child("images/ui/slot/blue.png"));
-		rawImagesDir.child("Inventory_Back14.png").copyTo(outputAssetDirectory.child("images/ui/slot/focus.png"));
-		rawImagesDir.child("Inventory_Tick_Off.png").copyTo(outputAssetDirectory.child("images/ui/accessoryDisabled.png"));
-		rawImagesDir.child("Inventory_Tick_On.png").copyTo(outputAssetDirectory.child("images/ui/accessoryEnabled.png"));
-		rawImagesDir.child("Sun.png").copyTo(outputAssetDirectory.child("images/ui/sun.png"));
-		rawImagesDir.child("Team.png").copyTo(outputAssetDirectory.child("images/ui/team.png"));
-		rawImagesDir.child("Lock_0.png").copyTo(outputAssetDirectory.child("images/ui/hotbarLocked.png"));
-		rawImagesDir.child("Lock_1.png").copyTo(outputAssetDirectory.child("images/ui/hotbarUnlocked.png"));
-		rawImagesDir.child("Mana.png").copyTo(outputAssetDirectory.child("images/ui/mana.png"));
-
-		rawImagesDir.child("Player_Hair_1.png").copyTo(outputAssetDirectory.child("images/player/hair.png"));
-		rawImagesDir.child("Player_Head.png").copyTo(outputAssetDirectory.child("images/player/head.png"));
-		rawImagesDir.child("Player_Eyes.png").copyTo(outputAssetDirectory.child("images/player/eyes.png"));
-		rawImagesDir.child("Player_Eye_Whites.png").copyTo(outputAssetDirectory.child("images/player/eyeWhites.png"));
-		rawImagesDir.child("Player_Shirt.png").copyTo(outputAssetDirectory.child("images/player/shirt.png"));
-		rawImagesDir.child("Player_Undershirt.png").copyTo(outputAssetDirectory.child("images/player/undershirt.png"));
-		rawImagesDir.child("Player_Hands.png").copyTo(outputAssetDirectory.child("images/player/hands.png"));
-		rawImagesDir.child("Player_Pants.png").copyTo(outputAssetDirectory.child("images/player/pants.png"));
-		rawImagesDir.child("Player_Shoes.png").copyTo(outputAssetDirectory.child("images/player/shoes.png"));
-
-		rawImagesDir.child("Liquid_0.png").copyTo(outputAssetDirectory.child("images/tiles/water.png"));
-		rawImagesDir.child("Liquid_1.png").copyTo(outputAssetDirectory.child("images/tiles/lava.png"));
+		copy("images/Liquid_0.png", "images/tiles/water.png");
+		copy("images/Liquid_1.png", "images/tiles/lava.png");
 
 		// Some images need to be padded/cropped, either because their sizes are
 		// not consequent or only a portion of the image is used by the game.
-		ImageCanvasResizer playerAnimationPadder = new ImageCanvasResizer(40, 1120);
-		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/head.png"));
-		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/eyes.png"));
-		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/eyeWhites.png"));
-		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/shirt.png"));
-		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/undershirt.png"));
-		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/hands.png"));
-		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/pants.png"));
-		playerAnimationPadder.resize(outputAssetDirectory.child("images/player/shoes.png"));
-
-		ImageCanvasResizer liquidImageCropper = new ImageCanvasResizer(16, 16);
-		liquidImageCropper.resize(outputAssetDirectory.child("images/tiles/water.png"));
-		liquidImageCropper.resize(outputAssetDirectory.child("images/tiles/lava.png"));
+		// ImageCanvasResizer playerAnimationPadder = new ImageCanvasResizer(40, 1120);
+		// playerAnimationPadder.resize(outputAssetDirectory.child("images/player/head.png"));
+		// playerAnimationPadder.resize(outputAssetDirectory.child("images/player/eyes.png"));
+		// playerAnimationPadder.resize(outputAssetDirectory.child("images/player/eyeWhites.png"));
+		// playerAnimationPadder.resize(outputAssetDirectory.child("images/player/shirt.png"));
+		// playerAnimationPadder.resize(outputAssetDirectory.child("images/player/undershirt.png"));
+		// playerAnimationPadder.resize(outputAssetDirectory.child("images/player/hands.png"));
+		// playerAnimationPadder.resize(outputAssetDirectory.child("images/player/pants.png"));
+		// playerAnimationPadder.resize(outputAssetDirectory.child("images/player/shoes.png"));
+		//
+		// ImageCanvasResizer liquidImageCropper = new ImageCanvasResizer(16, 16);
+		// liquidImageCropper.resize(outputAssetDirectory.child("images/tiles/water.png"));
+		// liquidImageCropper.resize(outputAssetDirectory.child("images/tiles/lava.png"));
 
 		// Create texture atlas for all UI images
 		createAtlas(outputAssetDirectory.child("images/ui/"), "ui");
 	}
 
-	private void convertTileImage(String imageName, String tileName) {
-		FileHandle imageFile = outputAssetDirectory.child("raw/images/" + imageName);
-		FileHandle imageDirectory = outputAssetDirectory.child("images/tiles/" + tileName + "/");
-		tileSplitter.split(imageFile, imageDirectory);
-	}
-
-	private void convertWallImage(String imageName, String wallName) {
-		FileHandle imageFile = outputAssetDirectory.child("raw/images/" + imageName);
-		FileHandle imageDirectory = outputAssetDirectory.child("images/walls/" + wallName + "/");
-		wallSplitter.split(imageFile, imageDirectory);
+	private void copy(String rawSource, String destination) {
+		outputAssetDirectory.child("raw/" + rawSource).copyTo(outputAssetDirectory.child(destination));
 	}
 
 	private void createAtlas(FileHandle directory, String atlasName) {

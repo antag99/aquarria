@@ -33,10 +33,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.Type;
 
 public final class ItemType extends Type {
-	// TODO: Add annotations to map fields to JSON properties.
-	// TODO: Add annotations to indicate the JSON configuration of a static field?
-	// TODO: Remove getters and setters, replaced with public fields?
-
 	// Static fields that are automatically set by GameRegistry via reflection.
 	public static ItemType air;
 	public static ItemType dirt;

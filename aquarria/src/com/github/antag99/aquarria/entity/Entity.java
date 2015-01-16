@@ -33,38 +33,30 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.github.antag99.aquarria.world.World;
 
-public class Entity {
+public abstract class Entity {
+	private World world;
 	private float x, y;
 	private float velocityX, velocityY;
-	private int direction = 1;
-
-	private EntityView<?> view;
-	private EntityType type;
-
-	private World world;
-
+	private int directionX, directionY;
+	private EntityView view;
 	private boolean active = true;
-
 	private Rectangle tmpRectangle = new Rectangle();
-
 	private int health;
 
-	public Entity(EntityType type) {
-		this.type = type;
-		view = createView();
-		health = type.getMaxHealth();
+	public Entity() {
+		health = getMaxHealth();
 	}
 
 	public void update(float delta) {
 		boolean inWater = inWater();
 
-		// Apply gravity
-		velocityY = velocityY - (35f * type.getWeight()) * delta;
+		/* apply gravity to the velocity */
+		velocityY = velocityY - (35f * getWeight()) * delta;
 
-		// It works...
+		/* move entity and detect collisions */
 		float moveX = velocityX * delta * (inWater ? 0.5f : 1f);
 		x += moveX;
-		if (type.isSolid() && inCollision()) {
+		if (isSolid() && inCollision()) {
 			x -= moveX;
 			while (!inCollision())
 				x += Math.signum(moveX) * 0.1f;
@@ -74,7 +66,7 @@ public class Entity {
 
 		float moveY = velocityY * delta * (inWater ? 0.5f : 1f);
 		y += moveY;
-		if (type.isSolid() && inCollision()) {
+		if (isSolid() && inCollision()) {
 			if (velocityY < -50f) {
 				int fallDamage = (int) (-velocityY * 2) - 100;
 				setHealth(Math.max(getHealth() - fallDamage, 0));
@@ -87,11 +79,8 @@ public class Entity {
 			velocityY = 0f;
 		}
 
-		if (velocityX > 0f) {
-			direction = 1;
-		} else if (velocityX < 0f) {
-			direction = -1;
-		}
+		directionX = velocityX > 0f ? 1 : velocityX < 0f ? -1 : directionX;
+		directionY = velocityY > 0f ? 1 : velocityY < 0f ? -1 : directionY;
 
 		view.update(delta);
 	}
@@ -178,37 +167,39 @@ public class Entity {
 		this.velocityY = velocityY;
 	}
 
-	public int getDirection() {
-		return direction;
+	public int getDirectionX() {
+		return directionX;
 	}
 
-	public void setDirection(int direction) {
-		this.direction = direction;
+	public int getDirectionY() {
+		return directionY;
+	}
+
+	public void setDirectionX(int directionX) {
+		this.directionX = directionX;
+	}
+
+	public void setDirectionY(int directionY) {
+		this.directionY = directionY;
 	}
 
 	public float getWidth() {
-		return type.getDefaultWidth();
+		return 0f;
 	}
 
 	public float getHeight() {
-		return type.getDefaultHeight();
+		return 0f;
 	}
 
 	public Rectangle getBounds() {
 		return tmpRectangle.set(x, y, getWidth(), getHeight());
 	}
 
-	public EntityType getType() {
-		return type;
-	}
-
-	public EntityView<?> getView() {
+	public EntityView getView() {
 		return view;
 	}
 
-	protected EntityView<?> createView() {
-		return new EntityView<Entity>(this);
-	}
+	protected abstract EntityView createView();
 
 	public World getWorld() {
 		return world;
@@ -232,5 +223,17 @@ public class Entity {
 
 	public void setHealth(int health) {
 		this.health = health;
+	}
+
+	public int getMaxHealth() {
+		return 0;
+	}
+
+	public float getWeight() {
+		return 1f;
+	}
+
+	public boolean isSolid() {
+		return true;
 	}
 }

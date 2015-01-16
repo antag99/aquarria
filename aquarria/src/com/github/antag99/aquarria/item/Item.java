@@ -95,6 +95,6 @@ public class Item {
 
 	@Override
 	public String toString() {
-		return "Item[type=" + type.getInternalName() + ", stack=" + stack + "]";
+		return "Item[type=" + type.getId() + ", stack=" + stack + "]";
 	}
 }

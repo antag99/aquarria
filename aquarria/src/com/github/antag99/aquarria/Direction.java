@@ -27,29 +27,52 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.world.render;
+package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.github.antag99.aquarria.entity.Entity;
-import com.github.antag99.aquarria.entity.EntityView;
+public enum Direction {
+	// Note that the order is important
+	NORTH(0, 1),
+	NORTHEAST(1, 1),
+	EAST(1, 0),
+	SOUTHEAST(1, -1),
+	SOUTH(0, -1),
+	SOUTHWEST(-1, -1),
+	WEST(-1, 0),
+	NORTHWEST(-1, 1);
 
-public abstract class EntityTypeRenderer<T extends Entity, V extends EntityView<T>> {
-	protected Class<T> entityClass;
+	private static Direction[] values = values();
 
-	public EntityTypeRenderer(Class<T> entityClass) {
-		this.entityClass = entityClass;
+	private int horizontal;
+	private int vertical;
+
+	private Direction(int horizontal, int vertical) {
+		this.horizontal = horizontal;
+		this.vertical = vertical;
 	}
 
-	public Class<T> getEntityClass() {
-		return entityClass;
+	public int getHorizontal() {
+		return horizontal;
 	}
 
-	public void queueAssets(AssetManager assetManager) {
+	public int getVertical() {
+		return vertical;
 	}
 
-	public void getAssets(AssetManager assetManager) {
+	public Direction opposite() {
+		return values[(ordinal() + 4) % values.length];
 	}
 
-	public abstract void renderEntity(Batch batch, V view);
+	public static Direction get(int x, int y) {
+		x = x < 0 ? -1 : x > 0 ? 1 : 0;
+		y = y < 0 ? -1 : y > 0 ? 1 : 0;
+
+		for (Direction direction : values) {
+			if (direction.getHorizontal() == x && direction.getVertical() == y) {
+				return direction;
+			}
+		}
+
+		// (0, 0)
+		return null;
+	}
 }

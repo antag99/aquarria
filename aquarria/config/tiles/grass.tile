@@ -1,8 +1,0 @@
-{
-	"internalName" : "grass",
-	"displayName" : "Grass",
-	"solid" : true,
-	"skin" : "frame/block.json",
-	"skinDirectory" : "images/tiles/grass/",
-	"drop" : "dirt"
-}

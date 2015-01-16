@@ -37,10 +37,10 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.Array;
+import com.github.antag99.aquarria.Direction;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.util.Direction;
 import com.sudoplay.joise.module.Module;
 import com.sudoplay.joise.module.ModuleBasisFunction.BasisType;
 import com.sudoplay.joise.module.ModuleBasisFunction.InterpolationType;
@@ -197,16 +197,6 @@ public class WorldGenerator {
 			}
 		});
 
-		// Find frames...
-		tasks.add((generator, seed) -> {
-			for (int i = 0; i < generator.getWidth(); ++i) {
-				for (int j = 0; j < generator.getHeight(); ++j) {
-					generator.findTileFrame(i, j);
-					generator.findWallFrame(i, j);
-				}
-			}
-		});
-
 		// Set the spawnpoint
 		tasks.add((generator, seed) -> {
 			generator.setSpawnX(generator.getWidth() / 2);
@@ -357,22 +347,6 @@ public class WorldGenerator {
 
 	public void setWallType(int x, int y, WallType type) {
 		world.setWallType(x, y, type);
-	}
-
-	public void findTileFrame(int x, int y) {
-		world.findTileFrame(x, y);
-	}
-
-	public void findTileFrameSquare(int x, int y) {
-		world.findTileFrameSquare(x, y);
-	}
-
-	public void findWallFrame(int x, int y) {
-		world.findWallFrame(x, y);
-	}
-
-	public void findWallFrameSquare(int x, int y) {
-		world.findWallFrameSquare(x, y);
 	}
 
 	public int getWidth() {

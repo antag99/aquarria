@@ -1,9 +1,0 @@
-{
-	"internalName" : "tree",
-	"displayName" : "Tree",
-	"solid" : false,
-	"skin" : "frame/tree.json",
-	"skinDirectory" : "images/tiles/tree/",
-	"style" : "treeFrame",
-	"drop" : "dirt"
-}

@@ -33,25 +33,25 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.event.EventManager;
 
 public abstract class Type {
-	private String internalName;
-	private String displayName;
+	private String id;
+	private String name;
 	private JsonValue config;
 	private EventManager events = new EventManager();
 
-	public String getInternalName() {
-		return internalName;
+	public String getId() {
+		return id;
 	}
 
-	public void setInternalName(String internalName) {
-		this.internalName = internalName;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public String getDisplayName() {
-		return displayName;
+	public String getName() {
+		return name;
 	}
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public JsonValue getConfig() {

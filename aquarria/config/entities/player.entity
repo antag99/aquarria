@@ -1,7 +1,0 @@
-{
-	"internalName" : "player",
-	"displayName" : "Player",
-	"maxHealth" : 400,
-	"width" : 1.25,
-	"height" : 2.625
-}

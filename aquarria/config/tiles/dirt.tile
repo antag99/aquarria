@@ -1,8 +1,0 @@
-{
-	"internalName" : "dirt",
-	"displayName" : "Dirt",
-	"solid" : true,
-	"skin" : "frame/block.json",
-	"skinDirectory" : "images/tiles/dirt/",
-	"drop" : "dirt"
-}

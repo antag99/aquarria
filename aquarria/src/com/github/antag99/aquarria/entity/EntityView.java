@@ -29,17 +29,10 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.entity;
 
-public class EntityView<T extends Entity> {
-	private T entity;
+import com.badlogic.gdx.graphics.g2d.Batch;
 
-	public EntityView(T entity) {
-		this.entity = entity;
-	}
+public interface EntityView {
+	void update(float deltaTime);
 
-	public void update(float delta) {
-	}
-
-	public T getEntity() {
-		return entity;
-	}
+	void render(Batch batch);
 }

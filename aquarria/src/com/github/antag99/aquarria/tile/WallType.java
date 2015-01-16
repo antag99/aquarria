@@ -29,7 +29,7 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.Type;
 import com.github.antag99.aquarria.item.ItemType;
 
@@ -39,9 +39,8 @@ public final class WallType extends Type {
 	public static WallType stone;
 
 	private ItemType drop;
-	private FrameSkin skin;
-	private FrameStyle style;
-	private Rectangle frame = new Rectangle(-0.5f, -0.5f, 2f, 2f);
+	private TileStyle style;
+	private TextureRegion[][] textureSheet;
 
 	public WallType() {
 	}
@@ -54,32 +53,19 @@ public final class WallType extends Type {
 		this.drop = drop;
 	}
 
-	public FrameSkin getSkin() {
-		return skin;
-	}
-
-	public void setSkin(FrameSkin skin) {
-		this.skin = skin;
-	}
-
-	public FrameStyle getStyle() {
+	public TileStyle getStyle() {
 		return style;
 	}
 
-	public void setStyle(FrameStyle style) {
+	public void setStyle(TileStyle style) {
 		this.style = style;
 	}
 
-	/**
-	 * Gets the frame of this wall type. This specifies the
-	 * rendering bounds of a wall, relative to the wall's
-	 * position.
-	 */
-	public Rectangle getFrame() {
-		return frame;
+	public TextureRegion[][] getTextureSheet() {
+		return textureSheet;
 	}
 
-	public void setFrame(Rectangle frame) {
-		this.frame.set(frame);
+	public void setTextureSheet(TextureRegion[][] textureSheet) {
+		this.textureSheet = textureSheet;
 	}
 }
