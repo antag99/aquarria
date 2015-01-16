@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, Anton Gustafsson
+ * Copyright (c) 2014-2015, Anton Gustafsson
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
