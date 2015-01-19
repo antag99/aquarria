@@ -29,9 +29,10 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.Assets;
 import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.TypeLoader;
+import com.github.antag99.aquarria.json.JsonObject;
 
 public class WallTypeLoader extends TypeLoader<WallType> {
 	public WallTypeLoader() {
@@ -39,12 +40,15 @@ public class WallTypeLoader extends TypeLoader<WallType> {
 	}
 
 	@Override
-	public void load(WallType type, JsonValue config) {
-		type.setName(config.getString("displayName", ""));
+	public void load(WallType type, JsonObject config) {
+		type.setStyle(TileStyle.wall);
+		if (config.has("sheet")) {
+			type.setSheet(Assets.createSpriteSheet(config.getString("sheet")));
+		}
 	}
 
 	@Override
-	public void postLoad(WallType type, JsonValue config) {
+	public void postLoad(WallType type, JsonObject config) {
 		if (config.has("drop")) {
 			type.setDrop(GameRegistry.getItemType(config.getString("drop")));
 		}

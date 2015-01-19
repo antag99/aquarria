@@ -29,106 +29,48 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
  * Stores data for a sprite sheet, which is a texture consisting of multiple smaller textures ('sprites').
  * <p>
- * Sprite sheets are used for tile graphics and entity animations (through the use of {@link AnimatedSpriteSheet}).
+ * Sprite sheets are used for tile graphics and entity animations (through the use of {@link SpriteAnimation}).
  */
 public class SpriteSheet {
+	/* the sprite grid */
+	private SpriteGrid grid;
 	/* the sprite matrix */
 	private TextureRegion[][] sprites;
-	/* the amount of sprites on the sheet */
-	private int spriteCountX;
-	private int spriteCountY;
-	/* the offset (in pixels) of the sprites */
-	private int spriteOffsetX;
-	private int spriteOffsetY;
-	/* the size (in pixels) of a single sprite */
-	private int spriteWidth;
-	private int spriteHeight;
-	/* the spacing between sprites */
-	private int spriteSpacingX;
-	private int spriteSpacingY;
 	/* the offset (in pixels) when rendering */
 	private int renderOffsetX;
 	private int renderOffsetY;
 	/* the size (in pixels) when rendering */
 	private int renderWidth;
 	private int renderHeight;
-	/* the tint to apply to rendered sprites */
-	private Color renderTint;
 
-	public SpriteSheet(TextureRegion texture,
-			int spriteCountX, int spriteCountY,
-			int spriteOffsetX, int spriteOffsetY,
-			int spriteWidth, int spriteHeight,
-			int spriteSpacingX, int spriteSpacingY) {
-		this.spriteCountX = spriteCountX;
-		this.spriteCountY = spriteCountY;
-		this.spriteOffsetX = spriteOffsetX;
-		this.spriteOffsetY = spriteOffsetY;
-		this.spriteWidth = spriteWidth;
-		this.spriteHeight = spriteHeight;
+	public SpriteSheet(TextureRegion texture, SpriteGrid grid) {
+		this.grid = grid;
 
 		renderOffsetX = 0;
 		renderOffsetY = 0;
-		renderWidth = spriteWidth;
-		renderHeight = spriteHeight;
-		renderTint = Color.WHITE;
+		renderWidth = grid.getSpriteWidth();
+		renderHeight = grid.getSpriteHeight();
 
-		sprites = new TextureRegion[spriteCountX][spriteCountY];
+		sprites = new TextureRegion[grid.getSpriteCountX()][grid.getSpriteCountY()];
 
-		for (int i = 0; i < spriteCountX; ++i) {
-			for (int j = 0; j < spriteCountY; ++j) {
-				int spriteX = spriteOffsetX + (spriteWidth + spriteSpacingX) * i;
-				int spriteY = spriteOffsetY + (spriteHeight + spriteSpacingY) * j;
+		for (int i = 0; i < grid.getSpriteCountX(); ++i) {
+			for (int j = 0; j < grid.getSpriteCountY(); ++j) {
+				int spriteX = grid.getSpriteOffsetX() + (grid.getSpriteWidth() + grid.getSpriteSpacingX()) * i;
+				int spriteY = grid.getSpriteOffsetY() + (grid.getSpriteHeight() + grid.getSpriteSpacingY()) * j;
 
-				sprites[i][j] = new TextureRegion(texture, spriteX, spriteY, spriteWidth, spriteHeight);
+				sprites[i][j] = new TextureRegion(texture, spriteX, spriteY,
+						grid.getSpriteWidth(), grid.getSpriteHeight());
 			}
 		}
 	}
 
-	/** Gets the amount of sprites on the x axis */
-	public int getSpriteCountX() {
-		return spriteCountX;
-	}
-
-	/** Gets the amount of sprites on the y axis */
-	public int getSpriteCountY() {
-		return spriteCountY;
-	}
-
-	/** Gets the x offset of sprites on the sprite sheet */
-	public int getSpriteOffsetX() {
-		return spriteOffsetX;
-	}
-
-	/** Gets the y offset of sprites on the sprite sheet */
-	public int getSpriteOffsetY() {
-		return spriteOffsetY;
-	}
-
-	/** Gets the x spacing between sprites on the sprite sheet */
-	public int getSpriteSpacingX() {
-		return spriteSpacingX;
-	}
-
-	/** Gets the y spacing between sprites on the sprite sheet */
-	public int getSpriteSpacingY() {
-		return spriteSpacingY;
-	}
-
-	/** Gets the width of a sprite on the sprite sheet */
-	public int getSpriteWidth() {
-		return spriteWidth;
-	}
-
-	/** Gets the height of a sprite on the sprite sheet */
-	public int getSpriteHeight() {
-		return spriteHeight;
+	public SpriteGrid getGrid() {
+		return grid;
 	}
 
 	/** Gets the x offset (in pixels) of rendered sprites */
@@ -179,15 +121,5 @@ public class SpriteSheet {
 	/** Sets the sprite at the given position */
 	public void setSprite(int x, int y, TextureRegion sprite) {
 		sprites[x][y] = sprite;
-	}
-
-	/** Gets the color to tint rendered sprites with */
-	public Color getRenderTint() {
-		return renderTint;
-	}
-
-	/** Sets the color to tint rendered sprites with */
-	public void setRenderTint(Color renderTint) {
-		this.renderTint = renderTint;
 	}
 }

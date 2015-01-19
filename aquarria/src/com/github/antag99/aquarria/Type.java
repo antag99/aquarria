@@ -29,14 +29,12 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.utils.JsonValue;
-import com.github.antag99.aquarria.event.EventManager;
+import com.github.antag99.aquarria.json.JsonObject;
 
 public abstract class Type {
 	private String id;
 	private String name;
-	private JsonValue config;
-	private EventManager events = new EventManager();
+	private JsonObject config;
 
 	public String getId() {
 		return id;
@@ -54,15 +52,11 @@ public abstract class Type {
 		this.name = name;
 	}
 
-	public JsonValue getConfig() {
+	public JsonObject getConfig() {
 		return config;
 	}
 
-	public void setConfig(JsonValue config) {
+	public void setConfig(JsonObject config) {
 		this.config = config;
-	}
-
-	public EventManager getEvents() {
-		return events;
 	}
 }

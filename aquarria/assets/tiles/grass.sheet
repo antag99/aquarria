@@ -1,0 +1,19 @@
+{
+	"texture" : "images/tiles/grass.png",
+
+	"renderOffsetX" : 0,
+	"renderOffsetY" : 0,
+	"renderWidth" : 16,
+	"renderHeight" : 16,
+
+	"grid" : {
+		"spriteOffsetX" : 0,
+		"spriteOffsetY" : 0,
+		"spriteSpacingX" : 2,
+		"spriteSpacingY" : 2,
+		"spriteWidth" : 16,
+		"spriteHeight" : 16,
+		"spriteCountX" : 16,
+		"spriteCountY" : 10
+	}
+}

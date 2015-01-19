@@ -32,7 +32,7 @@ package com.github.antag99.aquarria.tile;
 import com.github.antag99.aquarria.world.World;
 
 public interface TileStyle {
-	public static TileStyle block = new TileStyle() {
+	public static TileStyle tile = new TileStyle() {
 		TileFrame[][] tileFrames = new TileFrame[16][14];
 		{ /* this is an instance initializer */
 			for (int i = 0; i < 16; ++i) {
@@ -67,11 +67,10 @@ public interface TileStyle {
 
 		@Override
 		public TileFrame findFrame(World world, int x, int y) {
-			WallType type = world.getWallType(x, y);
-			boolean mergeTop = y + 1 == world.getHeight() || world.getWallType(x, y + 1) != type;
-			boolean mergeRight = x + 1 == world.getWidth() || world.getWallType(x + 1, y) != type;
-			boolean mergeBottom = y == 0 || world.getWallType(x, y - 1) != type;
-			boolean mergeLeft = x == 0 || world.getWallType(x - 1, y) != type;
+			boolean mergeTop = y + 1 == world.getHeight() || world.getWallType(x, y + 1) != WallType.air;
+			boolean mergeRight = x + 1 == world.getWidth() || world.getWallType(x + 1, y) != WallType.air;
+			boolean mergeBottom = y == 0 || world.getWallType(x, y - 1) != WallType.air;
+			boolean mergeLeft = x == 0 || world.getWallType(x - 1, y) != WallType.air;
 
 			String frame = TileFraming.getBlockFrame(mergeTop,
 					mergeRight, mergeBottom, mergeLeft);

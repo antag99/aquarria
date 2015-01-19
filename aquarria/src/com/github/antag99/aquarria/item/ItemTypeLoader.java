@@ -29,8 +29,10 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.item;
 
-import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.Assets;
+import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.TypeLoader;
+import com.github.antag99.aquarria.json.JsonObject;
 
 public class ItemTypeLoader extends TypeLoader<ItemType> {
 	public ItemTypeLoader() {
@@ -38,29 +40,36 @@ public class ItemTypeLoader extends TypeLoader<ItemType> {
 	}
 
 	@Override
-	public void load(ItemType type, JsonValue config) {
-		type.setName(config.getString("displayName", ""));
-		type.setMaxStack(config.getInt("maxStack", 1));
+	public void load(ItemType type, JsonObject config) {
+		type.setMaxStack(config.getInteger("maxStack", 1));
 		type.setWidth(config.getFloat("width"));
 		type.setHeight(config.getFloat("height"));
 		type.setUsageTime(config.getFloat("usageTime", 0f));
-		type.setUsageAnimationTime(config.getFloat("usageAnimationTime", type.getUsageTime()));
+		type.setAnimation(ItemAnimation.swing); // TODO: This should be changed
+		type.setAnimationTime(config.getFloat("animationTime", type.getUsageTime()));
 		type.setUsageRepeat(config.getBoolean("usageRepeat", false));
-		type.setUsageStyle(ItemUsageStyle.swing); // TODO: This should be changed
 		type.setConsumable(config.getBoolean("consumable", false));
+		type.setTexture(Assets.getTexture(config.getString("texture", "blank.png")));
 	}
 
-	// @Override
-	// public void loadAssets(ItemType type, JsonValue config, AssetManager assetManager) {
-	// if (config.has("texture")) {
-	// assetManager.load(config.getString("texture"), TextureRegion.class);
-	// }
-	// }
-	//
-	// @Override
-	// public void getAssets(ItemType type, JsonValue config, AssetManager assetManager) {
-	// if (config.has("texture")) {
-	// type.setTexture(assetManager.get(config.getString("texture", null), TextureRegion.class));
-	// }
-	// }
+	@Override
+	public void postLoad(ItemType type, JsonObject config) {
+		if (config.has("effect")) {
+			switch (config.getString("effect")) {
+			case "place":
+				if (config.has("tile")) {
+					type.setEffect(new PlaceTileEffect(GameRegistry.getTileType(config.getString("tile"))));
+				} else if (config.has("wall")) {
+					type.setEffect(new PlaceWallEffect(GameRegistry.getWallType(config.getString("wall"))));
+				}
+				break;
+			case "destroyTile":
+				type.setEffect(new DestroyTileEffect());
+				break;
+			case "destroyWall":
+				type.setEffect(new DestroyWallEffect());
+				break;
+			}
+		}
+	}
 }

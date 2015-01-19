@@ -1,0 +1,12 @@
+{
+	"id" : "pickaxe",
+	"name" : "Pickaxe",
+	"width" : 24,
+	"height" : 28,
+	"maxStack" : 1,
+	"texture" : "images/items/pickaxe.png",
+	"effect" : "destroyTile",
+	"usageTime" : 0.3,
+	"consumable" : false,
+	"usageRepeat" : true
+}

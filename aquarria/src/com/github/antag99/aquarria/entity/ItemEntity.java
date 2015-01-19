@@ -59,7 +59,6 @@ public class ItemEntity extends Entity {
 
 	@Override
 	protected EntityView createView() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItemView(this);
 	}
 }

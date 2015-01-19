@@ -109,16 +109,9 @@ public class Aquarria extends Game {
 
 		Gdx.input.setInputProcessor(stage);
 
-		GameRegistry.initialize();
 		Assets.initialize();
+		GameRegistry.initialize();
 		ingameScreen = new IngameScreen(this);
-
-		System.out.print("Loading assets... ");
-
-		ingameScreen.load();
-		ingameScreen.initialize();
-
-		System.out.println("Done!");
 
 		setScreen(ingameScreen);
 	}
@@ -131,6 +124,7 @@ public class Aquarria extends Game {
 	@Override
 	public void dispose() {
 		super.dispose();
+		ingameScreen.dispose();
 		Assets.dispose();
 		batch.dispose();
 		savePreferences();

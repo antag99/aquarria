@@ -38,11 +38,6 @@ import com.github.antag99.aquarria.Direction;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.ItemEntity;
 import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.event.EventManager;
-import com.github.antag99.aquarria.event.TileDestroyEvent;
-import com.github.antag99.aquarria.event.TilePlaceEvent;
-import com.github.antag99.aquarria.event.WallDestroyEvent;
-import com.github.antag99.aquarria.event.WallPlaceEvent;
 import com.github.antag99.aquarria.item.Item;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
@@ -69,8 +64,6 @@ public class World {
 	private float tickCounter;
 	private IntArray activeLiquids;
 
-	private EventManager events;
-
 	// Liquid simulation uses a fixed time step,
 	// as it is quite hard to interpolate liquid movement
 	// based on the time since the last frame.
@@ -83,8 +76,6 @@ public class World {
 
 		tiles = new TileType[width * height];
 		walls = new WallType[width * height];
-
-		events = new EventManager();
 
 		clear();
 	}
@@ -380,16 +371,9 @@ public class World {
 	public boolean destroyTile(int x, int y, PlayerEntity player) {
 		TileType type = getTileType(x, y);
 		if (type != TileType.air) {
-			// TODO: Add some other way to handle tile/wall drops
 			if (player != null && type.getDrop() != null) {
 				dropItem(new Item(type.getDrop()), x, y);
 			}
-
-			TileDestroyEvent event = new TileDestroyEvent();
-			event.setPlayer(player);
-			event.setTileX(x);
-			event.setTileY(y);
-			getEvents().fire(event);
 
 			setTileType(x, y, TileType.air);
 			clearAttachment(x, y);
@@ -404,12 +388,6 @@ public class World {
 		if (getTileType(x, y) == TileType.air) {
 			setTileType(x, y, type);
 			checkAttachment(x, y, player);
-
-			TilePlaceEvent event = new TilePlaceEvent();
-			event.setPlayer(player);
-			event.setTileX(x);
-			event.setTileY(y);
-			getEvents().fire(event);
 
 			return true;
 		}
@@ -432,12 +410,6 @@ public class World {
 				dropItem(new Item(type.getDrop()), x, y);
 			}
 
-			WallDestroyEvent event = new WallDestroyEvent();
-			event.setPlayer(player);
-			event.setTileX(x);
-			event.setTileY(y);
-			getEvents().fire(event);
-
 			setWallType(x, y, WallType.air);
 
 			return true;
@@ -448,12 +420,6 @@ public class World {
 	public boolean placeWall(int x, int y, WallType type, PlayerEntity player) {
 		if (getWallType(x, y) == WallType.air) {
 			setWallType(x, y, type);
-
-			WallPlaceEvent event = new WallPlaceEvent();
-			event.setPlayer(player);
-			event.setTileX(x);
-			event.setTileY(y);
-			getEvents().fire(event);
 
 			return true;
 		}
@@ -483,9 +449,5 @@ public class World {
 				entities.removeIndex(i);
 			}
 		}
-	}
-
-	public EventManager getEvents() {
-		return events;
 	}
 }

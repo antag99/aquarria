@@ -97,4 +97,8 @@ public class Item {
 	public String toString() {
 		return "Item[type=" + type.getId() + ", stack=" + stack + "]";
 	}
+
+	public static Item createMaxStack(ItemType type) {
+		return new Item(type, type.getMaxStack());
+	}
 }

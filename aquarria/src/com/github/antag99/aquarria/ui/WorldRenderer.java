@@ -42,6 +42,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
+import com.github.antag99.aquarria.Assets;
+import com.github.antag99.aquarria.SpriteSheet;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.EntityView;
 import com.github.antag99.aquarria.tile.TileFrame;
@@ -62,6 +64,11 @@ public class WorldRenderer extends Widget {
 
 	public WorldRenderer() {
 		setTouchable(Touchable.disabled);
+
+		lightTexture = Assets.getTexture("blank.png");
+		TextureRegion waterTexture = Assets.getTexture("images/tiles/water.png");
+		waterTopTexture = new TextureRegion(waterTexture, 0, 0, waterTexture.getRegionWidth(), 4);
+		waterFullTexture = new TextureRegion(waterTexture, 0, 4, waterTexture.getRegionWidth(), waterTexture.getRegionHeight() - 4);
 	}
 
 	public void setDrawEntityBoxes(boolean drawEntityBoxes) {
@@ -122,9 +129,10 @@ public class WorldRenderer extends Widget {
 
 				if (type != WallType.air) {
 					TileStyle style = type.getStyle();
-					TextureRegion[][] sheet = type.getTextureSheet();
+					SpriteSheet sheet = type.getSheet();
 					TileFrame frame = style.findFrame(world, i, j);
-					batch.draw(sheet[frame.getX()][frame.getY()], i, j, 1f, 1f);
+					batch.draw(sheet.getSprite(frame.getX(), frame.getY()),
+							i - 0.5f, j - 0.5f, 2f, 2f);
 				}
 			}
 		}
@@ -137,9 +145,9 @@ public class WorldRenderer extends Widget {
 
 				if (type != TileType.air) {
 					TileStyle style = type.getStyle();
-					TextureRegion[][] sheet = type.getTextureSheet();
+					SpriteSheet sheet = type.getSheet();
 					TileFrame frame = style.findFrame(world, i, j);
-					batch.draw(sheet[frame.getX()][frame.getY()], i, j, 1f, 1f);
+					batch.draw(sheet.getSprite(frame.getX(), frame.getY()), i, j, 1f, 1f);
 				}
 			}
 		}

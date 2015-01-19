@@ -34,38 +34,28 @@ import java.util.List;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
-import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.github.antag99.aquarria.event.Event;
-import com.github.antag99.aquarria.event.ScriptEventListener;
 import com.github.antag99.aquarria.item.ItemType;
 import com.github.antag99.aquarria.item.ItemTypeLoader;
-import com.github.antag99.aquarria.lua.LuaEnvironment;
-import com.github.antag99.aquarria.lua.LuaInterface;
-import com.github.antag99.aquarria.lua.LuaObject;
+import com.github.antag99.aquarria.json.JsonObject;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.TileTypeLoader;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.tile.WallTypeLoader;
 
 public final class GameRegistry {
-	private GameRegistry() {
+	private GameRegistry() { /* don't instantiate */
 		throw new AssertionError();
 	}
 
 	private static ObjectMap<Class<? extends Type>, ObjectMap<String, Type>> registeredTypes = new ObjectMap<>();
 	private static ObjectMap<String, TypeLoader<?>> typeLoadersByExtension = new ObjectMap<>();
 	private static ObjectMap<Class<? extends Type>, TypeLoader<?>> typeLoadersByClass = new ObjectMap<>();
-
-	private static LuaEnvironment luaEnvironment;
 
 	private static ObjectMap<String, Type> getRegisteredTypes(Class<? extends Type> typeClass) {
 		ObjectMap<String, Type> types = registeredTypes.get(typeClass);
@@ -123,25 +113,24 @@ public final class GameRegistry {
 		return getTypes(WallType.class);
 	}
 
-	private static JsonReader jsonReader = new JsonReader();
-
 	@SuppressWarnings("unchecked")
 	private static void loadTypes() {
-		// Source: http://stackoverflow.com/a/9571146
+		/* http://stackoverflow.com/a/9571146 */
 		List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
 		classLoadersList.add(ClasspathHelper.contextClassLoader());
 		classLoadersList.add(ClasspathHelper.staticClassLoader());
 
-		// TODO: Limit the resources that are scanned?
+		/* TODO: limit the resources that are scanned? */
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.setScanners(new ResourcesScanner())
 				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0]))));
 
+		/* find type configuration files */
 		for (String typePath : reflections.getResources((resourceName) -> {
 			return typeLoadersByExtension.containsKey(new FileHandle(resourceName).extension());
 		})) {
 			FileHandle file = Gdx.files.internal(typePath);
-			JsonValue config = jsonReader.parse(file);
+			JsonObject config = Util.parseJson(file);
 
 			TypeLoader<?> loader = typeLoadersByExtension.get(file.extension());
 			Type typeInstance = null;
@@ -156,30 +145,7 @@ public final class GameRegistry {
 			typeInstance.setName(config.getString("name"));
 			typeInstance.setConfig(config);
 
-			if (config.has("events")) {
-				for (JsonValue event : config.get("events")) {
-					Class<?> eventClass;
-					String handlerScript;
-
-					try {
-						eventClass = Class.forName(event.name);
-					} catch (ClassNotFoundException ex) {
-						throw new RuntimeException("Event class " + event.name + " not found");
-					}
-
-					if (!Event.class.isAssignableFrom(eventClass)) {
-						throw new RuntimeException(eventClass.getName() + " is not a subclass of " + Event.class.getName());
-					}
-
-					handlerScript = event.asString();
-					if (handlerScript == null) {
-						throw new RuntimeException("Invalid handler; not a string!");
-					}
-
-					LuaObject handler = luaEnvironment.loadScript(handlerScript + ".lua").call().get(0);
-					typeInstance.getEvents().registerListener(new ScriptEventListener<Event>(handler, (Class<Event>) eventClass, 0f));
-				}
-			}
+			System.out.println(typeInstance + "=" + typeInstance.getId());
 
 			((TypeLoader<Type>) loader).load(typeInstance, config);
 
@@ -195,64 +161,20 @@ public final class GameRegistry {
 	}
 
 	public static void initialize() {
-		/* create lua environment and register all aquarria classes */
-		luaEnvironment = new LuaEnvironment();
-
-		// Source: http://stackoverflow.com/a/9571146
-		List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
-		classLoadersList.add(ClasspathHelper.contextClassLoader());
-		classLoadersList.add(ClasspathHelper.staticClassLoader());
-
-		Reflections reflections = new Reflections(new ConfigurationBuilder()
-				.setScanners(new SubTypesScanner(false /* don't exclude Object.class */), new ResourcesScanner())
-				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
-				.filterInputsBy(new FilterBuilder()
-						/** Include aquarria classes */
-						.include(FilterBuilder.prefix("com.github.antag99.aquarria"))
-						/** Exclude tests and benchmarks in eclipse */
-						.exclude(FilterBuilder.prefix("com.github.antag99.aquarria.tests"))
-						.exclude(FilterBuilder.prefix("com.github.antag99.aquarria.benchmarks"))
-						/** Exclude anonymous inner classes */
-						.exclude(".*\\$\\d+.*")));
-
-		for (String type : reflections.getAllTypes()) {
-			// FIXME: This dosen't seem to include enumerations; find a workaround
-			try {
-				Class<?> clazz = Class.forName(type);
-				luaEnvironment.setGlobal(clazz.getSimpleName(), LuaInterface.create(clazz));
-			} catch (ClassNotFoundException ex) {
-				// Just shouldn't happen
-				throw new AssertionError(ex);
-			}
-		}
-
-		luaEnvironment.setGlobal("Direction", LuaInterface.create(Direction.class));
-
 		registerTypeLoader(new ItemTypeLoader());
 		registerTypeLoader(new TileTypeLoader());
 		registerTypeLoader(new WallTypeLoader());
 
 		loadTypes();
 
-		// Set static convenience fields in type classes
-		for (Class<? extends Type> typeClass : registeredTypes.keys()) {
-			for (Type type : getTypes(typeClass)) {
-				try {
-					typeClass.getField(type.getId()).set(null, type);
-				} catch (Exception ex) {
-					ex.printStackTrace();
-				}
-			}
-		}
+		ItemType.air = getItemType("air");
+		TileType.air = getTileType("air");
+		WallType.air = getWallType("air");
 	}
 
 	public static void clear() {
 		typeLoadersByClass.clear();
 		typeLoadersByExtension.clear();
 		registeredTypes.clear();
-	}
-
-	public static LuaEnvironment getLuaEnvironment() {
-		return luaEnvironment;
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, Anton Gustafsson
+ * Copyright (c) 2014-2015, Anton Gustafsson
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,8 +32,6 @@ package com.github.antag99.aquarria.tests;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.utils.ObjectSet;
 import com.github.antag99.aquarria.Direction;
 
 public class DirectionTests {
@@ -55,16 +53,6 @@ public class DirectionTests {
 			Direction opposite = direction.opposite();
 			Assert.assertEquals(direction.name() + "'s opposite direction is incorrect", 0, direction.getHorizontal() + opposite.getHorizontal());
 			Assert.assertEquals(direction.name() + "'s opposite direction is incorrect", 0, direction.getVertical() + opposite.getVertical());
-		}
-	}
-
-	@Test
-	public void testDuplicateDirections() {
-		// Quick hack to check that no duplicate directions existed
-		ObjectSet<GridPoint2> existingDirections = new ObjectSet<GridPoint2>();
-		for (Direction direction : Direction.values()) {
-			Assert.assertTrue(direction.name() + " is duplicate", existingDirections.add(
-					new GridPoint2(direction.getHorizontal(), direction.getVertical())));
 		}
 	}
 }

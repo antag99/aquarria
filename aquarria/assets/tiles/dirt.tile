@@ -2,5 +2,6 @@
 	"id" : "dirt",
 	"name" : "Dirt",
 	"solid" : true,
-	"render" : "dirt.render"
+	"sheet" : "tiles/dirt.sheet",
+	"drop" : "dirt"
 }

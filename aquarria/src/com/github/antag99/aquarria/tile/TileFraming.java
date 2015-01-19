@@ -42,9 +42,9 @@ public final class TileFraming {
 		case "empty": return 9;
 		case "full": return 1;
 		case "topStrip": return 6;
-		case "rightStrip": return 12;
+		case "rightStrip": return 9;
 		case "bottomStrip": return 6;
-		case "leftStrip": return 9;
+		case "leftStrip": return 12;
 		case "topLeftCorner": return 0;
 		case "topRightCorner": return 1;
 		case "bottomLeftCorner": return 0;
@@ -53,6 +53,8 @@ public final class TileFraming {
 		case "rightEdge": return 4;
 		case "bottomEdge": return 2;
 		case "leftEdge": return 0;
+		case "verticalStrip": return 5;
+		case "horizontalStrip": return 6;
 		default:
 			throw new IllegalArgumentException(frameName + " not found");
 		}
@@ -67,9 +69,9 @@ public final class TileFraming {
 		switch(frameName) {
 		case "empty": return 3;
 		case "full": return 1;
-		case "topStrip": return 0;
+		case "topStrip": return 3;
 		case "rightStrip": return 0;
-		case "bottomStrip": return 3;
+		case "bottomStrip": return 0;
 		case "leftStrip": return 0;
 		case "topLeftCorner": return 3;
 		case "topRightCorner": return 3;
@@ -79,6 +81,8 @@ public final class TileFraming {
 		case "rightEdge": return 0;
 		case "bottomEdge": return 2;
 		case "leftEdge": return 0;
+		case "verticalStrip": return 0;
+		case "horizontalStrip": return 4;
 		default:
 			throw new IllegalArgumentException(frameName + " not found");
 		}

@@ -1,0 +1,6 @@
+{
+	"id" : "stone",
+	"name" : "Stone",
+	"sheet" : "walls/stone.sheet",
+	"drop" : "stoneWall"
+}

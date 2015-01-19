@@ -33,21 +33,17 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.Assets;
+import com.github.antag99.aquarria.SpriteAnimation;
+import com.github.antag99.aquarria.entity.PlayerEntity.PlayerState;
 import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.item.ItemUsageStyle;
+import com.github.antag99.aquarria.item.ItemAnimation;
 import com.github.antag99.aquarria.world.World;
 
 public class PlayerView implements EntityView {
 	private PlayerEntity player;
 	private float animationCounter;
-
-	private int bodyFrame;
-	private int legFrame;
-
-	private float useRotation;
-	private float useOffsetX;
-	private float useOffsetY;
+	private SpriteAnimation animation = null;
+	private PlayerState knownState = null;
 
 	public PlayerView(PlayerEntity player) {
 		this.player = player;
@@ -55,121 +51,88 @@ public class PlayerView implements EntityView {
 
 	@Override
 	public void update(float delta) {
-		animationCounter += Math.abs(player.getVelocityX()) * delta;
+		if (knownState != player.getState()) {
+			System.out.println("resetting state");
+			knownState = player.getState();
+			animationCounter = 0f;
 
-		boolean advance = animationCounter > 0.4f;
-		if (advance)
-			animationCounter -= 0.4f;
-
-		if (!player.isGrounded()) {
-			legFrame = 5;
-			bodyFrame = 5;
-		} else if (player.getVelocityX() != 0f) {
-			if (legFrame < 7) {
-				legFrame = 7;
+			switch (knownState) {
+			case JUMPING:
+				animation = Assets.playerJump;
+				break;
+			case STANDING:
+				animation = Assets.playerStand;
+				break;
+			case WALKING:
+				animation = Assets.playerWalk;
+				break;
 			}
-
-			if (advance) {
-				legFrame++;
-
-				if (legFrame > 19) {
-					legFrame = 7;
-				}
-
-				bodyFrame = legFrame;
-			}
-		} else {
-			legFrame = 0;
-			bodyFrame = 0;
 		}
 
-		if (player.isUsingItem()) {
-			ItemType usedItemType = player.getUsedItem().getType();
-			ItemUsageStyle style = usedItemType.getUsageStyle();
-			float usageProgress = (player.getUseTime() % usedItemType.getUsageAnimationTime()) / usedItemType.getUsageAnimationTime();
-
-			useOffsetX = style.getUsedItemOffsetX(this, usageProgress);
-			useOffsetY = style.getUsedItemOffsetY(this, usageProgress);
-			useRotation = style.getUsedItemRotation(this, usageProgress);
-			bodyFrame = style.getPlayerBodyFrame(this, usageProgress);
+		if (knownState == PlayerState.WALKING) {
+			delta *= Math.abs(player.getVelocityX());
 		}
+
+		animationCounter += delta;
 	}
 
 	@Override
 	public void render(Batch batch) {
-		float centerX = player.getX() + player.getWidth() / 2f;
-		float centerY = player.getY() + player.getHeight() / 2f;
+		float x = player.getX();
+		float y = player.getY();
+		float width = player.getWidth();
+		float height = player.getHeight();
+		float originX = width / 2f;
+		float originY = height / 2f;
 
-		float scaleX = 40f / (player.getWidth() * World.PIXELS_PER_METER);
-		float scaleY = 56f / (player.getHeight() * World.PIXELS_PER_METER);
+		/* compute the scale to render the player at - this is the original player sprite scale */
+		float scaleX = (Assets.playerGrid.getSpriteWidth() / World.PIXELS_PER_METER) / player.getWidth();
+		float scaleY = (Assets.playerGrid.getSpriteHeight() / World.PIXELS_PER_METER) / player.getHeight();
 
-		float x = centerX - player.getWidth() * 0.5f * scaleX;
-		float y = centerY - player.getHeight() * 0.5f * scaleY;
+		/* flip the sprite on the x axis based on the players direction */
+		scaleX = scaleX * player.getDirectionX();
 
-		float width = player.getWidth() * scaleX;
-		float height = player.getHeight() * scaleY;
+		/* using an item replaces the body animation */
+		SpriteAnimation bodyAnimation = animation;
+		float bodyAnimationCounter = animationCounter;
 
-		boolean flip = player.getDirectionX() == -1;
+		if (player.isUsingItem()) {
+			bodyAnimation = player.getUsedItem().getType().getAnimation().getBodyAnimation(player);
+			float animationTime = player.getUsedItem().getType().getAnimationTime();
+			bodyAnimationCounter = (player.getUseTime() % animationTime) / animationTime;
+		}
 
 		batch.setColor(255 / 255f, 125 / 255f, 90 / 255f, 1f);
-		batch.draw(setFlip(Assets.headFrames[getBodyFrame()], flip), x, y, width, height);
+		batch.draw(animation.getFrame(Assets.playerHeadSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
 		batch.setColor(105 / 255f, 90 / 255f, 75 / 255f, 1f);
-		batch.draw(setFlip(Assets.eyesFrames[getBodyFrame()], flip), x, y, width, height);
+		batch.draw(animation.getFrame(Assets.playerEyesSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
 		batch.setColor(Color.WHITE);
-		batch.draw(setFlip(Assets.eyeWhitesFrames[getBodyFrame()], flip), x, y, width, height);
+		batch.draw(animation.getFrame(Assets.playerEyeWhitesSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
 		batch.setColor(255 / 255f, 230 / 255f, 175 / 255f, 1f);
-		batch.draw(setFlip(Assets.pantsFrames[getLegFrame()], flip), x, y, width, height);
+		batch.draw(animation.getFrame(Assets.playerPantsSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
 		batch.setColor(160 / 255f, 180 / 255f, 215 / 255f, 1f);
-		batch.draw(setFlip(Assets.undershirtFrames[getBodyFrame()], flip), x, y, width, height);
+		batch.draw(bodyAnimation.getFrame(Assets.playerUndershirtSheet, bodyAnimationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
 		batch.setColor(215 / 255f, 90 / 255f, 55 / 255f, 1f);
-		batch.draw(setFlip(Assets.hairFrames[Math.max(getBodyFrame() - 6, 0)], flip), x, y, width, height);
+		batch.draw(animation.getFrame(Assets.playerHairSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
 		batch.setColor(175 / 255f, 165 / 255f, 140 / 255f, 1f);
-		batch.draw(setFlip(Assets.shirtFrames[getBodyFrame()], flip), x, y, width, height);
+		batch.draw(bodyAnimation.getFrame(Assets.playerShirtSheet, bodyAnimationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
 		batch.setColor(160 / 255f, 105 / 255f, 60 / 255f, 1f);
-		batch.draw(setFlip(Assets.shoesFrames[getLegFrame()], flip), x, y, width, height);
+		batch.draw(animation.getFrame(Assets.playerShoesSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
 
 		if (player.isUsingItem()) {
 			Item item = player.getUsedItem();
+			ItemAnimation animation = item.getType().getAnimation();
 			TextureRegion itemTexture = item.getType().getTexture();
-			float itemOffsetX = getUseOffsetX();
-			float itemOffsetY = getUseOffsetY();
-			float itemRotation = getUseRotation();
+
+			float useOffsetX = animation.getHeldItemOffsetX(player);
+			float useOffsetY = animation.getHeldItemOffsetY(player);
+			float useRotation = animation.getHeldItemRotation(player);
 
 			batch.setColor(Color.WHITE);
-			batch.draw(itemTexture, player.getX() + itemOffsetX, player.getY() + itemOffsetY, 0f, 0f,
+			batch.draw(itemTexture, player.getX() + useOffsetX, player.getY() + useOffsetY, 0f, 0f,
 					item.getType().getWidth() / World.PIXELS_PER_METER,
 					item.getType().getHeight() / World.PIXELS_PER_METER,
-					1f, 1f, itemRotation);
+					1f, 1f, useRotation);
 		}
-	}
-
-	private TextureRegion setFlip(TextureRegion texture, boolean flip) {
-		if (texture.isFlipX() != flip)
-			texture.flip(true, false);
-		return texture;
-	}
-
-	public int getBodyFrame() {
-		return bodyFrame;
-	}
-
-	public int getLegFrame() {
-		return legFrame;
-	}
-
-	public float getUseRotation() {
-		return useRotation;
-	}
-
-	public float getUseOffsetX() {
-		return useOffsetX;
-	}
-
-	public float getUseOffsetY() {
-		return useOffsetY;
-	}
-
-	public PlayerEntity getPlayer() {
-		return player;
 	}
 }

@@ -32,12 +32,14 @@ package com.github.antag99.aquarria.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.github.antag99.aquarria.Aquarria;
+import com.github.antag99.aquarria.Assets;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
@@ -60,27 +62,11 @@ public class IngameScreen extends AquarriaScreen {
 
 	public IngameScreen(Aquarria aquarria) {
 		super(aquarria);
-	}
 
-	@Override
-	public void load() {
-		super.load();
-
-		// SkinParameter skinParameter = new SkinParameter("images/ui/ui.atlas");
-		// AssetManager assetManager = aquarria.getAssetManager();
-		// assetManager.load("skins/ingame.json", Skin.class, skinParameter);
+		TextureAtlas atlas = new TextureAtlas(Assets.findFile("images/ui/ui.atlas"));
+		skin = new Skin(Assets.findFile("ingameskin.json"), atlas);
 
 		worldRenderer = new WorldRenderer();
-		// worldRenderer.queueAssets(assetManager);
-	}
-
-	@Override
-	public void initialize() {
-		super.initialize();
-
-		// AssetManager assetManager = aquarria.getAssetManager();
-		// skin = assetManager.get("skins/ingame.json");
-		// worldRenderer.getAssets(assetManager);
 
 		world = new World(1024, 512);
 		worldGenerator = new WorldGenerator(world, MathUtils.random.nextLong());
@@ -144,7 +130,6 @@ public class IngameScreen extends AquarriaScreen {
 			player.setWorldFocus(null);
 		}
 
-		// if (!Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT) && !Gdx.input.isKeyPressed(Input.Keys.HOME)) {
 		if (player.getWorldFocus() != null) {
 			if (Gdx.input.justTouched()) {
 				if (!player.getRepeatUsingItem()) {
@@ -164,15 +149,6 @@ public class IngameScreen extends AquarriaScreen {
 			player.setUseTime(0f);
 			player.setUsedItem(null);
 		}
-		// } else if (player.getWorldFocus() != null) {
-		// int tileX = (int) player.getWorldFocus().x;
-		// int tileY = (int) player.getWorldFocus().y;
-		// if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-		// world.setLiquid(tileX, tileY, 255);
-		// } else if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-		// world.setLiquid(tileX, tileY, 0);
-		// }
-		// }
 	}
 
 	@Override
@@ -190,5 +166,10 @@ public class IngameScreen extends AquarriaScreen {
 		Stage stage = aquarria.getStage();
 		stage.setKeyboardFocus(ingameInterface);
 		stage.setScrollFocus(ingameInterface);
+	}
+
+	@Override
+	public void dispose() {
+		skin.dispose();
 	}
 }

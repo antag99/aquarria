@@ -30,117 +30,36 @@
 package com.github.antag99.aquarria;
 
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter.OutputType;
+import com.github.antag99.aquarria.json.JsonArray;
+import com.github.antag99.aquarria.json.JsonObject;
+import com.github.antag99.aquarria.json.JsonParser;
 
-public class Util {
-	public static JsonValue readJson(FileHandle file) {
-		return new JsonReader().parse(file);
+public final class Util {
+	private Util() { /* don't instantiate */
 	}
 
-	public static void writeJson(JsonValue value, FileHandle file) {
-		file.writeString(value.prettyPrint(OutputType.json, 0), false);
+	public static JsonObject parseJson(FileHandle file) {
+		return new JsonParser(file).parse();
 	}
 
-	public static TextureRegion[] splitVertically(TextureRegion target, int count) {
-		TextureRegion[] result = new TextureRegion[count];
-		int width = target.getRegionWidth();
-		int height = target.getRegionHeight() / count;
+	public static Rectangle createRectangle(JsonArray array) {
+		Rectangle rectangle = new Rectangle();
+		rectangle.x = array.getFloat(0);
+		rectangle.y = array.getFloat(1);
+		rectangle.width = array.getFloat(2);
+		rectangle.height = array.getFloat(3);
 
-		for (int i = 0; i < count; ++i) {
-			result[i] = new TextureRegion(target, 0, i * height, width, height);
-		}
-
-		return result;
+		return rectangle;
 	}
 
-	public static Pixmap[] splitVertically(Pixmap target, int count) {
-		Pixmap[] result = new Pixmap[count];
-		int width = target.getWidth();
-		int height = target.getHeight() / count;
+	public static Color createColor(JsonArray array) {
+		float r = array.getFloat(0);
+		float g = array.getFloat(1);
+		float b = array.getFloat(2);
+		float a = array.getFloat(3, 1f);
 
-		for (int i = 0; i < count; ++i) {
-			result[i] = new Pixmap(width, height, Format.RGBA8888);
-			result[i].drawPixmap(target, 0, 0, 0, i * height, width, height);
-		}
-
-		return result;
-	}
-
-	public static Pixmap resizeCanvas(Pixmap pixmap, int width, int height) {
-		Pixmap result = new Pixmap(width, height, pixmap.getFormat());
-		result.drawPixmap(pixmap, 0, 0, 0, 0, Math.min(pixmap.getWidth(), width), Math.min(pixmap.getHeight(), height));
-		return result;
-	}
-
-	public static Pixmap rotatePixmap(Pixmap pixmap, float degrees) {
-		Pixmap result = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), pixmap.getFormat());
-
-		float cos = MathUtils.cosDeg(degrees);
-		float sin = MathUtils.sinDeg(degrees);
-
-		for (int i = 0; i < pixmap.getWidth(); ++i) {
-			for (int j = 0; j < pixmap.getHeight(); ++j) {
-				int srcX = (int) (cos * i + sin * j);
-				int srcY = (int) (-sin * i + cos * j);
-
-				result.drawPixel(i, j, pixmap.getPixel(srcX, srcY));
-			}
-		}
-
-		return result;
-	}
-
-	public static Pixmap flipPixmap(Pixmap pixmap, boolean flipX, boolean flipY) {
-		Pixmap result = new Pixmap(pixmap.getWidth(), pixmap.getHeight(), pixmap.getFormat());
-
-		for (int i = 0; i < pixmap.getWidth(); ++i) {
-			for (int j = 0; j < pixmap.getHeight(); ++j) {
-				int srcX = i;
-				int srcY = j;
-
-				if (flipX)
-					srcX = pixmap.getWidth() - srcX - 1;
-				if (flipY)
-					srcY = pixmap.getHeight() - srcY - 1;
-
-				result.drawPixel(i, j, pixmap.getPixel(srcX, srcY));
-			}
-		}
-
-		return result;
-	}
-
-	public static void forceLoad(Class<?> clazz) {
-		if (clazz == null) {
-			throw new NullPointerException();
-		}
-
-		try {
-			Class.forName(clazz.getName(), true, clazz.getClassLoader());
-		} catch (Exception ex) {
-			throw new AssertionError(ex);
-		}
-	}
-
-	public static Rectangle asRectangle(JsonValue value) {
-		if (!value.isArray()) {
-			throw new IllegalArgumentException("array expected");
-		}
-
-		float[] bounds = value.asFloatArray();
-
-		if (bounds.length != 4) {
-			throw new IllegalArgumentException("Improper array length, expected 4 elements: "
-					+ "x, y, width, height; got " + bounds.length + " elements.");
-		}
-
-		return new Rectangle(bounds[0], bounds[1], bounds[2], bounds[3]);
+		return new Color(r, g, b, a);
 	}
 }

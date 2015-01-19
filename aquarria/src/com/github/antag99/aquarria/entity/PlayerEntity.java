@@ -32,15 +32,23 @@ package com.github.antag99.aquarria.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
-import com.github.antag99.aquarria.event.BeginUseItemEvent;
-import com.github.antag99.aquarria.event.CanUseItemEvent;
-import com.github.antag99.aquarria.event.UpdateUseItemEvent;
-import com.github.antag99.aquarria.event.UseItemEvent;
+import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.item.Inventory;
 import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.item.ItemType;
 
 public class PlayerEntity extends Entity {
+	/**
+	 * States that the player can be in. Note that the player can use
+	 * an item anytime, so that is a separate flag.
+	 */
+	public enum PlayerState {
+		STANDING,
+		WALKING,
+		JUMPING;
+	}
+
+	private PlayerState state = PlayerState.STANDING;
+
 	private Inventory hotbar;
 	private Inventory inventory;
 	private Vector2 worldFocus = new Vector2();
@@ -57,12 +65,12 @@ public class PlayerEntity extends Entity {
 		hotbar = new Inventory(10);
 		inventory = new Inventory(40);
 
-		hotbar.addItem(new Item(ItemType.pickaxe));
-		hotbar.addItem(new Item(ItemType.hammer));
-		hotbar.addItem(new Item(ItemType.dirt, ItemType.dirt.getMaxStack()));
-		hotbar.addItem(new Item(ItemType.stone, ItemType.stone.getMaxStack()));
-		hotbar.addItem(new Item(ItemType.dirtWall, ItemType.dirtWall.getMaxStack()));
-		hotbar.addItem(new Item(ItemType.stoneWall, ItemType.stoneWall.getMaxStack()));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("pickaxe")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("hammer")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("dirt")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("stone")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("dirtWall")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("stoneWall")));
 	}
 
 	@Override
@@ -72,7 +80,7 @@ public class PlayerEntity extends Entity {
 		boolean jump = Gdx.input.isKeyJustPressed(Input.Keys.SPACE);
 
 		if (moveLeft && !moveRight) {
-			setVelocityX(Math.min(getVelocityX(), 4f));
+			setVelocityX(Math.min(getVelocityX(), -4f));
 			setVelocityX(Math.max(getVelocityX() - 5f * delta, -12f));
 		} else if (moveRight && !moveLeft) {
 			setVelocityX(Math.max(getVelocityX(), 4f));
@@ -90,6 +98,16 @@ public class PlayerEntity extends Entity {
 		}
 
 		super.update(delta);
+
+		if (!isGrounded()) {
+			state = PlayerState.JUMPING;
+		} else {
+			if (getVelocityX() == 0f) {
+				state = PlayerState.STANDING;
+			} else {
+				state = PlayerState.WALKING;
+			}
+		}
 
 		for (Entity otherEntity : getWorld().getEntities()) {
 			if (otherEntity instanceof ItemEntity) {
@@ -118,21 +136,11 @@ public class PlayerEntity extends Entity {
 				// Set to true again if the item starts being used
 				repeatUsingItem = false;
 
-				if (!usedItem.isEmpty()) {
-					CanUseItemEvent canUseItemEvent = new CanUseItemEvent();
-					canUseItemEvent.setPlayer(this);
-					canUseItemEvent.setItem(usedItem);
-					usedItem.getType().getEvents().fire(canUseItemEvent);
+				if (!usedItem.isEmpty() && usedItem.getType().getEffect() != null) {
+					usingItem = true;
+					repeatUsingItem = true;
 
-					if (!canUseItemEvent.isHandled()) {
-						usingItem = true;
-						repeatUsingItem = true;
-
-						BeginUseItemEvent beginUseItemEvent = new BeginUseItemEvent();
-						beginUseItemEvent.setPlayer(this);
-						beginUseItemEvent.setItem(usedItem);
-						usedItem.getType().getEvents().fire(beginUseItemEvent);
-					}
+					/* begin using the item */
 				} else {
 					usingItem = false;
 					repeatUsingItem = false;
@@ -141,19 +149,10 @@ public class PlayerEntity extends Entity {
 
 			if (usingItem) {
 				useTime += delta;
-				UpdateUseItemEvent updateUseItemEvent = new UpdateUseItemEvent();
-				updateUseItemEvent.setPlayer(this);
-				updateUseItemEvent.setItem(usedItem);
-				updateUseItemEvent.setDelta(delta);
-				usedItem.getType().getEvents().fire(updateUseItemEvent);
 
 				if (useTime % usedItem.getType().getUsageTime() < delta) {
-					UseItemEvent useItemEvent = new UseItemEvent();
-					useItemEvent.setPlayer(this);
-					useItemEvent.setItem(usedItem);
-					usedItem.getType().getEvents().fire(useItemEvent);
-
-					if (useItemEvent.isHandled() && usedItem.getType().isConsumable()) {
+					if (usedItem.getType().getEffect().useItem(usedItem, this) &&
+							usedItem.getType().isConsumable()) {
 						usedItem.setStack(usedItem.getStack() - 1);
 					}
 
@@ -167,6 +166,10 @@ public class PlayerEntity extends Entity {
 				useTime = 0f;
 			}
 		}
+	}
+
+	public PlayerState getState() {
+		return state;
 	}
 
 	public Inventory getHotbar() {
@@ -246,13 +249,12 @@ public class PlayerEntity extends Entity {
 	}
 
 	@Override
-	public int getHealth() {
+	public int getMaxHealth() {
 		return 400;
 	}
 
 	@Override
 	protected EntityView createView() {
-		// TODO Auto-generated method stub
-		return null;
+		return new PlayerView(this);
 	}
 }

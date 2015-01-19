@@ -33,25 +33,18 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.Type;
 
 public final class ItemType extends Type {
-	// Static fields that are automatically set by GameRegistry via reflection.
 	public static ItemType air;
-	public static ItemType dirt;
-	public static ItemType stone;
-	public static ItemType pickaxe;
-	public static ItemType hammer;
-	public static ItemType dirtWall;
-	public static ItemType stoneWall;
 
-	// Item properties
 	private int maxStack;
 	private float width;
 	private float height;
 	private float usageTime;
-	private float usageAnimationTime;
+	private float animationTime;
 	private boolean usageRepeat;
 	private boolean consumable;
-	private ItemUsageStyle usageStyle;
+	private ItemAnimation animation;
 	private TextureRegion texture;
+	private ItemEffect effect;
 
 	public ItemType() {
 	}
@@ -96,12 +89,12 @@ public final class ItemType extends Type {
 		this.usageTime = usageTime;
 	}
 
-	public float getUsageAnimationTime() {
-		return usageAnimationTime;
+	public float getAnimationTime() {
+		return animationTime;
 	}
 
-	public void setUsageAnimationTime(float usageAnimationTime) {
-		this.usageAnimationTime = usageAnimationTime;
+	public void setAnimationTime(float animationTime) {
+		this.animationTime = animationTime;
 	}
 
 	public boolean getUsageRepeat() {
@@ -120,11 +113,19 @@ public final class ItemType extends Type {
 		this.consumable = consumable;
 	}
 
-	public ItemUsageStyle getUsageStyle() {
-		return usageStyle;
+	public ItemAnimation getAnimation() {
+		return animation;
 	}
 
-	public void setUsageStyle(ItemUsageStyle usageStyle) {
-		this.usageStyle = usageStyle;
+	public void setAnimation(ItemAnimation animation) {
+		this.animation = animation;
+	}
+
+	public ItemEffect getEffect() {
+		return effect;
+	}
+
+	public void setEffect(ItemEffect effect) {
+		this.effect = effect;
 	}
 }

@@ -29,18 +29,16 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.tile;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.github.antag99.aquarria.SpriteSheet;
 import com.github.antag99.aquarria.Type;
 import com.github.antag99.aquarria.item.ItemType;
 
 public final class WallType extends Type {
 	public static WallType air;
-	public static WallType dirt;
-	public static WallType stone;
 
 	private ItemType drop;
 	private TileStyle style;
-	private TextureRegion[][] textureSheet;
+	private SpriteSheet sheet;
 
 	public WallType() {
 	}
@@ -61,11 +59,11 @@ public final class WallType extends Type {
 		this.style = style;
 	}
 
-	public TextureRegion[][] getTextureSheet() {
-		return textureSheet;
+	public SpriteSheet getSheet() {
+		return sheet;
 	}
 
-	public void setTextureSheet(TextureRegion[][] textureSheet) {
-		this.textureSheet = textureSheet;
+	public void setSheet(SpriteSheet sheet) {
+		this.sheet = sheet;
 	}
 }

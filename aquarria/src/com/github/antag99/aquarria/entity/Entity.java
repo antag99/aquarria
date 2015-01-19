@@ -36,8 +36,12 @@ import com.github.antag99.aquarria.world.World;
 public abstract class Entity {
 	private World world;
 	private float x, y;
+	/*
+	 * TODO: make some distinction between raw velocity and resulting velocity,
+	 * as this would be quite useful for slowing down/speeding up movement.
+	 */
 	private float velocityX, velocityY;
-	private int directionX, directionY;
+	private int directionX = 1, directionY = 1;
 	private EntityView view;
 	private boolean active = true;
 	private Rectangle tmpRectangle = new Rectangle();
@@ -81,8 +85,6 @@ public abstract class Entity {
 
 		directionX = velocityX > 0f ? 1 : velocityX < 0f ? -1 : directionX;
 		directionY = velocityY > 0f ? 1 : velocityY < 0f ? -1 : directionY;
-
-		view.update(delta);
 	}
 
 	private Rectangle tmpBounds = new Rectangle();
@@ -196,6 +198,10 @@ public abstract class Entity {
 	}
 
 	public EntityView getView() {
+		if (view == null) {
+			view = createView();
+		}
+
 		return view;
 	}
 

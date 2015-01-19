@@ -52,7 +52,6 @@ public class ContentExtractor {
 	 * assets have not been extracted when {@link ContentExtractor#convert()} is called.
 	 */
 	public void extract() {
-		// Extract XNB files to raw/
 		FileHandle rawDir = outputAssetDirectory.child("raw");
 
 		XnbExtractor textureExtractor = new XnbTextureExtractor();
@@ -100,7 +99,7 @@ public class ContentExtractor {
 		copy("images/Tiles_2.png", "images/tiles/grass.png");
 
 		copy("images/Wall_2.png", "images/walls/dirt.png");
-		copy("images/Wall_1.png", "images/walls/dirt.png");
+		copy("images/Wall_1.png", "images/walls/stone.png");
 
 		copy("images/Item_1.png", "images/items/pickaxe.png");
 		copy("images/Item_2.png", "images/items/dirt.png");

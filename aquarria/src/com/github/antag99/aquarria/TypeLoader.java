@@ -29,7 +29,7 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.json.JsonObject;
 
 /**
  * Manages the loading of {@link Type}s from JSON configurations
@@ -61,11 +61,11 @@ public abstract class TypeLoader<T extends Type> {
 	 * Called to load the given type. The type's internal name
 	 * and JSON configuration have already been set.
 	 */
-	public abstract void load(T type, JsonValue config);
+	public abstract void load(T type, JsonObject config);
 
 	/**
 	 * Called after all types have been loaded and registered
 	 */
-	public void postLoad(T type, JsonValue config) {
+	public void postLoad(T type, JsonObject config) {
 	}
 }
