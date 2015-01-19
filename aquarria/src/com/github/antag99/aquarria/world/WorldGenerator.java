@@ -53,9 +53,7 @@ public class WorldGenerator {
 
 	void addTasks() {
 		// Clear the world
-		tasks.add((generator, seed) -> {
-			generator.getWorld().clear();
-		});
+		tasks.add(new ClearWorldTask());
 
 		// Generate base terrain
 		tasks.add(new TerrainGeneratorTask(GameRegistry.getTileType("stone")));
@@ -79,11 +77,7 @@ public class WorldGenerator {
 		// });
 
 		// Set the spawnpoint
-		tasks.add((generator, seed) -> {
-			generator.setSpawnX(generator.getWidth() / 2);
-			generator.setSpawnY(Math.max(generator.getSurfaceLevel((int) generator.getSpawnX()),
-					generator.getSurfaceLevel((int) generator.getSpawnX() + 1)));
-		});
+		tasks.add(new SpawnPointTask());
 	}
 
 	public World getWorld() {

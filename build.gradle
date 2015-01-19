@@ -5,6 +5,7 @@ subprojects {
     apply plugin: "idea"
 
     version = "1.0"
+    sourceCompatibility = 1.7
     
     ext {
         appName = "aquarria"

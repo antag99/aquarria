@@ -47,6 +47,7 @@ import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.TileTypeLoader;
 import com.github.antag99.aquarria.tile.WallType;
 import com.github.antag99.aquarria.tile.WallTypeLoader;
+import com.google.common.base.Predicate;
 
 public final class GameRegistry {
 	private GameRegistry() { /* don't instantiate */
@@ -126,8 +127,11 @@ public final class GameRegistry {
 				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0]))));
 
 		/* find type configuration files */
-		for (String typePath : reflections.getResources((resourceName) -> {
-			return typeLoadersByExtension.containsKey(new FileHandle(resourceName).extension());
+		for (String typePath : reflections.getResources(new Predicate<String>() {
+			@Override
+			public boolean apply(String resourceName) {
+				return typeLoadersByExtension.containsKey(new FileHandle(resourceName).extension());
+			}
 		})) {
 			FileHandle file = Gdx.files.internal(typePath);
 			JsonObject config = Util.parseJson(file);
