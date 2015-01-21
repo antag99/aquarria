@@ -9,7 +9,7 @@ subprojects {
     
     ext {
         appName = "aquarria"
-        gdxVersion = "1.4.2-SNAPSHOT"
+        gdxVersion = "1.5.4-SNAPSHOT"
     }
 
     repositories {
@@ -32,6 +32,8 @@ project(":aquarria") {
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
+        compile "com.esotericsoftware:kryo:3.0.0"
+        compile "com.esotericsoftware:kryonet:2.22.0-RC1"
         compile "org.luaj:luaj-jse:3.0"
         compile "org.reflections:reflections:0.9.9"
         testCompile "junit:junit:4.+"

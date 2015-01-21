@@ -149,8 +149,6 @@ public final class GameRegistry {
 			typeInstance.setName(config.getString("name"));
 			typeInstance.setConfig(config);
 
-			System.out.println(typeInstance + "=" + typeInstance.getId());
-
 			((TypeLoader<Type>) loader).load(typeInstance, config);
 
 			registerType(typeInstance);

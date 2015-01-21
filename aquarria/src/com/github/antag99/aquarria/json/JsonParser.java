@@ -45,6 +45,7 @@ public class JsonParser {
 	/* next tokens in the input */
 	private int next;
 	private int nextButOne;
+	private boolean crlfPending;
 	/* current position in the input */
 	private int line = 1;
 	private int column = 1;
@@ -87,6 +88,20 @@ public class JsonParser {
 			/* read the next token */
 			next = nextButOne;
 			nextButOne = reader.read();
+
+			/* handle CRLF line endings */
+			if (crlfPending) {
+				if (nextButOne == '\n') {
+					nextButOne = reader.read();
+				}
+				crlfPending = false;
+			}
+
+			/* convert line endings from CRLF/CR to LF */
+			if (nextButOne == '\r') {
+				nextButOne = '\n';
+				crlfPending = true;
+			}
 
 			/* automatically close the reader on eof */
 			if (nextButOne == -1 && next != -1) {
@@ -140,6 +155,7 @@ public class JsonParser {
 				advance();
 				advance();
 			}
+			skipWhitespace();
 		}
 	}
 
@@ -160,19 +176,33 @@ public class JsonParser {
 			return parseArray();
 		case '"':
 			return parseString();
-		case 't':
-		case 'f':
-			return parseBoolean();
-		case 'n':
-			return parseNull();
 		}
+
 		if (Character.isDigit(next) || next == '-') {
 			return parseNumber();
 		}
+
 		if (next == -1) {
 			throw syntaxError("value expected");
 		}
-		throw syntaxError("value expected; unrecognized token '" + (char) next + "'");
+
+		StringBuilder buffer = new StringBuilder();
+		while (Character.isAlphabetic(next)) {
+			buffer.append((char) next);
+			advance();
+		}
+
+		switch (buffer.toString()) {
+		case "true":
+			return true;
+		case "false":
+			return false;
+		case "null":
+			return null;
+		}
+
+		String errorToken = buffer.length() != 0 ? buffer.toString() : String.valueOf((char) next);
+		throw syntaxError("value expected; unrecognized token '" + errorToken + "'");
 	}
 
 	private JsonObject parseObject() {
@@ -281,6 +311,10 @@ public class JsonParser {
 				default:
 					throw syntaxError("unrecognized escape character '" + (char) next + "'");
 				}
+			} else if (next == -1) {
+				throw syntaxError("eof in string");
+			} else if (next == '\n') {
+				throw syntaxError("newline in string");
 			} else {
 				str.append((char) next);
 				advance();
@@ -326,26 +360,5 @@ public class JsonParser {
 		}
 
 		return Float.parseFloat(str.toString());
-	}
-
-	private boolean parseBoolean() {
-		if (consume('t')) {
-			if (consume('r') && consume('u') && consume('e')) {
-				return true;
-			}
-		} else if (consume('f')) {
-			if (consume('a') && consume('l') && consume('s') && consume('e')) {
-				return false;
-			}
-		}
-		throw syntaxError("value expected; unrecognized token '" + (char) next + "'");
-	}
-
-	private Object parseNull() {
-		if (consume('n') && consume('u') && consume('l') && consume('l')) {
-			return null;
-		}
-
-		throw syntaxError("value expected; unrecognized token '" + (char) next + "'");
 	}
 }

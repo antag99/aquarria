@@ -52,7 +52,6 @@ public class PlayerView implements EntityView {
 	@Override
 	public void update(float delta) {
 		if (knownState != player.getState()) {
-			System.out.println("resetting state");
 			knownState = player.getState();
 			animationCounter = 0f;
 

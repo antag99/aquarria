@@ -34,7 +34,6 @@ import java.util.Arrays;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
-import com.github.antag99.aquarria.Direction;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.ItemEntity;
 import com.github.antag99.aquarria.entity.PlayerEntity;
@@ -55,8 +54,6 @@ public class World {
 
 	private short[] surfaceLevel;
 	private byte[] light;
-
-	private byte[] tileAttachment;
 
 	private Array<Entity> entities;
 
@@ -92,7 +89,6 @@ public class World {
 		surfaceLevel = new short[width];
 		light = new byte[width * height];
 		liquidLevel = new byte[width * height];
-		tileAttachment = new byte[width * height];
 		activeLiquids = new IntArray();
 	}
 
@@ -314,53 +310,6 @@ public class World {
 	}
 
 	/**
-	 * Gets whether the tile is attached to another tile in the given direction.
-	 * Tiles attached to another tile will be destroyed when that tile is destroyed.
-	 * 
-	 * @param direction The direction towards the other tile.
-	 */
-	public boolean isAttached(int x, int y, Direction direction) {
-		return (tileAttachment[x + y * width] & (1 << direction.ordinal())) != 0;
-	}
-
-	/**
-	 * Sets whether the tile is attached to another tile in the given direction.
-	 * Tiles attached to another tile will be destroyed when that tile is destroyed.
-	 * 
-	 * @param direction The direction towards the other tile
-	 * @param attached Whether the given tile should be attached to the other tile.
-	 */
-	public void setAttached(int x, int y, Direction direction, boolean attached) {
-		if (!attached)
-			tileAttachment[x + y * width] &= ~(1 << direction.ordinal());
-		else
-			tileAttachment[x + y * width] |= 1 << direction.ordinal();
-	}
-
-	/**
-	 * Recursively detects detached tiles and destroys them
-	 * 
-	 * @param player The player that caused the attachment to be changed,
-	 *            and therefore should be responsible for destroying the tiles.
-	 *            May be null, which will suppress any item drops.
-	 */
-	public void checkAttachment(int x, int y, PlayerEntity player) {
-		// TODO: Add some property to indicate whether a tile can be attached to another
-		if (getTileType(x, y) == TileType.air) {
-			for (Direction direction : Direction.values()) {
-				if (inBounds(x + direction.getHorizontal(), y + direction.getVertical()) &&
-						isAttached(x + direction.getHorizontal(), y + direction.getVertical(), direction.opposite())) {
-					destroyTile(x + direction.getHorizontal(), y + direction.getVertical(), player);
-				}
-			}
-		}
-	}
-
-	public void clearAttachment(int x, int y) {
-		tileAttachment[x + y * width] = 0;
-	}
-
-	/**
 	 * Destroys the tile at the given position. This also checks the attachment of the adjacent
 	 * tiles and drops items if the tile was destroyed by a player.
 	 * 
@@ -376,8 +325,6 @@ public class World {
 			}
 
 			setTileType(x, y, TileType.air);
-			clearAttachment(x, y);
-			checkAttachment(x, y, player);
 
 			return true;
 		}
@@ -387,7 +334,6 @@ public class World {
 	public boolean placeTile(int x, int y, TileType type, PlayerEntity player) {
 		if (getTileType(x, y) == TileType.air) {
 			setTileType(x, y, type);
-			checkAttachment(x, y, player);
 
 			return true;
 		}

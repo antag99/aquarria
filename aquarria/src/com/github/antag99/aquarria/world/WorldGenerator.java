@@ -32,9 +32,7 @@ package com.github.antag99.aquarria.world;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.utils.Array;
-import com.github.antag99.aquarria.Direction;
 import com.github.antag99.aquarria.GameRegistry;
-import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.tile.TileType;
 import com.github.antag99.aquarria.tile.WallType;
 import com.sudoplay.joise.module.Module;
@@ -97,53 +95,6 @@ public class WorldGenerator {
 		// PixmapIO.writePNG(Gdx.files.local("debug/world.png"), worldPixmap);
 		// worldPixmap.dispose();
 	}
-
-	// public void placeTree(int x, int y, Random random) {
-	// // Place stubs
-	// if (world.getTileType(x - 1, y) == TileType.air &&
-	// world.getTileType(x - 1, y - 1).isSolid() &&
-	// random.nextBoolean()) {
-	// world.setTileType(x - 1, y, TileType.tree);
-	// world.setAttached(x - 1, y, Direction.EAST, true);
-	// world.setAttached(x - 1, y, Direction.SOUTH, true);
-	// }
-	// if (world.getTileType(x + 1, y) == TileType.air &&
-	// world.getTileType(x + 1, y - 1).isSolid() &&
-	// random.nextBoolean()) {
-	// world.setTileType(x + 1, y, TileType.tree);
-	// world.setAttached(x + 1, y, Direction.WEST, true);
-	// world.setAttached(x + 1, y, Direction.SOUTH, true);
-	// }
-	//
-	// // Place trunks
-	// int treeHeight = random.nextInt(7) + 8;
-	//
-	// for (int i = 0; i < treeHeight; ++i) {
-	// world.setTileType(x, y + i, TileType.tree);
-	// world.setAttached(x, y + i, Direction.SOUTH, true);
-	// }
-	//
-	// // Place branches
-	// // How many tiles away the next branch will be placed
-	// int branchCounter = 2 + random.nextInt(3);
-	// // Direction in which the next branch won't be placed
-	// int branchSkip = 0;
-	//
-	// for (int i = 0; i + 1 < treeHeight; ++i) {
-	// if (--branchCounter == 0) {
-	// int branchDir = -branchSkip;
-	// if (branchDir == 0) {
-	// branchDir = random.nextBoolean() ? 1 : -1;
-	// }
-	//
-	// world.setTileType(x + branchDir, y + i, TileType.tree);
-	// world.setAttached(x + branchDir, y + i, Direction.get(-branchDir, 0), true);
-	//
-	// branchCounter = 1 + random.nextInt(3);
-	// branchSkip = branchCounter == 1 ? branchDir : 0;
-	// }
-	// }
-	// }
 
 	static Pixmap moduleToPixmap(Module module, int width, int height, float xFrequency, float yFrequency) {
 		Pixmap result = new Pixmap(width, height, Format.RGBA8888);
@@ -246,21 +197,5 @@ public class WorldGenerator {
 
 	public void setLiquid(int x, int y, int liquid) {
 		world.setLiquid(x, y, liquid);
-	}
-
-	public boolean isAttached(int x, int y, Direction direction) {
-		return world.isAttached(x, y, direction);
-	}
-
-	public void setAttached(int x, int y, Direction direction, boolean attached) {
-		world.setAttached(x, y, direction, attached);
-	}
-
-	public void checkAttachment(int x, int y, PlayerEntity player) {
-		world.checkAttachment(x, y, player);
-	}
-
-	public void clearAttachment(int x, int y) {
-		world.clearAttachment(x, y);
 	}
 }
