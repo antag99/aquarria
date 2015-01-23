@@ -132,7 +132,9 @@ public class WorldRenderer extends Widget {
 					SpriteSheet sheet = type.getSheet();
 					TileFrame frame = style.findFrame(world, i, j);
 					batch.draw(sheet.getSprite(frame.getX(), frame.getY()),
-							i - 0.5f, j - 0.5f, 2f, 2f);
+							i + sheet.getRenderOffsetX() / World.PIXELS_PER_METER,
+							j + sheet.getRenderOffsetY() / World.PIXELS_PER_METER,
+							sheet.getRenderWidth() / World.PIXELS_PER_METER, sheet.getRenderHeight() / World.PIXELS_PER_METER);
 				}
 			}
 		}
@@ -147,7 +149,10 @@ public class WorldRenderer extends Widget {
 					TileStyle style = type.getStyle();
 					SpriteSheet sheet = type.getSheet();
 					TileFrame frame = style.findFrame(world, i, j);
-					batch.draw(sheet.getSprite(frame.getX(), frame.getY()), i, j, 1f, 1f);
+					batch.draw(sheet.getSprite(frame.getX(), frame.getY()),
+							i + sheet.getRenderOffsetX() / World.PIXELS_PER_METER,
+							j + sheet.getRenderOffsetY() / World.PIXELS_PER_METER,
+							sheet.getRenderWidth() / World.PIXELS_PER_METER, sheet.getRenderHeight() / World.PIXELS_PER_METER);
 				}
 			}
 		}
