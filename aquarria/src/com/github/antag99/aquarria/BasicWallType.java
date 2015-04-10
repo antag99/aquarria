@@ -27,25 +27,50 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.entity;
+package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.world.World;
+import com.github.antag99.aquarria.world.WorldView;
 
-public interface EntityView {
-	/**
-	 * Entity view to be used when none is necessary.
-	 */
-	public static final EntityView NONE = new EntityView() {
-		@Override
-		public void update(float deltaTime) {
-		}
+/**
+ * Implements basic tile types, loaded from json files.
+ */
+public class BasicWallType extends BasicType
+		implements WallType, Json.Serializable {
+	private SpriteSheet sheet;
 
-		@Override
-		public void render(Batch batch) {
-		}
-	};
+	public BasicWallType() {
+	}
 
-	public void update(float deltaTime);
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
 
-	public void render(Batch batch);
+		sheet = new SpriteSheet(Assets.getTexture(jsonData.getString("sheet", "null.png")), Assets.wallGrid);
+	}
+
+	public SpriteSheet getSheet() {
+		return sheet;
+	}
+
+	public void setSheet(SpriteSheet sheet) {
+		this.sheet = sheet;
+	}
+
+	@Override
+	public Sprite getTexture(WorldView worldView, int x, int y) {
+		World world = worldView.getWorld();
+		BlockFrame frame = BlockFrame.findFrame(
+				y == 0 || world.getWallType(x, y + 1) != GameRegistry.airWall,
+				x + 1 == world.getWidth() || world.getWallType(x + 1, y) != GameRegistry.airWall,
+				y + 1 == world.getHeight() || world.getWallType(x, y - 1) != GameRegistry.airWall,
+				x == 0 || world.getWallType(x - 1, y) != GameRegistry.airWall);
+		return sheet.getSprite(frame.getX(), frame.getY());
+	}
+
+	@Override
+	public void destroyed(World world, int x, int y) {
+	}
 }

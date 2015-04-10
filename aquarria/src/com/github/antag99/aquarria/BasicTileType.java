@@ -29,61 +29,75 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-public enum Direction {
-	// Note that the order is important
-	NORTH(0, 1),
-	NORTHEAST(1, 1),
-	EAST(1, 0),
-	SOUTHEAST(1, -1),
-	SOUTH(0, -1),
-	SOUTHWEST(-1, -1),
-	WEST(-1, 0),
-	NORTHWEST(-1, 1);
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.world.World;
+import com.github.antag99.aquarria.world.WorldView;
 
-	private static Direction[] values = values();
+/**
+ * Implements basic tile types, loaded from json files.
+ */
+public class BasicTileType extends BasicType
+		implements TileType, Json.Serializable {
+	private boolean solid = true;
+	private SpriteSheet sheet;
+	private String drop;
 
-	private final int horizontal;
-	private final int vertical;
-
-	private Direction(int horizontal, int vertical) {
-		this.horizontal = horizontal;
-		this.vertical = vertical;
+	public BasicTileType() {
 	}
 
-	public int getHorizontal() {
-		return horizontal;
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
+
+		solid = jsonData.getBoolean("solid", true);
+		sheet = new SpriteSheet(Assets.getTexture(jsonData.getString("sheet", "null.png")), Assets.tileGrid);
+		drop = jsonData.getString("drop", null);
 	}
 
-	public int getVertical() {
-		return vertical;
+	@Override
+	public boolean isSolid() {
+		return solid;
 	}
 
-	public int mask() {
-		return 1 << ordinal();
+	public void setSolid(boolean solid) {
+		this.solid = solid;
 	}
 
-	public Direction opposite() {
-		return values[(ordinal() + 4) % values.length];
+	public SpriteSheet getSheet() {
+		return sheet;
 	}
 
-	public static Direction get(int x, int y) {
-		x = x < 0 ? -1 : x > 0 ? 1 : 0;
-		y = y < 0 ? -1 : y > 0 ? 1 : 0;
-
-		for (Direction direction : values) {
-			if (direction.getHorizontal() == x && direction.getVertical() == y) {
-				return direction;
-			}
-		}
-
-		// (0, 0)
-		return null;
+	public void setSheet(SpriteSheet sheet) {
+		this.sheet = sheet;
 	}
 
-	public static int maskOf(Direction... directions) {
-		int mask = 0;
-		for (Direction dir : directions)
-			mask |= dir.mask();
-		return mask;
+	public String getDrop() {
+		return drop;
+	}
+
+	public void setDrop(String drop) {
+		this.drop = drop;
+	}
+
+	@Override
+	public Sprite getTexture(WorldView worldView, int x, int y) {
+		World world = worldView.getWorld();
+		BlockFrame frame = BlockFrame.findFrame(
+				y == 0 || world.getTileType(x, y + 1) != GameRegistry.airTile,
+				x + 1 == world.getWidth() || world.getTileType(x + 1, y) != GameRegistry.airTile,
+				y + 1 == world.getHeight() || world.getTileType(x, y - 1) != GameRegistry.airTile,
+				x == 0 || world.getTileType(x - 1, y) != GameRegistry.airTile);
+		return sheet.getSprite(frame.getX(), frame.getY());
+	}
+
+	@Override
+	public void placed(World world, int x, int y) {
+	}
+
+	@Override
+	public void destroyed(World world, int x, int y) {
+		if (getDrop() != null)
+			world.dropItem(new Item(GameRegistry.getItem(getDrop()), 1), x, y);
 	}
 }

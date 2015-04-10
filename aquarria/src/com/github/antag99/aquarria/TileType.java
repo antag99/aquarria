@@ -27,25 +27,49 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.entity;
+package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.github.antag99.aquarria.world.World;
+import com.github.antag99.aquarria.world.WorldView;
 
-public interface EntityView {
+public interface TileType extends Type {
+
 	/**
-	 * Entity view to be used when none is necessary.
+	 * Gets whether this tile is solid. Solid tiles can collide with solid entities.
+	 * Examples of non-solid tiles are trees and workbenches. Solid tiles include
+	 * dirt, stone and grass blocks.
 	 */
-	public static final EntityView NONE = new EntityView() {
-		@Override
-		public void update(float deltaTime) {
-		}
+	public boolean isSolid();
 
-		@Override
-		public void render(Batch batch) {
-		}
-	};
+	/**
+	 * Gets the sprite for the tile at the given position. This additional information
+	 * is required to implement things such as sprites depending on adjacent tiles.
+	 * 
+	 * @param worldView The world view for the world the tile resides in
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 */
+	public Sprite getTexture(WorldView worldView, int x, int y);
 
-	public void update(float deltaTime);
+	/**
+	 * Called when this tile is placed in a world. This is not invoked as a result
+	 * of world generation; it's called when a player or event causes this tile
+	 * to be placed.
+	 * 
+	 * @param world The world this tile was placed in
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 */
+	public void placed(World world, int x, int y);
 
-	public void render(Batch batch);
+	/**
+	 * Called when this tile is destroyed in a world. This is not invoked as a result
+	 * of world generation; it's called when a player or event causes this tile
+	 * to be destroyed.
+	 * 
+	 * @param world The world this tile was destroyed in
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 */
+	public void destroyed(World world, int x, int y);
 }

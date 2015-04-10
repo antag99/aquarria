@@ -1,7 +1,0 @@
-{
-	"id" : "stone",
-	"name" : "Stone",
-	"solid" : true,
-	"sheet" : "tiles/stone.sheet",
-	"drop" : "stone"
-}

@@ -27,25 +27,71 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.entity;
+package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.github.antag99.aquarria.entity.PlayerEntity;
 
-public interface EntityView {
+public interface ItemType extends Type {
+
 	/**
-	 * Entity view to be used when none is necessary.
+	 * Gets the physical width of this item type
 	 */
-	public static final EntityView NONE = new EntityView() {
-		@Override
-		public void update(float deltaTime) {
-		}
+	public float getWidth();
 
-		@Override
-		public void render(Batch batch) {
-		}
-	};
+	/**
+	 * Gets the physical height of this item type
+	 */
+	public float getHeight();
 
-	public void update(float deltaTime);
+	/**
+	 * Gets the maximum amount of items of this type that can be stored in one
+	 * slot.
+	 */
+	public int getMaxStack();
 
-	public void render(Batch batch);
+	/**
+	 * Gets the texture of the item type.
+	 */
+	public Sprite getIcon();
+
+	/**
+	 * Gets the interval in which this item may be used.
+	 */
+	public float getUsageDelay();
+
+	/**
+	 * Whether this item can be repeatedly used
+	 */
+	public boolean getUsageRepeat();
+
+	/**
+	 * Gets the animation for this item
+	 */
+	public ItemAnimation getUsageAnimation();
+
+	/**
+	 * Gets whether this item should be consumed when used. This reduces the item
+	 * stack by 1 per usage until the stack is depleted. (Of course, this <em>could</em> be
+	 * implemented in {@link #usageEffect(PlayerEntity, Item)}, but it's nice
+	 * to have a standard way to do it.)
+	 */
+	public boolean isConsumable();
+
+	/**
+	 * Called to check if this item can be used by the given player.
+	 * 
+	 * @param player The player that used the item
+	 * @param stack The item stack
+	 * @return Whether this item can be used by the given player.
+	 */
+	public boolean canUse(PlayerEntity player, Item stack);
+
+	/**
+	 * Called when this item is used by a player.
+	 * 
+	 * @param player The player that used the item
+	 * @param stack The item stack
+	 * @return Whether the item was successfully used
+	 */
+	public boolean usageEffect(PlayerEntity player, Item stack);
 }

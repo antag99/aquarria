@@ -29,7 +29,7 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.world;
 
-import com.github.antag99.aquarria.tile.WallType;
+import com.github.antag99.aquarria.WallType;
 
 public class SurfaceWallGeneratorTask implements WorldGeneratorTask {
 	private WallType wall;

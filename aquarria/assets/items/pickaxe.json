@@ -1,0 +1,8 @@
+{
+	"class"       : "com.github.antag99.aquarria.PickaxeItemType",
+	"id"          : "pickaxe",
+	"name"        : "Pickaxe",
+	"width"       : 24,
+	"height"      : 28,
+	"icon"        : "images/items/pickaxe.png"
+}

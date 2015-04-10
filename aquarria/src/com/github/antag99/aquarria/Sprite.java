@@ -27,25 +27,70 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.entity;
+package com.github.antag99.aquarria;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public interface EntityView {
-	/**
-	 * Entity view to be used when none is necessary.
-	 */
-	public static final EntityView NONE = new EntityView() {
-		@Override
-		public void update(float deltaTime) {
-		}
+/**
+ * Sprites are texture regions with additional drawing information; <em>offset</em> and <em>size</em>.
+ */
+public class Sprite {
+	private TextureRegion texture;
+	private float drawOffsetX;
+	private float drawOffsetY;
+	private float drawWidth;
+	private float drawHeight;
 
-		@Override
-		public void render(Batch batch) {
-		}
-	};
+	public Sprite(TextureRegion texture,
+			float drawOffsetX, float drawOffsetY,
+			float drawWidth, float drawHeight) {
+		this.texture = texture;
+		this.drawOffsetX = drawOffsetX;
+		this.drawOffsetY = drawOffsetY;
+		this.drawWidth = drawWidth;
+		this.drawHeight = drawHeight;
+	}
 
-	public void update(float deltaTime);
+	public TextureRegion getTexture() {
+		return texture;
+	}
 
-	public void render(Batch batch);
+	public float getDrawOffsetX() {
+		return drawOffsetX;
+	}
+
+	public float getDrawOffsetY() {
+		return drawOffsetY;
+	}
+
+	public float getDrawWidth() {
+		return drawWidth;
+	}
+
+	public float getDrawHeight() {
+		return drawHeight;
+	}
+
+	public void draw(Batch batch, float x, float y, float width, float height) {
+		batch.draw(getTexture(),
+				x + getDrawOffsetX() * (width / getDrawWidth()),
+				y + getDrawOffsetY() * (height / getDrawHeight()),
+				width,
+				height);
+	}
+
+	public void draw(Batch batch, float x, float y, float originX, float originY,
+			float width, float height, float scaleX, float scaleY, float rotation) {
+		batch.draw(getTexture(),
+				x + getDrawOffsetX() * (width / getDrawWidth()),
+				y + getDrawOffsetY() * (height / getDrawHeight()),
+				originX,
+				originY,
+				width,
+				height,
+				scaleX,
+				scaleY,
+				rotation);
+	}
 }

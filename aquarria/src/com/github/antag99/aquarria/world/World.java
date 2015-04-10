@@ -34,12 +34,13 @@ import java.util.Arrays;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
+import com.github.antag99.aquarria.Direction;
+import com.github.antag99.aquarria.GameRegistry;
+import com.github.antag99.aquarria.Item;
+import com.github.antag99.aquarria.TileType;
+import com.github.antag99.aquarria.WallType;
 import com.github.antag99.aquarria.entity.Entity;
 import com.github.antag99.aquarria.entity.ItemEntity;
-import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.tile.WallType;
 
 public class World {
 	public static final float PIXELS_PER_METER = 16;
@@ -51,6 +52,8 @@ public class World {
 
 	private TileType[] tiles;
 	private WallType[] walls;
+
+	private byte[] tileAttachment;
 
 	private short[] surfaceLevel;
 	private byte[] light;
@@ -83,8 +86,9 @@ public class World {
 	public void clear() {
 		spawnX = width / 2f;
 		spawnY = height / 2f;
-		Arrays.fill(tiles, TileType.air);
-		Arrays.fill(walls, WallType.air);
+		Arrays.fill(tiles, GameRegistry.airTile);
+		Arrays.fill(walls, GameRegistry.airWall);
+		tileAttachment = new byte[width * height];
 		entities = new Array<Entity>();
 		surfaceLevel = new short[width];
 		light = new byte[width * height];
@@ -129,10 +133,59 @@ public class World {
 		checkBounds(x, y);
 
 		if (type == null) {
-			throw new NullPointerException();
+			throw new NullPointerException("type == null");
 		}
 
 		tiles[y * width + x] = type;
+	}
+
+	/**
+	 * Gets whether the tile at the given position
+	 * is attached to the tile in the given direction.
+	 * </p>
+	 * Attached tiles will be destroyed when the tile they are
+	 * attached to is destroyed. This is used to implement multi-block
+	 * tiles, such as trees.
+	 * 
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 * @param direction The direction to the other tile
+	 * @return Whether the tile is attached to the other tile
+	 */
+	public boolean isTileAttached(int x, int y, Direction direction) {
+		checkBounds(x, y);
+
+		if (direction == null) {
+			throw new NullPointerException("direction == null");
+		}
+
+		return (tileAttachment[x + y * width] & direction.mask()) != 0;
+	}
+
+	/**
+	 * Sets whether the tile at the given position
+	 * is attached to the tile in the given direction.
+	 * </p>
+	 * Attached tiles will be destroyed when the tile they are
+	 * attached to is destroyed. This is used to implement multi-block
+	 * tiles, such as trees.
+	 * 
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 * @param direction The direction to the other tile
+	 * @param attached Whether the tile should be attached to the other tile
+	 */
+	public void setTileAttached(int x, int y, Direction direction, boolean attached) {
+		checkBounds(x, y);
+
+		if (direction == null) {
+			throw new NullPointerException("direction == null");
+		}
+
+		if (attached)
+			tileAttachment[x + y * width] |= direction.mask();
+		else
+			tileAttachment[x + y * width] &= ~direction.mask();
 	}
 
 	public WallType getWallType(int x, int y) {
@@ -145,7 +198,7 @@ public class World {
 		checkBounds(x, y);
 
 		if (type == null) {
-			throw new NullPointerException();
+			throw new NullPointerException("type == null");
 		}
 
 		walls[y * width + x] = type;
@@ -172,11 +225,19 @@ public class World {
 	}
 
 	public void addEntity(Entity entity) {
+		if (entity == null) {
+			throw new NullPointerException("entity == null");
+		}
+
 		entities.add(entity);
 		entity.setWorld(this);
 	}
 
 	public void removeEntity(Entity entity) {
+		if (entity == null) {
+			throw new NullPointerException("entity == null");
+		}
+
 		entities.removeValue(entity, true);
 		entity.setWorld(null);
 	}
@@ -257,7 +318,7 @@ public class World {
 		for (int i = 0; i < width; ++i) {
 			for (int j = 0; j < height; ++j) {
 				if (!getTileType(x + i, y + j).isSolid() &&
-						getWallType(x + i, y + j) == WallType.air) {
+						getWallType(x + i, y + j) == GameRegistry.airWall) {
 					setLight(x + i, y + j, 1f);
 				} else {
 					setLight(x + i, y + j, 0f);
@@ -307,70 +368,6 @@ public class World {
 			activeLiquids.add(position);
 		if (liquid == 0 && liquidActive)
 			activeLiquids.removeValue(position);
-	}
-
-	/**
-	 * Destroys the tile at the given position. This also checks the attachment of the adjacent
-	 * tiles and drops items if the tile was destroyed by a player.
-	 * 
-	 * @param player The player that destroyed the tile. May be null,
-	 *            which will suppress any item drops.
-	 * @return Whether the tile at the specified position was destroyed
-	 */
-	public boolean destroyTile(int x, int y, PlayerEntity player) {
-		TileType type = getTileType(x, y);
-		if (type != TileType.air) {
-			if (player != null && type.getDrop() != null) {
-				dropItem(new Item(type.getDrop()), x, y);
-			}
-
-			setTileType(x, y, TileType.air);
-
-			return true;
-		}
-		return false;
-	}
-
-	public boolean placeTile(int x, int y, TileType type, PlayerEntity player) {
-		if (getTileType(x, y) == TileType.air) {
-			setTileType(x, y, type);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Destroys the wall at the given position. This also causes
-	 * the wall to drop an item if it was destroyed by a player.
-	 * 
-	 * @param player The player that destroyed the wall. May be null,
-	 *            which will suppress any item drops.
-	 * @return Whether the wall at the specified position was destroyed
-	 */
-	public boolean destroyWall(int x, int y, PlayerEntity player) {
-		WallType type = getWallType(x, y);
-		if (type != WallType.air) {
-			if (type.getDrop() != null) {
-				dropItem(new Item(type.getDrop()), x, y);
-			}
-
-			setWallType(x, y, WallType.air);
-
-			return true;
-		}
-		return false;
-	}
-
-	public boolean placeWall(int x, int y, WallType type, PlayerEntity player) {
-		if (getWallType(x, y) == WallType.air) {
-			setWallType(x, y, type);
-
-			return true;
-		}
-
-		return false;
 	}
 
 	public void update(float delta) {

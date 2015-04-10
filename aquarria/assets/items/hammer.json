@@ -1,0 +1,8 @@
+{
+	"class"       : "com.github.antag99.aquarria.HammerItemType",
+	"id"          : "hammer",
+	"name"        : "Hammer",
+	"width"       : 32,
+	"height"      : 32,
+	"icon"        : "images/items/hammer.png"
+}

@@ -1,0 +1,10 @@
+{
+	"class"       : "com.github.antag99.aquarria.BlockItemType",
+	"id"          : "stone",
+	"name"        : "Stone",
+	"width"       : 16,
+	"height"      : 16,
+	"maxStack"    : 99,
+	"icon"        : "images/items/stone.png",
+	"sheet"       : "images/tiles/stone.png"
+}

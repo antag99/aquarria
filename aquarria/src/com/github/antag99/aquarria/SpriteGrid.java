@@ -30,7 +30,7 @@
 package com.github.antag99.aquarria;
 
 /**
- * {@link SpriteGrid} stores the grid data for a {@link SpriteSheet},
+ * {@link SpriteGrid} stores the grid data for a sprite sheet,
  * as that is often shared between multiple sheets, for example player
  * animations have different parts that are rendered on top of each other.
  */
@@ -47,12 +47,19 @@ public class SpriteGrid {
 	/* the spacing between sprites */
 	private int spriteSpacingX;
 	private int spriteSpacingY;
+	/* rendering sizes of the sprites */
+	private float drawOffsetX;
+	private float drawOffsetY;
+	private float drawWidth;
+	private float drawHeight;
 
 	public SpriteGrid(
 			int spriteCountX, int spriteCountY,
 			int spriteOffsetX, int spriteOffsetY,
 			int spriteWidth, int spriteHeight,
-			int spriteSpacingX, int spriteSpacingY) {
+			int spriteSpacingX, int spriteSpacingY,
+			float drawOffsetX, float drawOffsetY,
+			float drawWidth, float drawHeight) {
 		this.spriteCountX = spriteCountX;
 		this.spriteCountY = spriteCountY;
 		this.spriteOffsetX = spriteOffsetX;
@@ -61,6 +68,10 @@ public class SpriteGrid {
 		this.spriteHeight = spriteHeight;
 		this.spriteSpacingX = spriteSpacingX;
 		this.spriteSpacingY = spriteSpacingY;
+		this.drawOffsetX = drawOffsetX;
+		this.drawOffsetY = drawOffsetY;
+		this.drawWidth = drawWidth;
+		this.drawHeight = drawHeight;
 	}
 
 	/** Gets the amount of sprites on the x axis */
@@ -101,5 +112,25 @@ public class SpriteGrid {
 	/** Gets the height of a sprite on the sprite sheet */
 	public int getSpriteHeight() {
 		return spriteHeight;
+	}
+
+	/** Gets the offset of sprites being rendered */
+	public float getDrawOffsetX() {
+		return drawOffsetX;
+	}
+
+	/** Gets the offset of sprites being rendered */
+	public float getDrawOffsetY() {
+		return drawOffsetY;
+	}
+
+	/** Gets the size of sprites being rendered */
+	public float getDrawWidth() {
+		return drawWidth;
+	}
+
+	/** Gets the size of sprites being rendered */
+	public float getDrawHeight() {
+		return drawHeight;
 	}
 }

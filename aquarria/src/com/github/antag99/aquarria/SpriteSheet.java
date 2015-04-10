@@ -37,89 +37,75 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  * Sprite sheets are used for tile graphics and entity animations (through the use of {@link SpriteAnimation}).
  */
 public class SpriteSheet {
-	/* the sprite grid */
-	private SpriteGrid grid;
-	/* the sprite matrix */
-	private TextureRegion[][] sprites;
-	/* the offset (in pixels) when rendering */
-	private int renderOffsetX;
-	private int renderOffsetY;
-	/* the size (in pixels) when rendering */
-	private int renderWidth;
-	private int renderHeight;
+	private final Sprite[] sprites;
+	private final int width;
+	private final int height;
+	private final SpriteGrid layout;
 
-	public SpriteSheet(TextureRegion texture, SpriteGrid grid) {
-		this.grid = grid;
+	/**
+	 * Gets the width of the sheet
+	 */
+	public int getWidth() {
+		return width;
+	}
 
-		renderOffsetX = 0;
-		renderOffsetY = 0;
-		renderWidth = grid.getSpriteWidth();
-		renderHeight = grid.getSpriteHeight();
+	/**
+	 * Gets the height of the sheet
+	 */
+	public int getHeight() {
+		return height;
+	}
 
-		sprites = new TextureRegion[grid.getSpriteCountX()][grid.getSpriteCountY()];
+	/**
+	 * Gets the layout that was used to create this sheet
+	 */
+	public SpriteGrid getLayout() {
+		return layout;
+	}
 
-		for (int i = 0; i < grid.getSpriteCountX(); ++i) {
-			for (int j = 0; j < grid.getSpriteCountY(); ++j) {
-				int spriteX = grid.getSpriteOffsetX() + (grid.getSpriteWidth() + grid.getSpriteSpacingX()) * i;
-				int spriteY = grid.getSpriteOffsetY() + (grid.getSpriteHeight() + grid.getSpriteSpacingY()) * j;
+	/**
+	 * Gets the sprite at the given position in the sheet
+	 */
+	public Sprite getSprite(int x, int y) {
+		if (!(x >= 0 && x < width))
+			throw new ArrayIndexOutOfBoundsException(x);
+		if (!(y >= 0 && y < height))
+			throw new ArrayIndexOutOfBoundsException(y);
+		return sprites[x + y * width];
+	}
 
-				sprites[i][j] = new TextureRegion(texture, spriteX, spriteY,
-						grid.getSpriteWidth(), grid.getSpriteHeight());
+	/**
+	 * Creates a new spritesheet from the given texture and sprite sheet layout.
+	 */
+	public SpriteSheet(TextureRegion texture, SpriteGrid layout) {
+		this.layout = layout;
+		this.width = layout.getSpriteCountX();
+		this.height = layout.getSpriteCountY();
+		this.sprites = new Sprite[width * height];
+
+		int spriteWidth = layout.getSpriteWidth();
+		int spriteHeight = layout.getSpriteHeight();
+		int spriteOffsetX = layout.getSpriteOffsetX();
+		int spriteOffsetY = layout.getSpriteOffsetY();
+		int spriteSpacingX = layout.getSpriteSpacingX();
+		int spriteSpacingY = layout.getSpriteSpacingY();
+
+		float drawOffsetX = layout.getDrawOffsetX();
+		float drawOffsetY = layout.getDrawOffsetY();
+		float drawWidth = layout.getDrawWidth();
+		float drawHeight = layout.getDrawHeight();
+
+		for (int i = 0; i < width; ++i) {
+			for (int j = 0; j < height; ++j) {
+				Sprite sprite = new Sprite(
+						new TextureRegion(texture,
+								spriteOffsetX + i * (spriteWidth + spriteSpacingX),
+								spriteOffsetY + j * (spriteHeight + spriteSpacingY),
+								spriteWidth, spriteHeight),
+						drawOffsetX, drawOffsetY,
+						drawWidth, drawHeight);
+				sprites[i + j * width] = sprite;
 			}
 		}
-	}
-
-	public SpriteGrid getGrid() {
-		return grid;
-	}
-
-	/** Gets the x offset (in pixels) of rendered sprites */
-	public int getRenderOffsetX() {
-		return renderOffsetX;
-	}
-
-	/** Gets the y offset (in pixels) of rendered sprites */
-	public int getRenderOffsetY() {
-		return renderOffsetY;
-	}
-
-	/** Sets the x offset (in pixels) of rendered sprites */
-	public void setRenderOffsetX(int renderOffsetX) {
-		this.renderOffsetX = renderOffsetX;
-	}
-
-	/** Sets the y offset (in pixels) of rendered sprites */
-	public void setRenderOffsetY(int renderOffsetY) {
-		this.renderOffsetY = renderOffsetY;
-	}
-
-	/** Gets the width (in pixels) of rendered sprites */
-	public int getRenderWidth() {
-		return renderWidth;
-	}
-
-	/** Gets the height (in pixels) of rendered sprites */
-	public int getRenderHeight() {
-		return renderHeight;
-	}
-
-	/** Sets the width (in pixels) of rendered sprites */
-	public void setRenderWidth(int renderWidth) {
-		this.renderWidth = renderWidth;
-	}
-
-	/** Sets the height (in pixels) of rendered sprites */
-	public void setRenderHeight(int renderHeight) {
-		this.renderHeight = renderHeight;
-	}
-
-	/** Gets the sprite at the given position */
-	public TextureRegion getSprite(int x, int y) {
-		return sprites[x][y];
-	}
-
-	/** Sets the sprite at the given position */
-	public void setSprite(int x, int y, TextureRegion sprite) {
-		sprites[x][y] = sprite;
 	}
 }

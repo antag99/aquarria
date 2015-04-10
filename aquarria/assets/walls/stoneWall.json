@@ -1,0 +1,10 @@
+{
+	"class"       : "com.github.antag99.aquarria.WallItemType",
+	"id"          : "stoneWall",
+	"name"        : "Stone Wall",
+	"width"       : 16,
+	"height"      : 16,
+	"maxStack"    : 99,
+	"icon"        : "images/items/stoneWall.png",
+	"sheet"       : "images/walls/stone.png"
+}

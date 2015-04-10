@@ -29,7 +29,7 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.world;
 
-import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.TileType;
 
 public class SurfaceTileGeneratorTask implements WorldGeneratorTask {
 	private TileType target;

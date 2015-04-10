@@ -1,0 +1,5 @@
+{
+	"class"       : "com.github.antag99.aquarria.BasicWallType",
+	"id"          : "airWall",
+	"name"        : "Air"
+}

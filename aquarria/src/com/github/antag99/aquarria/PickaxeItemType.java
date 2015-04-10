@@ -27,25 +27,51 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.entity;
+package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
+import com.github.antag99.aquarria.entity.PlayerEntity;
 
-public interface EntityView {
-	/**
-	 * Entity view to be used when none is necessary.
-	 */
-	public static final EntityView NONE = new EntityView() {
-		@Override
-		public void update(float deltaTime) {
-		}
+public class PickaxeItemType extends BasicItemType
+		implements ItemType, Json.Serializable {
+	public PickaxeItemType() {
+	}
 
-		@Override
-		public void render(Batch batch) {
-		}
-	};
+	@Override
+	public int getMaxStack() {
+		return 1;
+	}
 
-	public void update(float deltaTime);
+	@Override
+	public float getUsageDelay() {
+		return 0.3f;
+	}
 
-	public void render(Batch batch);
+	@Override
+	public boolean getUsageRepeat() {
+		return true;
+	}
+
+	@Override
+	public ItemAnimation getUsageAnimation() {
+		return ItemAnimation.swing;
+	}
+
+	@Override
+	public boolean isConsumable() {
+		return false;
+	}
+
+	@Override
+	public boolean canUse(PlayerEntity player, Item stack) {
+		return true;
+	}
+
+	@Override
+	public boolean usageEffect(PlayerEntity player, Item stack) {
+		Vector2 focus = player.getWorldFocus();
+		return player.destroyTile(MathUtils.floor(focus.x), MathUtils.floor(focus.y));
+	}
 }

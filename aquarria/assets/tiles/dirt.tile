@@ -1,7 +1,0 @@
-{
-	"id" : "dirt",
-	"name" : "Dirt",
-	"solid" : true,
-	"sheet" : "tiles/dirt.sheet",
-	"drop" : "dirt"
-}

@@ -43,6 +43,7 @@ import com.github.antag99.aquarria.Assets;
 import com.github.antag99.aquarria.entity.PlayerEntity;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldGenerator;
+import com.github.antag99.aquarria.world.WorldRenderer;
 import com.github.antag99.aquarria.world.WorldView;
 
 public class IngameScreen extends AquarriaScreen {
@@ -77,9 +78,7 @@ public class IngameScreen extends AquarriaScreen {
 		player.setY(world.getSpawnY());
 		world.addEntity(player);
 
-		worldView = new WorldView();
-		worldView.setWorld(world);
-
+		worldView = new WorldView(world);
 		worldRenderer.setView(worldView);
 
 		ingameInterface = new IngameInterface(skin);

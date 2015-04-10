@@ -29,11 +29,11 @@
  ******************************************************************************/
 package com.github.antag99.aquarria.world;
 
-import com.github.antag99.aquarria.tile.TileType;
+import com.github.antag99.aquarria.TileType;
 import com.sudoplay.joise.module.Module;
-import com.sudoplay.joise.module.ModuleFractal;
 import com.sudoplay.joise.module.ModuleBasisFunction.BasisType;
 import com.sudoplay.joise.module.ModuleBasisFunction.InterpolationType;
+import com.sudoplay.joise.module.ModuleFractal;
 import com.sudoplay.joise.module.ModuleFractal.FractalType;
 
 public class TerrainGeneratorTask implements WorldGeneratorTask {

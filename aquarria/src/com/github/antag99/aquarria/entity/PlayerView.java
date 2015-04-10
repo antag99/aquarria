@@ -31,12 +31,12 @@ package com.github.antag99.aquarria.entity;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.github.antag99.aquarria.Assets;
+import com.github.antag99.aquarria.Item;
+import com.github.antag99.aquarria.ItemAnimation;
+import com.github.antag99.aquarria.Sprite;
 import com.github.antag99.aquarria.SpriteAnimation;
 import com.github.antag99.aquarria.entity.PlayerEntity.PlayerState;
-import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.item.ItemAnimation;
 import com.github.antag99.aquarria.world.World;
 
 public class PlayerView implements EntityView {
@@ -96,39 +96,54 @@ public class PlayerView implements EntityView {
 		float bodyAnimationCounter = animationCounter;
 
 		if (player.isUsingItem()) {
-			bodyAnimation = player.getUsedItem().getType().getAnimation().getBodyAnimation(player);
-			float animationTime = player.getUsedItem().getType().getAnimationTime();
+			bodyAnimation = player.getUsedItem().getType().getUsageAnimation().getBodyAnimation(player);
+			float animationTime = player.getUsedItem().getType().getUsageDelay();
 			bodyAnimationCounter = (player.getUseTime() % animationTime) / animationTime;
 		}
 
 		batch.setColor(255 / 255f, 125 / 255f, 90 / 255f, 1f);
-		batch.draw(animation.getFrame(Assets.playerHeadSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+		batch.draw(animation.getFrame(Assets.playerHeadSheet, animationCounter).getTexture(),
+				x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+
 		batch.setColor(105 / 255f, 90 / 255f, 75 / 255f, 1f);
-		batch.draw(animation.getFrame(Assets.playerEyesSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+		batch.draw(animation.getFrame(Assets.playerEyesSheet, animationCounter).getTexture(),
+				x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+
 		batch.setColor(Color.WHITE);
-		batch.draw(animation.getFrame(Assets.playerEyeWhitesSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+		batch.draw(animation.getFrame(Assets.playerEyeWhitesSheet, animationCounter).getTexture(),
+				x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+
 		batch.setColor(255 / 255f, 230 / 255f, 175 / 255f, 1f);
-		batch.draw(animation.getFrame(Assets.playerPantsSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+		batch.draw(animation.getFrame(Assets.playerPantsSheet, animationCounter).getTexture(),
+				x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+
 		batch.setColor(160 / 255f, 180 / 255f, 215 / 255f, 1f);
-		batch.draw(bodyAnimation.getFrame(Assets.playerUndershirtSheet, bodyAnimationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+		batch.draw(bodyAnimation.getFrame(Assets.playerUndershirtSheet, bodyAnimationCounter).getTexture(),
+				x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+
 		batch.setColor(215 / 255f, 90 / 255f, 55 / 255f, 1f);
-		batch.draw(animation.getFrame(Assets.playerHairSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+		batch.draw(animation.getFrame(Assets.playerHairSheet, animationCounter).getTexture(),
+				x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+
 		batch.setColor(175 / 255f, 165 / 255f, 140 / 255f, 1f);
-		batch.draw(bodyAnimation.getFrame(Assets.playerShirtSheet, bodyAnimationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+		batch.draw(bodyAnimation.getFrame(Assets.playerShirtSheet, bodyAnimationCounter).getTexture(),
+				x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+
 		batch.setColor(160 / 255f, 105 / 255f, 60 / 255f, 1f);
-		batch.draw(animation.getFrame(Assets.playerShoesSheet, animationCounter), x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
+		batch.draw(animation.getFrame(Assets.playerShoesSheet, animationCounter).getTexture(),
+				x, y, originX, originY, width, height, scaleX, scaleY, 0f /* rotation */);
 
 		if (player.isUsingItem()) {
 			Item item = player.getUsedItem();
-			ItemAnimation animation = item.getType().getAnimation();
-			TextureRegion itemTexture = item.getType().getTexture();
+			ItemAnimation animation = item.getType().getUsageAnimation();
+			Sprite itemTexture = item.getType().getIcon();
 
 			float useOffsetX = animation.getHeldItemOffsetX(player);
 			float useOffsetY = animation.getHeldItemOffsetY(player);
 			float useRotation = animation.getHeldItemRotation(player);
 
 			batch.setColor(Color.WHITE);
-			batch.draw(itemTexture, player.getX() + useOffsetX, player.getY() + useOffsetY, 0f, 0f,
+			itemTexture.draw(batch, player.getX() + useOffsetX, player.getY() + useOffsetY, 0f, 0f,
 					item.getType().getWidth() / World.PIXELS_PER_METER,
 					item.getType().getHeight() / World.PIXELS_PER_METER,
 					1f, 1f, useRotation);

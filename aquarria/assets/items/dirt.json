@@ -1,0 +1,10 @@
+{
+	"class"       : "com.github.antag99.aquarria.BlockItemType",
+	"id"          : "dirt",
+	"name"        : "Dirt",
+	"width"       : 16,
+	"height"      : 16,
+	"maxStack"    : 99,
+	"icon"        : "images/items/dirt.png",
+	"sheet"       : "images/tiles/dirt.png"
+}

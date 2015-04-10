@@ -31,7 +31,6 @@ package com.github.antag99.aquarria.ui;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -39,9 +38,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.github.antag99.aquarria.item.Inventory;
-import com.github.antag99.aquarria.item.Item;
-import com.github.antag99.aquarria.item.ItemType;
+import com.github.antag99.aquarria.Inventory;
+import com.github.antag99.aquarria.Item;
+import com.github.antag99.aquarria.ItemType;
+import com.github.antag99.aquarria.Sprite;
 
 public class InventoryDisplay extends Table {
 	private Inventory inventory;
@@ -217,13 +217,13 @@ public class InventoryDisplay extends Table {
 			Item item = getItem();
 			if (!item.isEmpty()) {
 				ItemType type = item.getType();
-				if (type.getTexture() != null) {
-					TextureRegion itemTexture = type.getTexture();
+				if (type.getIcon() != null) {
+					Sprite itemTexture = type.getIcon();
 
 					float centerX = getX() + getWidth() / 2f;
 					float centerY = getY() + getHeight() / 2f;
 
-					batch.draw(itemTexture, centerX - type.getWidth() / 2f, centerY - type.getHeight() / 2f, type.getWidth(), type.getHeight());
+					itemTexture.draw(batch, centerX - type.getWidth() / 2f, centerY - type.getHeight() / 2f, type.getWidth(), type.getHeight());
 
 					int stack = item.getStack();
 					if (type.getMaxStack() != 1 || stack != 1) {

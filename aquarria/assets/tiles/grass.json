@@ -1,0 +1,8 @@
+{
+	"class"       : "com.github.antag99.aquarria.BasicTileType",
+	"id"          : "grass",
+	"name"        : "",
+	"drop"        : "dirt",
+	"solid"       : true,
+	"sheet"       : "images/tiles/grass.png"
+}

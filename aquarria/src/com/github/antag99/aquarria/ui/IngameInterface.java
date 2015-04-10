@@ -32,7 +32,6 @@ package com.github.antag99.aquarria.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -41,8 +40,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.IntIntMap;
+import com.github.antag99.aquarria.Item;
+import com.github.antag99.aquarria.Sprite;
 import com.github.antag99.aquarria.entity.PlayerEntity;
-import com.github.antag99.aquarria.item.Item;
 
 public class IngameInterface extends Table {
 	private Table leftTable;
@@ -188,11 +188,11 @@ public class IngameInterface extends Table {
 		super.draw(batch, parentAlpha);
 
 		if (!swapItem.isEmpty()) {
-			TextureRegion itemTexture = swapItem.getType().getTexture();
+			Sprite itemTexture = swapItem.getType().getIcon();
 			if (itemTexture != null) {
 				Vector2 mousePosition = tmpVector2.set(Gdx.input.getX(), Gdx.input.getY());
 				mousePosition = getStage().screenToStageCoordinates(mousePosition);
-				batch.draw(itemTexture, mousePosition.x, mousePosition.y, swapItem.getType().getWidth(), swapItem.getType().getHeight());
+				itemTexture.draw(batch, mousePosition.x, mousePosition.y, swapItem.getType().getWidth(), swapItem.getType().getHeight());
 			}
 		}
 	}

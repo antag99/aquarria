@@ -31,27 +31,113 @@ package com.github.antag99.aquarria.world;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 
+/**
+ * Stores view-related information of a {@link World}.
+ * </p>
+ * Tile frames are stored as plain integers, expected to be managed by the framing
+ * code of the relevant tile type, preferably by mapping the frames
+ * to {@link Enum#ordinal() enum ordinals}.
+ */
 public class WorldView {
 	private World world;
 	private OrthographicCamera camera;
 
-	public WorldView() {
-		camera = new OrthographicCamera();
+	private byte[] tileFrame;
+	private byte[] wallFrame;
+
+	private final int width;
+	private final int height;
+
+	/**
+	 * Creates a new world view for the given world
+	 */
+	public WorldView(World world) {
+		this.world = world;
+		this.camera = new OrthographicCamera();
+
+		width = world.getWidth();
+		height = world.getHeight();
+
+		clear();
 	}
 
+	/**
+	 * Clears the frame data of this view.
+	 */
+	public void clear() {
+		tileFrame = new byte[width * height];
+		wallFrame = new byte[width * height];
+	}
+
+	/**
+	 * Gets the frame of the tile at the given position.
+	 * 
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 * @return The frame of the tile at the given position.
+	 */
+	public int getTileFrame(int x, int y) {
+		world.checkBounds(x, y);
+
+		return tileFrame[x + y * width] & 0xff;
+	}
+
+	/**
+	 * Sets the frame of the tile at the given position.
+	 * 
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 * @param frame The frame of the tile at the given position. Must be in the range 0-255.
+	 */
+	public void setTileFrame(int x, int y, int frame) {
+		world.checkBounds(x, y);
+
+		if ((frame & 0xff) != frame)
+			throw new IllegalArgumentException("frame out of range: " + frame);
+
+		tileFrame[x + y * width] = (byte) frame;
+	}
+
+	/**
+	 * Gets the frame of the wall at the given position.
+	 * 
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 * @return The frame of the wall at the given position.
+	 */
+	public int getWallFrame(int x, int y) {
+		world.checkBounds(x, y);
+
+		return wallFrame[x + y * width] & 0xff;
+	}
+
+	/**
+	 * Sets the frame of the wall at the given position.
+	 * 
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 * @param frame The frame of the wall at the given position. Must be in the range 0-255.
+	 */
+	public void setWallFrame(int x, int y, int frame) {
+		world.checkBounds(x, y);
+
+		if ((frame & 0xff) != frame)
+			throw new IllegalArgumentException("frame out of range: " + frame);
+
+		wallFrame[x + y * width] = (byte) frame;
+	}
+
+	/**
+	 * Gets the world of this view
+	 */
 	public World getWorld() {
 		return world;
 	}
 
-	public void setWorld(World world) {
-		this.world = world;
-	}
-
+	/**
+	 * Gets the camera of this view
+	 */
 	public OrthographicCamera getCamera() {
 		return camera;
-	}
-
-	public void setCamera(OrthographicCamera camera) {
-		this.camera = camera;
 	}
 }

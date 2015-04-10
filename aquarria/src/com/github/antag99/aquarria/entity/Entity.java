@@ -198,11 +198,13 @@ public abstract class Entity {
 	}
 
 	public EntityView getView() {
-		if (view == null) {
+		if (view == null)
 			view = createView();
-		}
-
 		return view;
+	}
+
+	public void setView(EntityView view) {
+		this.view = view;
 	}
 
 	protected abstract EntityView createView();

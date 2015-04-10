@@ -27,25 +27,55 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.entity;
+package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
 
-public interface EntityView {
+/**
+ * Base class for mutable {@link Type} implementations.
+ * Implements {@link Json.Serializable}.
+ */
+public class BasicType
+		implements Type, Json.Serializable {
+	private String id;
+	private String name;
+
+	public BasicType() {
+	}
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
 	/**
-	 * Entity view to be used when none is necessary.
+	 * Sets the id of this type
 	 */
-	public static final EntityView NONE = new EntityView() {
-		@Override
-		public void update(float deltaTime) {
-		}
+	public void setId(String id) {
+		this.id = id;
+	}
 
-		@Override
-		public void render(Batch batch) {
-		}
-	};
+	@Override
+	public String getName() {
+		return name;
+	}
 
-	public void update(float deltaTime);
+	/**
+	 * Sets the in-game name of this type
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-	public void render(Batch batch);
+	@Override
+	public void write(Json json) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		id = jsonData.getString("id");
+		name = jsonData.getString("name");
+	}
 }

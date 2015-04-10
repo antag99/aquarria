@@ -29,8 +29,7 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.regex.Pattern;
 
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
@@ -39,144 +38,127 @@ import org.reflections.util.ConfigurationBuilder;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.github.antag99.aquarria.item.ItemType;
-import com.github.antag99.aquarria.item.ItemTypeLoader;
-import com.github.antag99.aquarria.json.JsonObject;
-import com.github.antag99.aquarria.tile.TileType;
-import com.github.antag99.aquarria.tile.TileTypeLoader;
-import com.github.antag99.aquarria.tile.WallType;
-import com.github.antag99.aquarria.tile.WallTypeLoader;
-import com.google.common.base.Predicate;
 
 public final class GameRegistry {
-	private GameRegistry() { /* don't instantiate */
-		throw new AssertionError();
+	public static ItemType airItem;
+	public static TileType airTile;
+	public static WallType airWall;
+
+	private GameRegistry() { /* Don't instantiate */
 	}
 
-	private static ObjectMap<Class<? extends Type>, ObjectMap<String, Type>> registeredTypes = new ObjectMap<>();
-	private static ObjectMap<String, TypeLoader<?>> typeLoadersByExtension = new ObjectMap<>();
-	private static ObjectMap<Class<? extends Type>, TypeLoader<?>> typeLoadersByClass = new ObjectMap<>();
+	/*
+	 * Mapping of type class to instances of the type
+	 */
+	private static ObjectMap<Class<? extends Type>, ObjectMap<String, Type>> instances = new ObjectMap<>();
 
-	private static ObjectMap<String, Type> getRegisteredTypes(Class<? extends Type> typeClass) {
-		ObjectMap<String, Type> types = registeredTypes.get(typeClass);
-		if (types == null) {
-			types = new ObjectMap<String, Type>();
-			registeredTypes.put(typeClass, types);
+	/*
+	 * Type that is used on id clashes, which quite easy happens for the root interface Type.
+	 * Attempting to access types that have the same id on a certain level in the hierarchy
+	 * is prohibited.
+	 */
+	private static final Type AMBIGOUS = null;
+
+	/*
+	 * Reflections instance, used to get metadata
+	 */
+	private static Reflections reflections;
+
+	/*
+	 * Json instance, used to parse configuration files
+	 */
+	private static Json json;
+
+	/*
+	 * Initializes all types
+	 */
+	public static void initialize() {
+		// Scan for json configuration files on the classpath
+		ConfigurationBuilder builder = new ConfigurationBuilder();
+		builder.setScanners(new ResourcesScanner());
+		builder.setUrls(ClasspathHelper.forClassLoader(
+				ClasspathHelper.contextClassLoader(),
+				ClasspathHelper.staticClassLoader()));
+
+		reflections = new Reflections(builder);
+		json = new Json();
+		for (String path : reflections.getResources(Pattern.compile(".*\\.json"))) {
+			if (!path.startsWith("items") && !path.startsWith("tiles") && !path.startsWith("walls"))
+				continue;
+
+			FileHandle file = Gdx.files.internal(path);
+			Type type = json.fromJson(null, file);
+			registerType(type);
 		}
-		return types;
+
+		airItem = getItem("airItem");
+		airTile = getTile("airTile");
+		airWall = getWall("airWall");
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Type> Iterable<T> getTypes(Class<T> typeClass) {
-		return (Iterable<T>) getRegisteredTypes(typeClass).values();
+	public static void registerType(Type type) {
+		registerType(type, (Class<Type>) type.getClass());
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Type> T getType(Class<T> typeClass, String internalName) {
-		T type = (T) getRegisteredTypes(typeClass).get(internalName);
-		if (type == null) {
-			throw new IllegalArgumentException(typeClass.getSimpleName() + " not found: " + internalName);
-		}
+	public static <T extends Type> ObjectMap<String, T> getTypes(Class<T> typeClass) {
+		if (!instances.containsKey(typeClass))
+			instances.put(typeClass, new ObjectMap<String, Type>());
+		return (ObjectMap<String, T>) instances.get(typeClass);
+	}
+
+	public static <T extends Type> T getType(Class<T> typeClass, String id) {
+		ObjectMap<String, T> types = getTypes(typeClass);
+		if (!types.containsKey(id))
+			throw new IllegalArgumentException(typeClass.getSimpleName() + " " + id + " has not been registered");
+		T type = types.get(id);
+		if (type == AMBIGOUS)
+			throw new IllegalArgumentException(typeClass.getSimpleName() + " " + id + " is ambigous");
 		return type;
 	}
 
-	public static void registerTypeLoader(TypeLoader<?> typeLoader) {
-		typeLoadersByExtension.put(typeLoader.getExtension(), typeLoader);
-		typeLoadersByClass.put(typeLoader.getTypeClass(), typeLoader);
+	public static ItemType getItem(String id) {
+		return getType(ItemType.class, id);
 	}
 
-	public static void registerType(Type type) {
-		getRegisteredTypes(type.getClass()).put(type.getId(), type);
+	public static TileType getTile(String id) {
+		return getType(TileType.class, id);
 	}
 
-	public static ItemType getItemType(String internalName) {
-		return getType(ItemType.class, internalName);
+	public static WallType getWall(String id) {
+		return getType(WallType.class, id);
 	}
 
-	public static TileType getTileType(String internalName) {
-		return getType(TileType.class, internalName);
-	}
-
-	public static WallType getWallType(String internalName) {
-		return getType(WallType.class, internalName);
-	}
-
-	public static Iterable<ItemType> getItemTypes() {
-		return getTypes(ItemType.class);
-	}
-
-	public static Iterable<TileType> getTileTypes() {
-		return getTypes(TileType.class);
-	}
-
-	public static Iterable<WallType> getWallTypes() {
-		return getTypes(WallType.class);
-	}
-
+	/*
+	 * Registers the given type. All interfaces or class that directly or indirectly
+	 * implements Type are registered in the instances map, and can thus be retrieved
+	 * using the supplied methods. This is especially useful when sharing the same
+	 * instance for an item/tile pair.
+	 */
 	@SuppressWarnings("unchecked")
-	private static void loadTypes() {
-		/* http://stackoverflow.com/a/9571146 */
-		List<ClassLoader> classLoadersList = new LinkedList<ClassLoader>();
-		classLoadersList.add(ClasspathHelper.contextClassLoader());
-		classLoadersList.add(ClasspathHelper.staticClassLoader());
+	private static <T extends Type> void registerType(T type, Class<T> typeClass) {
+		// Put type in the mapping
+		ObjectMap<String, T> types = getTypes(typeClass);
+		if (!types.containsKey(type.getId())) /* No id clash, put in map */
+			types.put(type.getId(), type);
+		else if (types.get(type.getId()) != type)
+			/* Id clash, undefined on this level in the hierarchy */
+			types.put(type.getId(), (T) AMBIGOUS);
 
-		/* TODO: limit the resources that are scanned? */
-		Reflections reflections = new Reflections(new ConfigurationBuilder()
-				.setScanners(new ResourcesScanner())
-				.setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0]))));
-
-		/* find type configuration files */
-		for (String typePath : reflections.getResources(new Predicate<String>() {
-			@Override
-			public boolean apply(String resourceName) {
-				return typeLoadersByExtension.containsKey(new FileHandle(resourceName).extension());
-			}
-		})) {
-			FileHandle file = Gdx.files.internal(typePath);
-			JsonObject config = Util.parseJson(file);
-
-			TypeLoader<?> loader = typeLoadersByExtension.get(file.extension());
-			Type typeInstance = null;
-
-			try {
-				typeInstance = (Type) loader.getTypeClass().newInstance();
-			} catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-
-			typeInstance.setId(config.getString("id"));
-			typeInstance.setName(config.getString("name"));
-			typeInstance.setConfig(config);
-
-			((TypeLoader<Type>) loader).load(typeInstance, config);
-
-			registerType(typeInstance);
+		// Register type as superclass instance
+		if (typeClass.getSuperclass() != null &&
+				Type.class.isAssignableFrom(typeClass.getSuperclass())) {
+			registerType(type, (Class<T>) typeClass.getSuperclass());
 		}
 
-		for (Class<? extends Type> typeClass : registeredTypes.keys()) {
-			TypeLoader<?> loader = typeLoadersByClass.get(typeClass);
-			for (Type type : getTypes(typeClass)) {
-				((TypeLoader<Type>) loader).postLoad(type, type.getConfig());
+		// Register type as superinterface instance
+		for (Class<?> otherInterface : typeClass.getInterfaces()) {
+			if (Type.class.isAssignableFrom(otherInterface)) {
+				registerType(type, (Class<T>) otherInterface);
 			}
 		}
-	}
-
-	public static void initialize() {
-		registerTypeLoader(new ItemTypeLoader());
-		registerTypeLoader(new TileTypeLoader());
-		registerTypeLoader(new WallTypeLoader());
-
-		loadTypes();
-
-		ItemType.air = getItemType("air");
-		TileType.air = getTileType("air");
-		WallType.air = getWallType("air");
-	}
-
-	public static void clear() {
-		typeLoadersByClass.clear();
-		typeLoadersByExtension.clear();
-		registeredTypes.clear();
 	}
 }

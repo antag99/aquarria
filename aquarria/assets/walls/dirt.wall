@@ -1,6 +1,0 @@
-{
-	"id" : "dirt",
-	"name" : "Dirt",
-	"sheet" : "walls/dirt.sheet",
-	"drop" : "dirtWall"
-}

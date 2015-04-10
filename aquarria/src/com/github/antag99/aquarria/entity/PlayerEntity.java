@@ -33,8 +33,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.github.antag99.aquarria.GameRegistry;
-import com.github.antag99.aquarria.item.Inventory;
-import com.github.antag99.aquarria.item.Item;
+import com.github.antag99.aquarria.Inventory;
+import com.github.antag99.aquarria.Item;
 
 public class PlayerEntity extends Entity {
 	/**
@@ -65,12 +65,12 @@ public class PlayerEntity extends Entity {
 		hotbar = new Inventory(10);
 		inventory = new Inventory(40);
 
-		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("pickaxe")));
-		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("hammer")));
-		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("dirt")));
-		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("stone")));
-		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("dirtWall")));
-		hotbar.addItem(Item.createMaxStack(GameRegistry.getItemType("stoneWall")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItem("pickaxe")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItem("hammer")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItem("dirt")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItem("stone")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItem("dirtWall")));
+		hotbar.addItem(Item.createMaxStack(GameRegistry.getItem("stoneWall")));
 	}
 
 	@Override
@@ -136,7 +136,7 @@ public class PlayerEntity extends Entity {
 				// Set to true again if the item starts being used
 				repeatUsingItem = false;
 
-				if (!usedItem.isEmpty() && usedItem.getType().getEffect() != null) {
+				if (!usedItem.isEmpty() && usedItem.getType().canUse(this, usedItem)) {
 					usingItem = true;
 					repeatUsingItem = true;
 
@@ -150,8 +150,8 @@ public class PlayerEntity extends Entity {
 			if (usingItem) {
 				useTime += delta;
 
-				if (useTime % usedItem.getType().getUsageTime() < delta) {
-					if (usedItem.getType().getEffect().useItem(usedItem, this) &&
+				if (useTime % usedItem.getType().getUsageDelay() < delta) {
+					if (usedItem.getType().usageEffect(this, usedItem) &&
 							usedItem.getType().isConsumable()) {
 						usedItem.setStack(usedItem.getStack() - 1);
 					}
@@ -236,6 +236,24 @@ public class PlayerEntity extends Entity {
 		} else {
 			hasWorldFocus = false;
 		}
+	}
+
+	public boolean destroyTile(int x, int y) {
+		if (getWorld().getTileType(x, y) == GameRegistry.airTile) {
+			return false;
+		}
+		getWorld().getTileType(x, y).destroyed(getWorld(), x, y);
+		getWorld().setTileType(x, y, GameRegistry.airTile);
+		return true;
+	}
+
+	public boolean destroyWall(int x, int y) {
+		if (getWorld().getWallType(x, y) == GameRegistry.airWall) {
+			return false;
+		}
+		getWorld().getWallType(x, y).destroyed(getWorld(), x, y);
+		getWorld().setWallType(x, y, GameRegistry.airWall);
+		return true;
 	}
 
 	@Override

@@ -29,59 +29,37 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
-
 /**
- * Stores data for spritesheet-based animation. {@link #getFrame(SpriteSheet, float)} </>
+ * Stores data for spritesheet-based animation. {@link #getFrame(Sprite[], float)} </>
  * is used to get the current frame in an animation.
  */
 public class SpriteAnimation {
-	/* beginning frame position */
-	private int frameStartX;
-	private int frameStartY;
-	/* amount of frames */
-	private int frameCount;
-	/* total time of the animation */
+	private int frameOffset;
+	private int frameLength;
+
 	private float animationTime;
 
-	public SpriteAnimation(
-			int frameStartX, int frameStartY,
-			int frameCount, float animationTime) {
-		this.frameStartX = frameStartX;
-		this.frameStartY = frameStartY;
-		this.frameCount = frameCount;
+	public SpriteAnimation(int frameOffset, int frameLength, float animationTime) {
+		this.frameOffset = frameOffset;
+		this.frameLength = frameLength;
 		this.animationTime = animationTime;
 	}
 
-	public int getFrameStartX() {
-		return frameStartX;
+	public int getFrameOffset() {
+		return frameOffset;
 	}
 
-	public int getFrameStartY() {
-		return frameStartY;
-	}
-
-	public int getFrameCount() {
-		return frameCount;
+	public int getFrameLength() {
+		return frameLength;
 	}
 
 	public float getAnimationTime() {
 		return animationTime;
 	}
 
-	public void setAnimationTime(float animationTime) {
-		this.animationTime = animationTime;
-	}
-
-	public TextureRegion getFrame(SpriteSheet sheet, float time) {
-		float frameTime = animationTime / frameCount;
-		int frameIndex = MathUtils.floor((time / frameTime) % frameCount);
-		int frameCountX = sheet.getGrid().getSpriteCountX() - frameStartX;
-		int frameCountY = sheet.getGrid().getSpriteCountY() - frameStartY;
-		int frameX = frameIndex % frameCountX;
-		int frameY = (frameIndex / frameCountX) % frameCountY;
-
-		return sheet.getSprite(frameStartX + frameX, frameStartY + frameY);
+	public Sprite getFrame(SpriteSheet sheet, float time) {
+		float frameTime = animationTime / frameLength;
+		int frameIndex = frameOffset + (int) (time / frameTime) % frameLength;
+		return sheet.getSprite(frameIndex % sheet.getWidth(), frameIndex / sheet.getWidth());
 	}
 }

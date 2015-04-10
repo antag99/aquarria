@@ -27,54 +27,113 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-package com.github.antag99.aquarria.entity;
+package com.github.antag99.aquarria;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.github.antag99.aquarria.Item;
-import com.github.antag99.aquarria.Sprite;
-import com.github.antag99.aquarria.world.World;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+import com.github.antag99.aquarria.entity.PlayerEntity;
 
-public class ItemEntity extends Entity {
-	private Item item;
+/**
+ * Implements basic item types, loaded from json files.
+ */
+public class BasicItemType extends BasicType
+		implements ItemType, Json.Serializable {
+	private float width;
+	private float height;
 
-	public ItemEntity(Item item) {
-		this.item = item;
+	private int maxStack;
+
+	private Sprite icon;
+
+	public BasicItemType() {
 	}
 
-	public Item getItem() {
-		return item;
-	}
+	@Override
+	public void read(Json json, JsonValue jsonData) {
+		super.read(json, jsonData);
 
-	public void setItem(Item item) {
-		this.item = item;
+		width = jsonData.getFloat("width");
+		height = jsonData.getFloat("height");
+
+		maxStack = jsonData.getInt("maxStack", 99);
+		icon = Assets.getSprite(jsonData.getString("icon", "null.png"));
 	}
 
 	@Override
 	public float getWidth() {
-		return item.getType().getWidth() / World.PIXELS_PER_METER;
+		return width;
 	}
 
 	@Override
 	public float getHeight() {
-		return item.getType().getHeight() / World.PIXELS_PER_METER;
+		return height;
+	}
+
+	/**
+	 * Sets the physical width of this item type
+	 */
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	/**
+	 * Sets the physical height of this item type
+	 */
+	public void setHeight(float height) {
+		this.height = height;
 	}
 
 	@Override
-	protected EntityView createView() {
-		return new ItemView();
+	public int getMaxStack() {
+		return maxStack;
 	}
 
-	private class ItemView implements EntityView {
-		@Override
-		public void update(float deltaTime) {
-		}
+	/**
+	 * Sets the maximum amount of items of this type that can be stored in one slot.
+	 */
+	public void setMaxStack(int maxStack) {
+		this.maxStack = maxStack;
+	}
 
-		@Override
-		public void render(Batch batch) {
-			batch.setColor(Color.WHITE);
-			Sprite sprite = getItem().getType().getIcon();
-			sprite.draw(batch, getX(), getY(), getWidth(), getHeight());
-		}
+	@Override
+	public Sprite getIcon() {
+		return icon;
+	}
+
+	/**
+	 * Sets the texture of the item type.
+	 */
+	public void setIcon(Sprite icon) {
+		this.icon = icon;
+	}
+
+	@Override
+	public float getUsageDelay() {
+		return 0f;
+	}
+
+	@Override
+	public boolean getUsageRepeat() {
+		return false;
+	}
+
+	@Override
+	public ItemAnimation getUsageAnimation() {
+		return null;
+	}
+
+	@Override
+	public boolean isConsumable() {
+		return false;
+	}
+
+	@Override
+	public boolean canUse(PlayerEntity player, Item stack) {
+		return false;
+	}
+
+	@Override
+	public boolean usageEffect(PlayerEntity player, Item stack) {
+		return false;
 	}
 }

@@ -29,34 +29,18 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-import com.github.antag99.aquarria.json.JsonObject;
+public interface Type {
 
-public abstract class Type {
-	private String id;
-	private String name;
-	private JsonObject config;
+	/**
+	 * Gets the id of this type; this is a string used to identify it in
+	 * configuration and saved game files, so it should not be changed without
+	 * a good reason. Examples: "dirt", "snow" etc.
+	 */
+	public String getId();
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public JsonObject getConfig() {
-		return config;
-	}
-
-	public void setConfig(JsonObject config) {
-		this.config = config;
-	}
+	/**
+	 * Gets the name of this type; this is the in-game name of it.
+	 * Examples: "Dirt Block", "Snow Wall" etc.
+	 */
+	public String getName();
 }

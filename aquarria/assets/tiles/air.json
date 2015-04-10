@@ -1,0 +1,7 @@
+{
+	"class"       : "com.github.antag99.aquarria.BasicTileType",
+	"id"          : "airTile",
+	"name"        : "",
+	"solid"       : false,
+	"sheet"       : null
+}
