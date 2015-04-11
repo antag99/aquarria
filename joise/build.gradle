@@ -1,3 +1,0 @@
-
-sourceSets.main.java.srcDirs = [ "src/" ]
-sourceSets.test.java.srcDirs = [ "tests/" ]
