@@ -47,6 +47,10 @@ public class Assets {
 	public static SpriteGrid tileGrid;
 	public static SpriteGrid wallGrid;
 
+	public static SpriteGrid trunkGrid;
+	public static SpriteGrid topsGrid;
+	public static SpriteGrid branchesGrid;
+
 	public static SpriteSheet playerHairSheet;
 	public static SpriteSheet playerHeadSheet;
 	public static SpriteSheet playerEyesSheet;
@@ -93,41 +97,12 @@ public class Assets {
 		playerStand = new SpriteAnimation(0, 1, 1f);
 		playerSwing = new SpriteAnimation(1, 5, 1f);
 
-		tileGrid = new SpriteGrid(
-				16, 10/* count */,
-				0, 0/* offset */,
-				16, 16/* size */,
-				2, 2/* spacing */,
-				0, 0/* draw offset */,
-				16, 16/* draw size */);
-/*
--{
--	"texture" : "images/walls/dirt.png",
--
--	"renderOffsetX" : -8,
--	"renderOffsetY" : -8,
--	"renderWidth" : 32,
--	"renderHeight" : 32,
--
--	"grid" : {
--		"spriteOffsetX" : 0,
--		"spriteOffsetY" : 0,
--		"spriteSpacingX" : 4,
--		"spriteSpacingY" : 4,
--		"spriteWidth" : 32,
--		"spriteHeight" : 32,
--		"spriteCountX" : 16,
--		"spriteCountY" : 10
--	}
--}
-*/
-		wallGrid = new SpriteGrid(
-				16, 10/* count */,
-				0, 0/* offset */,
-				32, 32/* size */,
-				4, 4/* spacing */,
-				-8, -8/* draw offset */,
-				32, 32/* draw size */);
+		tileGrid = new SpriteGrid(16, 10, 0, 0, 16, 16, 2, 2, 0, 0, 16, 16);
+		wallGrid = new SpriteGrid(16, 10, 0, 0, 32, 32, 4, 4, -8, -8, 32, 32);
+
+		trunkGrid = new SpriteGrid(8, 12, 0, 0, 20, 20, 2, 2, -2, -2, 20, 20);
+		topsGrid = new SpriteGrid(3, 1, 0, 0, 80, 80, 2, 2, -32, 0, 80, 80);
+		branchesGrid = new SpriteGrid(2, 3, 0, 0, 40, 40, 2, 2, -2, -10, 40, 40);
 	}
 
 	private static PixmapPacker texturePacker;

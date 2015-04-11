@@ -98,7 +98,8 @@ public class ContentExtractor {
 		copy("images/Tiles_1.png", "images/tiles/stone.png");
 		copy("images/Tiles_2.png", "images/tiles/grass.png");
 		copy("images/Tiles_5.png", "images/tiles/tree.png");
-		copy("images/Tree_Tops_1.png", "images/tiles/treeTop.png");
+		copy("images/Tree_Tops_0.png", "images/tiles/treeTop.png");
+		copy("images/Tree_Branches_0.png", "images/tiles/treeBranch.png");
 
 		copy("images/Wall_2.png", "images/walls/dirt.png");
 		copy("images/Wall_1.png", "images/walls/stone.png");

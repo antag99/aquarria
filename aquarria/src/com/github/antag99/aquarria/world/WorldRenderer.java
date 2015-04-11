@@ -126,7 +126,7 @@ public class WorldRenderer extends Widget {
 
 				if (type != GameRegistry.airWall) {
 					Sprite sprite = type.getTexture(view, i, j);
-					sprite.draw(batch, i, j, 2f, 2f);
+					sprite.draw(batch, i, j, sprite.getDrawWidth() / World.PIXELS_PER_METER, sprite.getDrawHeight() / World.PIXELS_PER_METER);
 				}
 			}
 		}
@@ -139,7 +139,7 @@ public class WorldRenderer extends Widget {
 
 				if (type != GameRegistry.airTile) {
 					Sprite sprite = type.getTexture(view, i, j);
-					sprite.draw(batch, i, j, 1f, 1f);
+					sprite.draw(batch, i, j, sprite.getDrawWidth() / World.PIXELS_PER_METER, sprite.getDrawHeight() / World.PIXELS_PER_METER);
 				}
 			}
 		}

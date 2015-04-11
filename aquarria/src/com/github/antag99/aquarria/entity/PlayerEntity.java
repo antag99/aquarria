@@ -32,9 +32,11 @@ package com.github.antag99.aquarria.entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
+import com.github.antag99.aquarria.Direction;
 import com.github.antag99.aquarria.GameRegistry;
 import com.github.antag99.aquarria.Inventory;
 import com.github.antag99.aquarria.Item;
+import com.github.antag99.aquarria.world.World;
 
 public class PlayerEntity extends Entity {
 	/**
@@ -239,11 +241,24 @@ public class PlayerEntity extends Entity {
 	}
 
 	public boolean destroyTile(int x, int y) {
-		if (getWorld().getTileType(x, y) == GameRegistry.airTile) {
+		World world = getWorld();
+		if (world.getTileType(x, y) == GameRegistry.airTile || world.isTileBlocked(x, y)) {
 			return false;
 		}
-		getWorld().getTileType(x, y).destroyed(getWorld(), x, y);
-		getWorld().setTileType(x, y, GameRegistry.airTile);
+		world.getTileType(x, y).destroyed(getWorld(), x, y);
+		world.setTileType(x, y, GameRegistry.airTile);
+		// Destroy attached tiles
+		for (Direction direction : Direction.values()) {
+			int adjacentX = x - direction.getHorizontal();
+			int adjacentY = y - direction.getVertical();
+			if (world.isTileAttached(adjacentX, adjacentY, direction)) {
+				destroyTile(adjacentX, adjacentY);
+				// Clear attachment *after* calling destruction code, as some
+				// types may wish to use attachment to implicitly store which
+				// part of a multiblock tile the current tile is.
+				world.setTileAttached(adjacentX, adjacentY, direction, false);
+			}
+		}
 		return true;
 	}
 

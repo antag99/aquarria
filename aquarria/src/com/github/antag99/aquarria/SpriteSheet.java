@@ -75,6 +75,19 @@ public class SpriteSheet {
 	}
 
 	/**
+	 * Sets the sprite at the given position in the sheet
+	 */
+	public void setSprite(int x, int y, Sprite sprite) {
+		if (!(x >= 0 && x < width))
+			throw new ArrayIndexOutOfBoundsException(x);
+		if (!(y >= 0 && y < height))
+			throw new ArrayIndexOutOfBoundsException(y);
+		if (sprite == null)
+			throw new NullPointerException();
+		sprites[x + y * width] = sprite;
+	}
+
+	/**
 	 * Creates a new spritesheet from the given texture and sprite sheet layout.
 	 */
 	public SpriteSheet(TextureRegion texture, SpriteGrid layout) {

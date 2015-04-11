@@ -64,10 +64,10 @@ public class BlockItemType extends BasicItemType
 	public Sprite getTexture(WorldView worldView, int x, int y) {
 		World world = worldView.getWorld();
 		BlockFrame frame = BlockFrame.findFrame(
-				y == 0 || world.getTileType(x, y + 1) != GameRegistry.airTile,
-				x + 1 == world.getWidth() || world.getTileType(x + 1, y) != GameRegistry.airTile,
-				y + 1 == world.getHeight() || world.getTileType(x, y - 1) != GameRegistry.airTile,
-				x == 0 || world.getTileType(x - 1, y) != GameRegistry.airTile);
+				y == 0 || world.getTileType(x, y + 1).isSolid(),
+				x + 1 == world.getWidth() || world.getTileType(x + 1, y).isSolid(),
+				y + 1 == world.getHeight() || world.getTileType(x, y - 1).isSolid(),
+				x == 0 || world.getTileType(x - 1, y).isSolid());
 		return sheet.getSprite(frame.getX(), frame.getY());
 	}
 

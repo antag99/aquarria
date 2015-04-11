@@ -30,6 +30,7 @@
 package com.github.antag99.aquarria.world;
 
 import java.util.Arrays;
+import java.util.BitSet;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -45,8 +46,8 @@ import com.github.antag99.aquarria.entity.ItemEntity;
 public class World {
 	public static final float PIXELS_PER_METER = 16;
 
-	private int width;
-	private int height;
+	private final int width;
+	private final int height;
 
 	private float spawnX, spawnY;
 
@@ -54,6 +55,7 @@ public class World {
 	private WallType[] walls;
 
 	private byte[] tileAttachment;
+	private BitSet tileBlocked;
 
 	private short[] surfaceLevel;
 	private byte[] light;
@@ -89,6 +91,7 @@ public class World {
 		Arrays.fill(tiles, GameRegistry.airTile);
 		Arrays.fill(walls, GameRegistry.airWall);
 		tileAttachment = new byte[width * height];
+		tileBlocked = new BitSet(width * height);
 		entities = new Array<Entity>();
 		surfaceLevel = new short[width];
 		light = new byte[width * height];
@@ -186,6 +189,38 @@ public class World {
 			tileAttachment[x + y * width] |= direction.mask();
 		else
 			tileAttachment[x + y * width] &= ~direction.mask();
+	}
+
+	/**
+	 * Gets whether the tile at the given position is blocked. Blocked tiles
+	 * cannot be destroyed as long as they are blocked. This is used to prevent
+	 * tiles such as the demon altar from being destroyed by destroying the tiles
+	 * underneath it that it's attached to.
+	 * 
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 * @return Whether the tile is blocked
+	 */
+	public boolean isTileBlocked(int x, int y) {
+		checkBounds(x, y);
+
+		return tileBlocked.get(x + y * width);
+	}
+
+	/**
+	 * Sets whether the tile at the given position is blocked. Blocked tiles
+	 * cannot be destroyed as long as they are blocked. This is used to prevent
+	 * tiles such as demon altars from being destroyed by destroying the tiles
+	 * underneath it that it's attached to.
+	 * 
+	 * @param x The X position of the tile
+	 * @param y The Y position of the tile
+	 * @param blocked Whether the tile is blocked
+	 */
+	public void setTileBlocked(int x, int y, boolean blocked) {
+		checkBounds(x, y);
+
+		tileBlocked.set(x + y * width, blocked);
 	}
 
 	public WallType getWallType(int x, int y) {

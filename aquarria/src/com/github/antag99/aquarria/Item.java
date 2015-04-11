@@ -29,7 +29,6 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
-
 public class Item {
 	private ItemType type;
 	private int stack;

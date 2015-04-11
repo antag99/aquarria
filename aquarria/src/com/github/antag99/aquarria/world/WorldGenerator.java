@@ -70,13 +70,7 @@ public class WorldGenerator {
 		tasks.add(new SurfaceTileGeneratorTask(GameRegistry.getTile("dirt"), GameRegistry.getTile("grass")));
 
 		// Place some trees...
-		// tasks.add((generator, seed) -> {
-		// Random treeRandom = new Random(seed);
-		//
-		// for (int i = 5; i < generator.getWidth() - 5; i += 10) {
-		// placeTree(i, generator.getSurfaceLevel(i), treeRandom);
-		// }
-		// });
+		tasks.add(new TreeGeneratorTask(GameRegistry.getTile("tree")));
 
 		// Set the spawnpoint
 		tasks.add(new SpawnPointTask());

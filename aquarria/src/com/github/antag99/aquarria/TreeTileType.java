@@ -29,83 +29,62 @@
  ******************************************************************************/
 package com.github.antag99.aquarria;
 
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.github.antag99.aquarria.world.World;
 import com.github.antag99.aquarria.world.WorldView;
 
-/**
- * Implements basic tile types, loaded from json files.
- */
-public class BasicTileType extends BasicType
+public class TreeTileType extends BasicTileType
 		implements TileType, Json.Serializable {
-	private boolean solid = true;
-	private SpriteSheet sheet;
-	private String drop;
 
-	public BasicTileType() {
+	private SpriteSheet topSheet;
+	private SpriteSheet branchSheet;
+
+	public TreeTileType() {
 	}
 
 	@Override
 	public void read(Json json, JsonValue jsonData) {
 		super.read(json, jsonData);
 
-		solid = jsonData.getBoolean("solid", true);
-		sheet = new SpriteSheet(Assets.getTexture(jsonData.getString("sheet", "null.png")), getGrid());
-		drop = jsonData.getString("drop", null);
-	}
+		topSheet = new SpriteSheet(Assets.getTexture(jsonData.getString("topSheet")), Assets.topsGrid);
+		branchSheet = new SpriteSheet(Assets.getTexture(jsonData.getString("branchSheet")), Assets.branchesGrid);
 
-	/**
-	 * Gets the sprite grid used by the textures for this tile type;
-	 * can be overriden by subclasses.
-	 */
-	protected SpriteGrid getGrid() {
-		return Assets.tileGrid;
-	}
-
-	@Override
-	public boolean isSolid() {
-		return solid;
-	}
-
-	public void setSolid(boolean solid) {
-		this.solid = solid;
-	}
-
-	public SpriteSheet getSheet() {
-		return sheet;
-	}
-
-	public void setSheet(SpriteSheet sheet) {
-		this.sheet = sheet;
-	}
-
-	public String getDrop() {
-		return drop;
-	}
-
-	public void setDrop(String drop) {
-		this.drop = drop;
-	}
-
-	@Override
-	public Sprite getTexture(WorldView worldView, int x, int y) {
-		World world = worldView.getWorld();
-		BlockFrame frame = BlockFrame.findFrame(
-				y == 0 || world.getTileType(x, y + 1).isSolid(),
-				x + 1 == world.getWidth() || world.getTileType(x + 1, y).isSolid(),
-				y + 1 == world.getHeight() || world.getTileType(x, y - 1).isSolid(),
-				x == 0 || world.getTileType(x - 1, y).isSolid());
-		return sheet.getSprite(frame.getX(), frame.getY());
-	}
-
-	@Override
-	public void placed(World world, int x, int y) {
+		// HACK: Left branch sprites are offset manually
+		for (int y = 0; y < 3; ++y) {
+			TextureRegion texture = branchSheet.getSprite(0, y).getTexture();
+			branchSheet.setSprite(0, y, new Sprite(texture, -24f, -10f, 40f, 40f));
+		}
 	}
 
 	@Override
 	public void destroyed(World world, int x, int y) {
-		if (getDrop() != null)
-			world.dropItem(new Item(GameRegistry.getItem(getDrop()), 1), x, y);
+		super.destroyed(world, x, y);
+
+		// Unblock the tile underneath the tree
+		if (world.getTileType(x, y - 1) != this) {
+			world.setTileBlocked(x, y - 1, false);
+		}
+	}
+
+	@Override
+	protected SpriteGrid getGrid() {
+		return Assets.trunkGrid;
+	}
+
+	@Override
+	public Sprite getTexture(WorldView worldView, int x, int y) {
+		TreeFrame treeFrame = TreeFrame.findFrame(worldView.getWorld(), x, y);
+
+		if (treeFrame == TreeFrame.TOP) {
+			return topSheet.getSprite(0, 0);
+		} else if (treeFrame == TreeFrame.BRANCH_LEFT) {
+			return branchSheet.getSprite(0, 0);
+		} else if (treeFrame == TreeFrame.BRANCH_RIGHT) {
+			return branchSheet.getSprite(1, 0);
+		}
+
+		return getSheet().getSprite(treeFrame.getX(), treeFrame.getY());
 	}
 }

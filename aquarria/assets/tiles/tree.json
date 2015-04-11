@@ -1,0 +1,10 @@
+{
+	"class"       : "com.github.antag99.aquarria.TreeTileType",
+	"id"          : "tree",
+	"name"        : "Tree",
+	"solid"       : false,
+	"sheet"       : "images/tiles/tree.png",
+	"topSheet"    : "images/tiles/treeTop.png",
+	"branchSheet" : "images/tiles/treeBranch.png",
+	"drop"        : "dirt"
+}

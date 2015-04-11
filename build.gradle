@@ -9,7 +9,7 @@ subprojects {
     
     ext {
         appName = "aquarria"
-        gdxVersion = "1.5.4-SNAPSHOT"
+        gdxVersion = "1.5.5"
     }
 
     repositories {
